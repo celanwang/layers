@@ -18,7 +18,7 @@
 
 ## 3. 禁止事项
 
-- 新依赖仅批准 `torch`（Oracle 用，`uv pip install --python .venv/bin/python torch`）；不得改既有依赖版本
+- 新依赖仅批准 `torch` 与 `numpy`（Oracle 与权重桥接用，`uv pip install --python .venv/bin/python torch numpy`）；不得改既有依赖版本
 - `git push`、删文件、改既有测量协议
 - 阅读任何参照实现源码（nanochat / minGPT / HF transformers / MLX 官方示例的注意力实现）；只允许调用 `mx.fast.scaled_dot_product_attention`、`mlx.nn.RoPE`、`torch` 的公开 API 作对照
 - 主路径使用 `mx.fast.*` 或 `mlx.nn.RoPE`（仅 Oracle 对照可用）
