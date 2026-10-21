@@ -1,0 +1,208 @@
+{
+  "task": "tasks/l6-diff-analysis.md",
+  "base_commit": "7293ad32cbd63749536b68654e94d4f33753278e",
+  "stage1_commit": "712faaa",
+  "scope": "Documentary and arithmetic checks only; no tests or benchmarks run.",
+  "result": "PASS",
+  "checks": {
+    "sha256:results/l6/batching-bench-20261021T133044874890Z.json": true,
+    "sha256:results/l6/batching-bench-20261021T132523026893Z.json": true,
+    "sha256:results/l6/api-bench-20261021T144110591270Z.json": true,
+    "sha256:results/l6/api-bench-20261021T145054448274Z.json": true,
+    "sha256:results/l4/decode-bench-20261021T114111Z.json": true,
+    "five_analysis_sections": true,
+    "eleven_inventory_rows": true,
+    "local_production_landing_per_row": true,
+    "production_reference_per_row": true,
+    "landing_per_row": true,
+    "eight_required_topics": true,
+    "five_report_conclusions": true,
+    "relative_links": true,
+    "source_ranges": true,
+    "external_references": true,
+    "paired_components_B1": true,
+    "median_p90_B1:prefill": true,
+    "median_p90_B1:decode": true,
+    "median_p90_B1:end_to_end": true,
+    "shares_B1": true,
+    "step_rate_B1": true,
+    "paired_components_B2": true,
+    "median_p90_B2:prefill": true,
+    "median_p90_B2:decode": true,
+    "median_p90_B2:end_to_end": true,
+    "shares_B2": true,
+    "step_rate_B2": true,
+    "paired_components_B4": true,
+    "median_p90_B4:prefill": true,
+    "median_p90_B4:decode": true,
+    "median_p90_B4:end_to_end": true,
+    "shares_B4": true,
+    "step_rate_B4": true,
+    "paired_components_B8": true,
+    "median_p90_B8:prefill": true,
+    "median_p90_B8:decode": true,
+    "median_p90_B8:end_to_end": true,
+    "shares_B8": true,
+    "step_rate_B8": true,
+    "gap_independent": true,
+    "gap_identity": true,
+    "padding_slots": true,
+    "padding_time": true,
+    "blocking_estimate": true,
+    "blocking_limits": true,
+    "kernel_evidence_limits": true,
+    "api_delta:results/l6/api-bench-20261021T144110591270Z.json": true,
+    "api_delta:results/l6/api-bench-20261021T145054448274Z.json": true,
+    "document_whitespace": true,
+    "document_fences": true,
+    "whitelist": true,
+    "no_deletions": true,
+    "git_whitespace": true
+  },
+  "changed_files": [
+    "results/l6/diff-acceptance.json",
+    "results/l6/diff-accounting.json",
+    "results/l6/l6-diff-report.md",
+    "runs/l6-diff-analysis.md"
+  ],
+  "relative_link_count": 14,
+  "source_line_range_count": 67,
+  "external_reference_count": 23,
+  "external_reference_locations": [
+    {
+      "id": "O1",
+      "url": "https://www.usenix.org/system/files/osdi22-yu.pdf"
+    },
+    {
+      "id": "S1",
+      "url": "https://www.usenix.org/system/files/osdi24-agrawal.pdf"
+    },
+    {
+      "id": "V1",
+      "url": "https://docs.vllm.ai/en/v0.10.2/configuration/optimization.html#preemption"
+    },
+    {
+      "id": "V2",
+      "url": "https://arxiv.org/pdf/2309.06180"
+    },
+    {
+      "id": "V3",
+      "url": "https://docs.vllm.ai/en/v0.10.2/features/automatic_prefix_caching.html#introduction"
+    },
+    {
+      "id": "V4",
+      "url": "https://docs.vllm.ai/en/v0.10.2/design/prefix_caching.html#operations"
+    },
+    {
+      "id": "V5",
+      "url": "https://docs.vllm.ai/en/v0.10.2/api/vllm/sampling_params.html#vllm.sampling_params.SamplingParams"
+    },
+    {
+      "id": "V6",
+      "url": "https://docs.vllm.ai/en/v0.10.2/design/metrics.html#objectives"
+    },
+    {
+      "id": "V7",
+      "url": "https://docs.vllm.ai/en/v0.10.2/examples/online_serving/opentelemetry.html"
+    },
+    {
+      "id": "V8",
+      "url": "https://docs.vllm.ai/en/v0.10.2/cli/serve.html"
+    },
+    {
+      "id": "V9",
+      "url": "https://docs.vllm.ai/en/v0.10.2/features/spec_decode.html"
+    },
+    {
+      "id": "V10",
+      "url": "https://docs.vllm.ai/en/v0.10.2/features/lora.html#serving-lora-adapters"
+    },
+    {
+      "id": "P1",
+      "url": "https://docs.python.org/3.12/library/http.server.html#http.server.ThreadingHTTPServer"
+    },
+    {
+      "id": "P2",
+      "url": "https://docs.python.org/3.12/library/socketserver.html#socketserver.ThreadingMixIn"
+    },
+    {
+      "id": "P3",
+      "url": "https://docs.python.org/3.12/library/threading.html"
+    },
+    {
+      "id": "F1",
+      "url": "https://fastapi.tiangolo.com/async/#path-operation-functions"
+    },
+    {
+      "id": "F2",
+      "url": "https://fastapi.tiangolo.com/deployment/server-workers/"
+    },
+    {
+      "id": "U1",
+      "url": "https://uvicorn.dev/server-behavior/"
+    },
+    {
+      "id": "U2",
+      "url": "https://uvicorn.dev/settings/"
+    },
+    {
+      "id": "U3",
+      "url": "https://uvicorn.dev/deployment/"
+    },
+    {
+      "id": "U4",
+      "url": "https://uvicorn.dev/concepts/http2/"
+    },
+    {
+      "id": "E1",
+      "url": "https://www.envoyproxy.io/docs/envoy/v1.35.0/configuration/http/http_filters/local_rate_limit_filter"
+    },
+    {
+      "id": "E2",
+      "url": "https://www.envoyproxy.io/docs/envoy/latest/intro/arch_overview/other_features/global_rate_limiting"
+    }
+  ],
+  "artifact_sha256": {
+    "runs/l6-diff-analysis.md": "2c5c26ac51e82241d30bb2a2b500763c4551cc0b3252ac579245ad731bacd4a9",
+    "results/l6/diff-accounting.json": "e737690827853add842f624f06d7f13b0f0cf6020bc3a11773cabe18c28236af",
+    "results/l6/l6-diff-report.md": "bd071eed5c32f5a5eea3da49fc78046221fef6eb2661078b600131da95b92c96"
+  },
+  "retained_padding_trials": [
+    {
+      "path": "results/l6/batching-bench-20261021T130956006308Z.json",
+      "config_hash": "d0a78294f6d4",
+      "penalty_percent": 1.8890378631810756
+    },
+    {
+      "path": "results/l6/batching-bench-20261021T131308951824Z.json",
+      "config_hash": "e306d784f96d",
+      "penalty_percent": 3.3059259800732432
+    },
+    {
+      "path": "results/l6/batching-bench-20261021T131618165992Z.json",
+      "config_hash": "d858cc726e7f",
+      "penalty_percent": -0.3542822559197578
+    },
+    {
+      "path": "results/l6/batching-bench-20261021T132523026893Z.json",
+      "config_hash": "d2f97623b7b7",
+      "penalty_percent": 2.1708478874933657
+    },
+    {
+      "path": "results/l6/batching-bench-20261021T133044874890Z.json",
+      "config_hash": "2d2e2aeed61b",
+      "penalty_percent": 2.396328767561229
+    }
+  ],
+  "transient_validation_failures": [
+    "Initial inventory regex included batch-size rows: AssertionError. Non-fail-fast shell still committed stage 1 after staged whitespace check.",
+    "Follow-up checker used PosixPath subscription: TypeError.",
+    "Expanded final-audit drafts contained parenthesis typos: SyntaxError.",
+    "A format-sensitive assertion expected a separately bolded zero-ms phrase instead of the actual complete bold phrase.",
+    "All checker defects corrected; final checks pass. Upper-median decode shares were independently corrected during content review."
+  ],
+  "tests": "Not run, as task section 5 requires.",
+  "performance_experiments": "No reruns or new samples; no ablation script.",
+  "lint": "No configured linter; whitespace, structure, local links and source ranges checked.",
+  "push": "Not performed."
+}

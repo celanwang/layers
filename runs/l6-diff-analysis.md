@@ -55,9 +55,11 @@ source-level inferences, not a measured allocation of time to GPU dispatch
 
 Source: T1 /throughput_scaling/0–3/batched; A /scaling. Prefill fractions are
 computed within each paired component sample, then summarized with the bench's
-upper median (sorted[n//2]); decode shares are the complementary **98.30%,
-97.46%, 96.53%, 94.87%**. Separately summarized component medians need not sum to
-the end-to-end median. Dividing the decode window by 63 gives a useful average
+upper median (sorted[n//2]); independently summarized decode shares are **98.32%,
+97.47%, 96.54%, 95.49%**. With ten samples, upper medians of complementary shares
+need not sum to 100%, although every trial's shares do. Separately summarized
+component medians also need not sum to the end-to-end median. Dividing the
+decode window by 63 gives a useful average
 forward-equivalent, including the 64th terminal sampling iteration; it does not
 turn that window into a GPU timer.
 
