@@ -114,10 +114,12 @@ layers 的核心目标是"建出来以理解"。执行侧仍尽可能完全交�
 
 - **L0 测量基座**：已收官（`bench/l0_hw_profile.py` + `results/l0/` + `runs/l0-hw-profile.md`）。
 - **L1 Tokenizer**：已收官并合并 main（`8c0aa0c`）。byte-level BPE 盲做实现 + 三重 Oracle 对齐 + 对照精读消融；复盘见 `runs/l1-retrospective.md`。
+- **L2 注意力**：已收官并合并 main（`fa073f4`）。嵌入 + RoPE + 多头因果注意力（MLX naive 主路径，fast 内核仅对照）；PyTorch 逐中间量对齐；复盘见 `runs/l2-retrospective.md`。
+- **L3 训练循环**：已收官并合并 main（`02fcd21`）。13.1M GPT 组装（PyTorch 梯度级对齐）+ 手写 AdamW/cosine/clip；500 步 heldout -41%，MFU 精确口径 35.7%；复盘见 `runs/l3-retrospective.md`。
 
 ### 仍开放
 
-- **L2 选题（待用户确认）**：复盘建议**注意力**（缩放点积 + 因果掩码 + 多头，可并入嵌入/RoPE 作前置），备选维持原候选序列。
-- 后续迭代顺序（候选：训练循环 → 推理/KV Cache → 量化 → 服务化）。
-- Infra 线深度：是否包含自研 mini 推理引擎（mini-vLLM 形态）。
+- **L4 选题（已定方向，待启动）**：推理 / KV Cache（decode 循环、KV cache 接口、流式 UTF-8、采样策略、生成吞吐与内存墙测量，接 L0/L2 基线）。
+- 后续迭代顺序（候选：量化/混合精度 → 服务化）。
+- Infra 线深度：是否包含自研 mini 推理引擎（mini-vLLM 形态）——L4 启动时需一并确认。
 - 除已收官迭代外，新迭代仍遵循"讨论确认后再落地"的节奏。
