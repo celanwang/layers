@@ -41,7 +41,7 @@ layers 采用**以 nanochat / CS336 作业线为参照系的对照式自研**，
 
 ## 3. 工作模式：Kimi 规划把关 + Codex 执行
 
-本项目采用「Kimi to Codex」双层协作模式：**执行侧尽可能完全交给 Codex**（默认使用 codex 6.1-sol / luna 模型，权限 Never Ask），**关键判断与决策始终由 Kimi 处理**。
+本项目采用「Kimi to Codex」双层协作模式：**执行侧尽可能完全交给 Codex**（默认 `gpt-6.1-sol`，需要时切换 `gpt-6-luna`，权限 Never Ask），**关键判断与决策始终由 Kimi 处理**。
 
 ### 3.1 角色分工
 
