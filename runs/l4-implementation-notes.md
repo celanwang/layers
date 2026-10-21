@@ -19,7 +19,7 @@ No existing test file was changed.
 - The cache stores rotary-encoded keys and values separately for each transformer layer. Each call appends the current chunk. Attention uses the current absolute RoPE offset and masks only keys that are in the future of each query.
 - `generate` prefills the full prompt once, then forwards one sampled token per iteration. It uses Python's incremental UTF-8 decoder, so incomplete byte suffixes remain buffered between token IDs.
 - `Sampler` applies temperature to logits, applies top-k before top-p, and renormalizes after nucleus truncation. Each draw seeds MLX with `seed + draw_index`, giving repeatable sequences without changing the no-cache model path.
-- The L3 checkpoint test compares 32 consecutive cached decode logits against full-prefix logits, at `rtol=atol=1e-5`. The greedy smoke test generates 200 tokens from the 500-step L3 checkpoint.
+- The L3 checkpoint test compares 32 consecutive cached decode logits against full-prefix logits, at `rtol=atol=1e-5`. The greedy smoke test generates 200 tokens from the 500-step L3 checkpoint and checks each generated-step logits array is finite.
 - The 512-token KV curve is prefetched in chunks no larger than the model's `ctx=256`; cached decode then attends over the full 512-token cache.
 
 ## Acceptance commands
@@ -36,7 +36,7 @@ Output:
 
 ```text
 .....................................................                    [100%]
-53 passed in 4.86s
+53 passed in 4.90s
 ```
 
 The 49 pre-existing tests passed unchanged; the four new inference tests also passed.
@@ -83,3 +83,4 @@ The one-token decode curve moved from 508.01 tok/s at 64 cached tokens to 470.28
 
 - `b137e6f` — `feat(l4): add cached inference path`
 - `987fe15` — `fix(l4): support direct benchmark invocation`
+- `3f17a79` — `test(l4): assert finite decode logits`
