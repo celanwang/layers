@@ -1,0 +1,10 @@
+{
+  "benchmark_record": "results/l7/paged-attn-bench-20261021T154404587918Z.json",
+  "config_hash_valid": true,
+  "protocol_equals_historical_l6": true,
+  "all_source_hashes_match_delivered_files": true,
+  "all_240_timed_samples_retained": true,
+  "paired_trials_per_batch_including_warmup": 13,
+  "request_output_comparisons": 195,
+  "token_event_comparisons": 12480
+}

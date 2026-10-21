@@ -1,0 +1,810 @@
+{
+  "kind": "Derived accounting from archived evidence; no new timing, GPU tracing, or external source copies",
+  "source_revision": "aeee67f641d99ada2d6c1cfb46be9fdbe1504d6d",
+  "statistic": "Preserve archived upper median sorted(samples)[n//2] and p90 sorted(samples)[int(n*.9)-1]. T(B)=1000*decode_median_s/63 includes 64 sampling rounds and 63 model forwards. Endpoint interpolation, not OLS or a kernel cost decomposition.",
+  "formulas": {
+    "endpoint": "b=(T8-T1)/7; a=T1-b; residual=T(B)-(a+b*B)",
+    "gap_fraction": "1-throughput/2792.3113611181825",
+    "output_bytes": "2*B*ceil(max(lengths)/S)*S*H*D*element_bytes",
+    "bank_bytes": "2*unique_referenced_pages*S*H*D*element_bytes"
+  },
+  "old_l6_model": {
+    "formula": "T_equiv_ms(B)=a+b*B; endpoint illustration only, not measured kernel shares",
+    "a_ms": 1.6405672585837705,
+    "b_ms_per_row": 0.5021575986189385,
+    "residuals_ms": [
+      {
+        "batch_size": 1,
+        "actual_minus_model": 0.0
+      },
+      {
+        "batch_size": 2,
+        "actual_minus_model": 0.1577517981118315
+      },
+      {
+        "batch_size": 4,
+        "actual_minus_model": 0.1288532675930263
+      },
+      {
+        "batch_size": 8,
+        "actual_minus_model": 8.881784197001252e-16
+      }
+    ],
+    "b8_row_term_fraction": 0.7100358574350008,
+    "impossible_remove_all_row_work_ceiling_tok_s": 4953.7646716171785
+  },
+  "sources": [
+    {
+      "path": "results/l7/paged-attn-bench-20261021T154156026596Z.json",
+      "sha256": "9b1b6ab332f5b44782f29ca4eaac9486bf160f19687256a4967a9c3e6f1ae8f9",
+      "config_hash": "16e6ba63e56f",
+      "git_commit": "fbbe38e62216e11d85dfc79be9ec5181477d8ec8",
+      "device": {
+        "chip": "Apple M4 Max",
+        "memory_bytes": 51539607552,
+        "os": "macOS-15.8-arm64-arm-64bit",
+        "python": "3.12.15",
+        "mlx": "0.32.4"
+      },
+      "protocol": {
+        "warmup": 3,
+        "reps": 10,
+        "percentiles": [
+          "median",
+          "p90"
+        ],
+        "dtype": "float32",
+        "checkpoint": "results/l3/ckpt-final-500.npz",
+        "checkpoint_sha256": "a6bc079ef679c90ea8a4fdff95cf5086d4d49b8c811ce0252b2c31c7f1531889",
+        "seed": 20261021,
+        "batch_sizes": [
+          1,
+          2,
+          4,
+          8
+        ],
+        "prompt_tokens_scaling": 32,
+        "generated_tokens_per_request": 64,
+        "block_size": 16,
+        "share_prefixes": false,
+        "small_variance_lengths": [
+          95,
+          95,
+          96,
+          96,
+          96,
+          96,
+          97,
+          97
+        ],
+        "large_variance_lengths": [
+          8,
+          24,
+          40,
+          72,
+          120,
+          152,
+          168,
+          184
+        ],
+        "timing": "decode includes sampling, scheduling, KV gather/pad/scatter, and synchronization; prefill separate",
+        "decode_forwards_per_request": 63,
+        "trial_order": "paired, alternating; fresh engine and pool per trial"
+      }
+    },
+    {
+      "path": "results/l7/paged-attn-bench-20261021T154404587918Z.json",
+      "sha256": "bef731b901c68c94e0ebadf9f88e58b54c3f5a573d99c8eb19bec4a2e5e6d462",
+      "config_hash": "4e04eb84dc1c",
+      "git_commit": "e5b5755002e6f2427a5b1fd322b1ea3c98e6a606",
+      "device": {
+        "chip": "Apple M4 Max",
+        "memory_bytes": 51539607552,
+        "os": "macOS-15.8-arm64-arm-64bit",
+        "python": "3.12.15",
+        "mlx": "0.32.4"
+      },
+      "protocol": {
+        "warmup": 3,
+        "reps": 10,
+        "percentiles": [
+          "median",
+          "p90"
+        ],
+        "dtype": "float32",
+        "checkpoint": "results/l3/ckpt-final-500.npz",
+        "checkpoint_sha256": "a6bc079ef679c90ea8a4fdff95cf5086d4d49b8c811ce0252b2c31c7f1531889",
+        "seed": 20261021,
+        "batch_sizes": [
+          1,
+          2,
+          4,
+          8
+        ],
+        "prompt_tokens_scaling": 32,
+        "generated_tokens_per_request": 64,
+        "block_size": 16,
+        "share_prefixes": false,
+        "small_variance_lengths": [
+          95,
+          95,
+          96,
+          96,
+          96,
+          96,
+          97,
+          97
+        ],
+        "large_variance_lengths": [
+          8,
+          24,
+          40,
+          72,
+          120,
+          152,
+          168,
+          184
+        ],
+        "timing": "decode includes sampling, scheduling, KV gather/pad/scatter, and synchronization; prefill separate",
+        "decode_forwards_per_request": 63,
+        "trial_order": "paired, alternating; fresh engine and pool per trial"
+      }
+    },
+    {
+      "path": "results/l7/paged-attn-bench-20261021T154844862268Z.json",
+      "sha256": "e16162cd16e5a5993777083440bbeffba651dea46b14079f36a56146b0ddb687",
+      "config_hash": "a7204f93b23d",
+      "git_commit": "3ae785d84729d2a785069dc64c59d4e9512a5b13",
+      "device": {
+        "chip": "Apple M4 Max",
+        "memory_bytes": 51539607552,
+        "os": "macOS-15.8-arm64-arm-64bit",
+        "python": "3.12.15",
+        "mlx": "0.32.4"
+      },
+      "protocol": {
+        "warmup": 3,
+        "reps": 10,
+        "percentiles": [
+          "median",
+          "p90"
+        ],
+        "dtype": "float32",
+        "checkpoint": "results/l3/ckpt-final-500.npz",
+        "checkpoint_sha256": "a6bc079ef679c90ea8a4fdff95cf5086d4d49b8c811ce0252b2c31c7f1531889",
+        "seed": 20261021,
+        "batch_sizes": [
+          1,
+          2,
+          4,
+          8
+        ],
+        "prompt_tokens_scaling": 32,
+        "generated_tokens_per_request": 64,
+        "block_size": 16,
+        "share_prefixes": false,
+        "small_variance_lengths": [
+          95,
+          95,
+          96,
+          96,
+          96,
+          96,
+          97,
+          97
+        ],
+        "large_variance_lengths": [
+          8,
+          24,
+          40,
+          72,
+          120,
+          152,
+          168,
+          184
+        ],
+        "timing": "decode includes sampling, scheduling, KV gather/pad/scatter, and synchronization; prefill separate",
+        "decode_forwards_per_request": 63,
+        "trial_order": "paired, alternating; fresh engine and pool per trial"
+      }
+    },
+    {
+      "path": "results/l7/sampling-bench-20261021T155558005176Z.json",
+      "sha256": "add39278c3e1ec2dfccd3aad921f5348c1eae60320a039925335de9ac2ddb076",
+      "config_hash": "08e7ca285efb",
+      "git_commit": "2f81b785f4bddc64e2ecf4abeb3438997d9ca5f7",
+      "device": {
+        "chip": "Apple M4 Max",
+        "memory_bytes": 51539607552,
+        "os": "macOS-15.8-arm64-arm-64bit",
+        "python": "3.12.15",
+        "mlx": "0.32.4"
+      },
+      "protocol": {
+        "warmup": 3,
+        "reps": 10,
+        "percentiles": [
+          "median",
+          "p90"
+        ],
+        "dtype": "float32",
+        "checkpoint": "results/l3/ckpt-final-500.npz",
+        "checkpoint_sha256": "a6bc079ef679c90ea8a4fdff95cf5086d4d49b8c811ce0252b2c31c7f1531889",
+        "seed": 20261021,
+        "batch_sizes": [
+          1,
+          2,
+          4,
+          8
+        ],
+        "prompt_tokens_scaling": 32,
+        "generated_tokens_per_request": 64,
+        "block_size": 16,
+        "share_prefixes": false,
+        "small_variance_lengths": [
+          95,
+          95,
+          96,
+          96,
+          96,
+          96,
+          97,
+          97
+        ],
+        "large_variance_lengths": [
+          8,
+          24,
+          40,
+          72,
+          120,
+          152,
+          168,
+          184
+        ],
+        "timing": "decode includes sampling, scheduling, KV gather/pad/scatter, and synchronization; prefill separate",
+        "decode_forwards_per_request": 63,
+        "trial_order": "paired, alternating; fresh engine and pool per trial"
+      }
+    },
+    {
+      "path": "results/l7/sampling-bench-20261021T160258087804Z.json",
+      "sha256": "8976e583d45433e64411133711c7b99a423cc95c9f8807d358787e72de859bd7",
+      "config_hash": "2647c88d1d41",
+      "git_commit": "f4bc10797af9d892580befc32516c7d22ab08744",
+      "device": {
+        "chip": "Apple M4 Max",
+        "memory_bytes": 51539607552,
+        "os": "macOS-15.8-arm64-arm-64bit",
+        "python": "3.12.15",
+        "mlx": "0.32.4"
+      },
+      "protocol": {
+        "warmup": 3,
+        "reps": 10,
+        "percentiles": [
+          "median",
+          "p90"
+        ],
+        "dtype": "float32",
+        "checkpoint": "results/l3/ckpt-final-500.npz",
+        "checkpoint_sha256": "a6bc079ef679c90ea8a4fdff95cf5086d4d49b8c811ce0252b2c31c7f1531889",
+        "seed": 20261021,
+        "batch_sizes": [
+          1,
+          2,
+          4,
+          8
+        ],
+        "prompt_tokens_scaling": 32,
+        "generated_tokens_per_request": 64,
+        "block_size": 16,
+        "share_prefixes": false,
+        "small_variance_lengths": [
+          95,
+          95,
+          96,
+          96,
+          96,
+          96,
+          97,
+          97
+        ],
+        "large_variance_lengths": [
+          8,
+          24,
+          40,
+          72,
+          120,
+          152,
+          168,
+          184
+        ],
+        "timing": "decode includes sampling, scheduling, KV gather/pad/scatter, and synchronization; prefill separate",
+        "decode_forwards_per_request": 63,
+        "trial_order": "paired, alternating; fresh engine and pool per trial"
+      }
+    },
+    {
+      "path": "results/l6/diff-accounting.json",
+      "sha256": "e737690827853add842f624f06d7f13b0f0cf6020bc3a11773cabe18c28236af"
+    }
+  ],
+  "t2_models": [
+    {
+      "source": "results/l7/sampling-bench-20261021T155558005176Z.json",
+      "edge": "l6_vs_t2",
+      "arm": "l6",
+      "a_ms": 1.5940204217493834,
+      "b_ms_per_row": 0.5012785306025102,
+      "a_change_vs_historical_ms": -0.046546836834387095,
+      "b_reduction_vs_historical_percent": 0.17505819265625222,
+      "b8_row_term_fraction": 0.715569290981313,
+      "rows": [
+        {
+          "source_pointer": "/throughput_scaling/0/pairs/l6_vs_t2/l6",
+          "batch_size": 1,
+          "decode_median_ms": 132.00383399816928,
+          "decode_p90_ms": 134.09929200133774,
+          "T_equiv_ms": 2.0952989523518935,
+          "tokens_per_second": 484.83440261960567,
+          "residual_ms": 0.0
+        },
+        {
+          "source_pointer": "/throughput_scaling/1/pairs/l6_vs_t2/l6",
+          "batch_size": 2,
+          "decode_median_ms": 167.97487500298303,
+          "decode_p90_ms": 172.4515829992015,
+          "T_equiv_ms": 2.6662678571902068,
+          "tokens_per_second": 762.0187245129778,
+          "residual_ms": 0.06969037423580327
+        },
+        {
+          "source_pointer": "/throughput_scaling/2/pairs/l6_vs_t2/l6",
+          "batch_size": 4,
+          "decode_median_ms": 232.45608300203457,
+          "decode_p90_ms": 239.91066600137856,
+          "T_equiv_ms": 3.68977909527039,
+          "tokens_per_second": 1101.2832905635744,
+          "residual_ms": 0.09064455111096592
+        },
+        {
+          "source_pointer": "/throughput_scaling/3/pairs/l6_vs_t2/l6",
+          "batch_size": 8,
+          "decode_median_ms": 353.0676659938763,
+          "decode_p90_ms": 358.72879099770216,
+          "T_equiv_ms": 5.604248666569465,
+          "tokens_per_second": 1450.146952875827,
+          "residual_ms": 0.0
+        }
+      ]
+    },
+    {
+      "source": "results/l7/sampling-bench-20261021T155558005176Z.json",
+      "edge": "l6_vs_t2",
+      "arm": "t2",
+      "a_ms": 1.8772660499583043,
+      "b_ms_per_row": 0.3025421405720837,
+      "a_change_vs_historical_ms": 0.23669879137453376,
+      "b_reduction_vs_historical_percent": 39.751555805557516,
+      "b8_row_term_fraction": 0.5631830176685786,
+      "rows": [
+        {
+          "source_pointer": "/throughput_scaling/0/pairs/l6_vs_t2/t2",
+          "batch_size": 1,
+          "decode_median_ms": 137.32791600341443,
+          "decode_p90_ms": 139.06699999643024,
+          "T_equiv_ms": 2.179808190530388,
+          "tokens_per_second": 466.03780107177005,
+          "residual_ms": 0.0
+        },
+        {
+          "source_pointer": "/throughput_scaling/1/pairs/l6_vs_t2/t2",
+          "batch_size": 2,
+          "decode_median_ms": 169.4633330043871,
+          "decode_p90_ms": 173.95516599935945,
+          "T_equiv_ms": 2.689894174672811,
+          "tokens_per_second": 755.3256372969267,
+          "residual_ms": 0.20754384357033961
+        },
+        {
+          "source_pointer": "/throughput_scaling/2/pairs/l6_vs_t2/t2",
+          "batch_size": 4,
+          "decode_median_ms": 195.40541600144934,
+          "decode_p90_ms": 202.00062499498017,
+          "T_equiv_ms": 3.1016732698642753,
+          "tokens_per_second": 1310.0967477692698,
+          "residual_ms": 0.014238657617636097
+        },
+        {
+          "source_pointer": "/throughput_scaling/3/pairs/l6_vs_t2/t2",
+          "batch_size": 8,
+          "decode_median_ms": 270.74899999570334,
+          "decode_p90_ms": 272.8260829971987,
+          "T_equiv_ms": 4.297603174534974,
+          "tokens_per_second": 1891.050382487563,
+          "residual_ms": 0.0
+        }
+      ],
+      "b8_gap_to_projection_percent": 32.276521564905615,
+      "b8_time_saved_to_projection_ms": 87.38835937037948
+    },
+    {
+      "source": "results/l7/sampling-bench-20261021T155558005176Z.json",
+      "edge": "t1_vs_t2",
+      "arm": "t1",
+      "a_ms": 1.7780906191402457,
+      "b_ms_per_row": 0.38835912698506564,
+      "a_change_vs_historical_ms": 0.13752336055647518,
+      "b_reduction_vs_historical_percent": 22.661903742340584,
+      "b8_row_term_fraction": 0.6360073990330359,
+      "rows": [
+        {
+          "source_pointer": "/throughput_scaling/0/pairs/t1_vs_t2/t1",
+          "batch_size": 1,
+          "decode_median_ms": 136.4863340058946,
+          "decode_p90_ms": 137.37337500060676,
+          "T_equiv_ms": 2.1664497461253114,
+          "tokens_per_second": 468.9114149496898,
+          "residual_ms": 0.0
+        },
+        {
+          "source_pointer": "/throughput_scaling/1/pairs/t1_vs_t2/t1",
+          "batch_size": 2,
+          "decode_median_ms": 172.58316600054968,
+          "decode_p90_ms": 175.1901249954244,
+          "T_equiv_ms": 2.7394153333420586,
+          "tokens_per_second": 741.6714095950257,
+          "residual_ms": 0.1846064602316817
+        },
+        {
+          "source_pointer": "/throughput_scaling/2/pairs/t1_vs_t2/t1",
+          "batch_size": 4,
+          "decode_median_ms": 221.73729100177297,
+          "decode_p90_ms": 230.17033300129697,
+          "T_equiv_ms": 3.519639539710682,
+          "tokens_per_second": 1154.5193812165455,
+          "residual_ms": 0.18811241263017386
+        },
+        {
+          "source_pointer": "/throughput_scaling/3/pairs/t1_vs_t2/t1",
+          "batch_size": 8,
+          "decode_median_ms": 307.7527090063086,
+          "decode_p90_ms": 312.3607500019716,
+          "T_equiv_ms": 4.884963635020771,
+          "tokens_per_second": 1663.6734138041481,
+          "residual_ms": 0.0
+        }
+      ]
+    },
+    {
+      "source": "results/l7/sampling-bench-20261021T155558005176Z.json",
+      "edge": "t1_vs_t2",
+      "arm": "t2",
+      "a_ms": 1.8273073377849558,
+      "b_ms_per_row": 0.3011139478676218,
+      "a_change_vs_historical_ms": 0.1867400792011853,
+      "b_reduction_vs_historical_percent": 40.035967055808385,
+      "b8_row_term_fraction": 0.5686466228539899,
+      "rows": [
+        {
+          "source_pointer": "/throughput_scaling/0/pairs/t1_vs_t2/t2",
+          "batch_size": 1,
+          "decode_median_ms": 134.0905409961124,
+          "decode_p90_ms": 137.06562500010477,
+          "T_equiv_ms": 2.1284212856525775,
+          "tokens_per_second": 477.28944580703507,
+          "residual_ms": 0.0
+        },
+        {
+          "source_pointer": "/throughput_scaling/1/pairs/t1_vs_t2/t2",
+          "batch_size": 2,
+          "decode_median_ms": 167.40629100240767,
+          "decode_p90_ms": 169.44120900006965,
+          "T_equiv_ms": 2.657242714323931,
+          "tokens_per_second": 764.606868914855,
+          "residual_ms": 0.22770748080373204
+        },
+        {
+          "source_pointer": "/throughput_scaling/2/pairs/t1_vs_t2/t2",
+          "batch_size": 4,
+          "decode_median_ms": 195.40054100070847,
+          "decode_p90_ms": 205.23479200346628,
+          "T_equiv_ms": 3.1015958889001345,
+          "tokens_per_second": 1310.1294330555195,
+          "residual_ms": 0.06983275964469149
+        },
+        {
+          "source_pointer": "/throughput_scaling/3/pairs/t1_vs_t2/t2",
+          "batch_size": 8,
+          "decode_median_ms": 266.8817920057336,
+          "decode_p90_ms": 269.8305000012624,
+          "T_equiv_ms": 4.23621892072593,
+          "tokens_per_second": 1918.4523460821201,
+          "residual_ms": 0.0
+        }
+      ],
+      "b8_gap_to_projection_percent": 31.295185315083383,
+      "b8_time_saved_to_projection_ms": 83.52115138040972
+    },
+    {
+      "source": "results/l7/sampling-bench-20261021T160258087804Z.json",
+      "edge": "l6_vs_t2",
+      "arm": "l6",
+      "a_ms": 1.5975982562039321,
+      "b_ms_per_row": 0.49634552155536876,
+      "a_change_vs_historical_ms": -0.04296900237983836,
+      "b_reduction_vs_historical_percent": 1.1574209131863022,
+      "b8_row_term_fraction": 0.7130937009442918,
+      "rows": [
+        {
+          "source_pointer": "/throughput_scaling/0/pairs/l6_vs_t2/l6",
+          "batch_size": 1,
+          "decode_median_ms": 131.91845799883595,
+          "decode_p90_ms": 137.5056670003687,
+          "T_equiv_ms": 2.093943777759301,
+          "tokens_per_second": 485.14818146649907,
+          "residual_ms": 0.0
+        },
+        {
+          "source_pointer": "/throughput_scaling/1/pairs/l6_vs_t2/l6",
+          "batch_size": 2,
+          "decode_median_ms": 171.6039169987198,
+          "decode_p90_ms": 176.86866599979112,
+          "T_equiv_ms": 2.7238716983923776,
+          "tokens_per_second": 745.9037196741547,
+          "residual_ms": 0.13358239907770786
+        },
+        {
+          "source_pointer": "/throughput_scaling/2/pairs/l6_vs_t2/l6",
+          "batch_size": 4,
+          "decode_median_ms": 229.71345800033305,
+          "decode_p90_ms": 234.26104200189002,
+          "T_equiv_ms": 3.6462453650846514,
+          "tokens_per_second": 1114.4318762535404,
+          "residual_ms": 0.06326502265924416
+        },
+        {
+          "source_pointer": "/throughput_scaling/3/pairs/l6_vs_t2/l6",
+          "batch_size": 8,
+          "decode_median_ms": 350.80683300475357,
+          "decode_p90_ms": 355.7796670065727,
+          "T_equiv_ms": 5.568362428646882,
+          "tokens_per_second": 1459.4926661336217,
+          "residual_ms": 0.0
+        }
+      ]
+    },
+    {
+      "source": "results/l7/sampling-bench-20261021T160258087804Z.json",
+      "edge": "l6_vs_t2",
+      "arm": "t2",
+      "a_ms": 1.7955220090143507,
+      "b_ms_per_row": 0.31220549887812815,
+      "a_change_vs_historical_ms": 0.15495475043058016,
+      "b_reduction_vs_historical_percent": 37.82718817025314,
+      "b8_row_term_fraction": 0.5817720514422497,
+      "rows": [
+        {
+          "source_pointer": "/throughput_scaling/0/pairs/l6_vs_t2/t2",
+          "batch_size": 1,
+          "decode_median_ms": 132.78683299722616,
+          "decode_p90_ms": 136.32020800287137,
+          "T_equiv_ms": 2.107727507892479,
+          "tokens_per_second": 481.975498288576,
+          "residual_ms": 0.0
+        },
+        {
+          "source_pointer": "/throughput_scaling/1/pairs/l6_vs_t2/t2",
+          "batch_size": 2,
+          "decode_median_ms": 165.59150000102818,
+          "decode_p90_ms": 168.8310419995105,
+          "T_equiv_ms": 2.6284365079528285,
+          "tokens_per_second": 772.9865361398697,
+          "residual_ms": 0.20850350118222138
+        },
+        {
+          "source_pointer": "/throughput_scaling/2/pairs/l6_vs_t2/t2",
+          "batch_size": 4,
+          "decode_median_ms": 193.79395800206112,
+          "decode_p90_ms": 196.90054199600127,
+          "T_equiv_ms": 3.0760945714612875,
+          "tokens_per_second": 1320.9906162155855,
+          "residual_ms": 0.03175056693442446
+        },
+        {
+          "source_pointer": "/throughput_scaling/3/pairs/l6_vs_t2/t2",
+          "batch_size": 8,
+          "decode_median_ms": 270.4694580024807,
+          "decode_p90_ms": 273.20104200043716,
+          "T_equiv_ms": 4.293166000039376,
+          "tokens_per_second": 1893.00486561889,
+          "residual_ms": 0.0
+        }
+      ],
+      "b8_gap_to_projection_percent": 32.20652639321586,
+      "b8_time_saved_to_projection_ms": 87.10881737715681
+    },
+    {
+      "source": "results/l7/sampling-bench-20261021T160258087804Z.json",
+      "edge": "t1_vs_t2",
+      "arm": "t1",
+      "a_ms": 1.7236133674336511,
+      "b_ms_per_row": 0.40013926756270485,
+      "a_change_vs_historical_ms": 0.08304610884988062,
+      "b_reduction_vs_historical_percent": 20.31599866990166,
+      "b8_row_term_fraction": 0.6500083781983133,
+      "rows": [
+        {
+          "source_pointer": "/throughput_scaling/0/pairs/t1_vs_t2/t1",
+          "batch_size": 1,
+          "decode_median_ms": 133.79641600477044,
+          "decode_p90_ms": 137.32316599634942,
+          "T_equiv_ms": 2.123752634996356,
+          "tokens_per_second": 478.33867237309346,
+          "residual_ms": 0.0
+        },
+        {
+          "source_pointer": "/throughput_scaling/1/pairs/t1_vs_t2/t1",
+          "batch_size": 2,
+          "decode_median_ms": 174.0858749981271,
+          "decode_p90_ms": 174.62358299962943,
+          "T_equiv_ms": 2.763267857113129,
+          "tokens_per_second": 735.2693031607365,
+          "residual_ms": 0.23937595455406813
+        },
+        {
+          "source_pointer": "/throughput_scaling/2/pairs/t1_vs_t2/t1",
+          "batch_size": 4,
+          "decode_median_ms": 224.81458399852272,
+          "decode_p90_ms": 229.44495800038567,
+          "T_equiv_ms": 3.5684854602940113,
+          "tokens_per_second": 1138.7161608771885,
+          "residual_ms": 0.24431502260954074
+        },
+        {
+          "source_pointer": "/throughput_scaling/3/pairs/t1_vs_t2/t1",
+          "batch_size": 8,
+          "decode_median_ms": 310.25783299992327,
+          "decode_p90_ms": 312.95320800563786,
+          "T_equiv_ms": 4.92472750793529,
+          "tokens_per_second": 1650.240366373366,
+          "residual_ms": 0.0
+        }
+      ]
+    },
+    {
+      "source": "results/l7/sampling-bench-20261021T160258087804Z.json",
+      "edge": "t1_vs_t2",
+      "arm": "t2",
+      "a_ms": 1.8604906348331012,
+      "b_ms_per_row": 0.29932549207794956,
+      "a_change_vs_historical_ms": 0.21992337624933067,
+      "b_reduction_vs_historical_percent": 40.39212133776905,
+      "b8_row_term_fraction": 0.5627616252495706,
+      "rows": [
+        {
+          "source_pointer": "/throughput_scaling/0/pairs/t1_vs_t2/t2",
+          "batch_size": 1,
+          "decode_median_ms": 136.0684159953962,
+          "decode_p90_ms": 138.0675420004991,
+          "T_equiv_ms": 2.1598161269110507,
+          "tokens_per_second": 470.35162077704643,
+          "residual_ms": 0.0
+        },
+        {
+          "source_pointer": "/throughput_scaling/1/pairs/t1_vs_t2/t2",
+          "batch_size": 2,
+          "decode_median_ms": 168.68691700074123,
+          "decode_p90_ms": 172.24524999619462,
+          "T_equiv_ms": 2.677570111122877,
+          "tokens_per_second": 758.8021778798503,
+          "residual_ms": 0.2184284921338766
+        },
+        {
+          "source_pointer": "/throughput_scaling/2/pairs/t1_vs_t2/t2",
+          "batch_size": 4,
+          "decode_median_ms": 202.50958299584454,
+          "decode_p90_ms": 203.5610419989098,
+          "T_equiv_ms": 3.2144378253308656,
+          "tokens_per_second": 1264.1377075239598,
+          "residual_ms": 0.15664522218596622
+        },
+        {
+          "source_pointer": "/throughput_scaling/3/pairs/t1_vs_t2/t2",
+          "batch_size": 8,
+          "decode_median_ms": 268.07095800177194,
+          "decode_p90_ms": 273.65820900013205,
+          "T_equiv_ms": 4.255094571456698,
+          "tokens_per_second": 1909.9420683855492,
+          "residual_ms": 0.0
+        }
+      ],
+      "b8_gap_to_projection_percent": 31.59996069991593,
+      "b8_time_saved_to_projection_ms": 84.71031737644807
+    }
+  ],
+  "t1_regressions": [
+    {
+      "source": "results/l7/paged-attn-bench-20261021T154156026596Z.json",
+      "b1_latency_regression_percent": 8.748075136834688
+    },
+    {
+      "source": "results/l7/paged-attn-bench-20261021T154404587918Z.json",
+      "b1_latency_regression_percent": 1.3233350330033922
+    },
+    {
+      "source": "results/l7/paged-attn-bench-20261021T154844862268Z.json",
+      "b1_latency_regression_percent": 8.426612897843722
+    }
+  ],
+  "materialization": {
+    "assumptions": "Equal current lengths 128, no sharing; H8 D64, fp32, S16, 4 layers. Mean length alone is insufficient; these are equal-length lower-bound estimates. Logical graph payload/traffic, not measured DRAM transactions.",
+    "B": 8,
+    "heads": 8,
+    "head_dim": 64,
+    "block_size": 16,
+    "equal_length": 128,
+    "layers": 4,
+    "unique_pages": 64,
+    "bank_payload_bytes_per_layer": 4194304,
+    "output_kv_payload_bytes_per_layer": 4194304,
+    "copy_payload_written_bytes_per_layer": 8388608,
+    "copy_read_plus_write_bytes_per_layer": 16777216,
+    "plus_attention_reads_bytes_per_layer": 20971520,
+    "direct_page_attention_read_bytes_per_layer": 4194304,
+    "copy_read_plus_write_bytes_all_layers": 67108864,
+    "block_table_int32_bytes": 256,
+    "stacked_kv_indices_int32_bytes": 512
+  },
+  "actual_scaling_padding": {
+    "current_lengths": {
+      "first": 33,
+      "last": 95,
+      "mean": 64.0
+    },
+    "padded_length_mean": 71.61904761904762,
+    "real_key_slots_B8_per_head_layer": 32256,
+    "padded_key_slots_B8_per_head_layer": 36096,
+    "padded_over_real_percent": 11.904761904761907,
+    "wasted_fraction": 0.1063829787234043
+  },
+  "int8_kv_scenario": {
+    "int8_bytes_per_layer": 1048576,
+    "fp16_scales_bytes_per_layer": 4096,
+    "compressed_bytes_per_layer": 1052672,
+    "compression_vs_fp32": 3.9844357976653697,
+    "persistent_bytes_all_layers": 4210688,
+    "fp32_persistent_bytes_all_layers": 16777216,
+    "persistent_saved_bytes_all_layers": 12566528,
+    "note": "Storage capacity estimate, not throughput gain. Legacy quantizer sync costs and packed-page integration are not included."
+  },
+  "sensitivity": [
+    {
+      "assumed_fraction_of_current_time": 0.05,
+      "component_speedup": 2,
+      "end_to_end_gain_percent": 2.564102564102577
+    },
+    {
+      "assumed_fraction_of_current_time": 0.1,
+      "component_speedup": 2,
+      "end_to_end_gain_percent": 5.263157894736836
+    },
+    {
+      "assumed_fraction_of_current_time": 0.2,
+      "component_speedup": 2,
+      "end_to_end_gain_percent": 11.111111111111116
+    },
+    {
+      "assumed_fraction_of_current_time": 0.05,
+      "component_speedup": 4,
+      "end_to_end_gain_percent": 3.8961038961039085
+    },
+    {
+      "assumed_fraction_of_current_time": 0.1,
+      "component_speedup": 4,
+      "end_to_end_gain_percent": 8.108108108108091
+    }
+  ],
+  "verified_archived_timing_values": 2160,
+  "analysis_config_hash": "24ed91a0c873"
+}

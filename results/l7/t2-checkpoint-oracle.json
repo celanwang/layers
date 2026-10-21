@@ -1,0 +1,50 @@
+{
+  "stages": [
+    "BatchedEngine",
+    "PagedAttentionEngine",
+    "BatchedSamplingEngine"
+  ],
+  "batch_size": 8,
+  "sampled_tokens_per_request": 33,
+  "decode_forwards_per_request": 32,
+  "sampler_configs": [
+    {
+      "temperature": 0
+    },
+    {
+      "temperature": 0.7,
+      "top_k": 1
+    },
+    {
+      "temperature": 1
+    },
+    {
+      "temperature": 0.35,
+      "top_k": 7
+    },
+    {
+      "temperature": 1.7,
+      "top_p": 0.8
+    },
+    {
+      "temperature": 0.9,
+      "top_k": 13,
+      "top_p": 0.95
+    },
+    {
+      "temperature": 1,
+      "top_k": 999,
+      "top_p": 1
+    },
+    {
+      "temperature": 2,
+      "top_p": 1e-06
+    }
+  ],
+  "atol": 1e-05,
+  "rtol": 0,
+  "max_absolute_logit_error_vs_l6": 0.0,
+  "t2_vs_t1_logits_bit_exact": true,
+  "seeded_tokens_equal": true,
+  "all_pages_reclaimed": true
+}

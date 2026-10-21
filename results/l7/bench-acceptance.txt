@@ -1,0 +1,10 @@
+device: Apple M4 Max, 48 GiB, mlx 0.32.4
+config_hash: 16e6ba63e56f (commit fbbe38e62216)
+B=1: L6 491.92 tok/s, paged 452.35 tok/s, paired 0.920x; new decode median/p90 0.141485/0.153587s
+B=2: L6 764.22 tok/s, paged 723.88 tok/s, paired 0.947x; new decode median/p90 0.176826/0.178762s
+B=4: L6 1104.03 tok/s, paged 1182.44 tok/s, paired 1.071x; new decode median/p90 0.216501/0.226200s
+B=8: L6 1434.17 tok/s, paged 1603.95 tok/s, paired 1.118x; new decode median/p90 0.319213/0.328087s
+B=1 latency regression: 8.75%
+prediction: intermediate; B=8 / historical L6 = 1.117x
+written: results/l7/paged-attn-bench-20261021T154156026596Z.json
+PASS: paired token oracle, pool reclamation, and unchanged L6 protocol; prediction recorded separately

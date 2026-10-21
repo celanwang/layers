@@ -1,0 +1,99 @@
+{
+  "kind": "Documentation/data acceptance; no tests, new timings or trace capture",
+  "baseline_commit": "aeee67f641d99ada2d6c1cfb46be9fdbe1504d6d",
+  "accounting_stage_commit": "45edfc6",
+  "verified_at_utc": "2026-10-21T16:15:01.361011+00:00",
+  "analysis_config_hash": "24ed91a0c873",
+  "automated_checks": {
+    "archived_raw_timing_values_verified": 2160,
+    "source_archives": [
+      {
+        "path": "results/l7/paged-attn-bench-20261021T154156026596Z.json",
+        "sha256_verified": true,
+        "protocol_and_summary_verified": true,
+        "implementation_source_hashes_verified_against_recorded_commit": 9
+      },
+      {
+        "path": "results/l7/paged-attn-bench-20261021T154404587918Z.json",
+        "sha256_verified": true,
+        "protocol_and_summary_verified": true,
+        "implementation_source_hashes_verified_against_recorded_commit": 9
+      },
+      {
+        "path": "results/l7/paged-attn-bench-20261021T154844862268Z.json",
+        "sha256_verified": true,
+        "protocol_and_summary_verified": true,
+        "implementation_source_hashes_verified_against_recorded_commit": 9
+      },
+      {
+        "path": "results/l7/sampling-bench-20261021T155558005176Z.json",
+        "sha256_verified": true,
+        "protocol_and_summary_verified": true,
+        "implementation_source_hashes_verified_against_recorded_commit": 10
+      },
+      {
+        "path": "results/l7/sampling-bench-20261021T160258087804Z.json",
+        "sha256_verified": true,
+        "protocol_and_summary_verified": true,
+        "implementation_source_hashes_verified_against_recorded_commit": 10
+      }
+    ],
+    "endpoint_models_verified": 8,
+    "endpoint_residuals_and_gaps_verified": true,
+    "bank_output_copy_and_INT8_byte_equations_verified": true,
+    "analysis_config_hash_verified": true,
+    "five_numbered_sections": [
+      [
+        "1",
+        "Structural gap: vectorized materialization and batched production kernels"
+      ],
+      [
+        "2",
+        "Remaining gap: a lower row slope with an increased intercept"
+      ],
+      [
+        "3",
+        "Small-batch regressions and path selection"
+      ],
+      [
+        "4",
+        "Hypothesis verdict and its boundary"
+      ],
+      [
+        "5",
+        "Follow-up special topics: cost, benefit and suggested layer"
+      ]
+    ],
+    "local_links_verified_count": 34,
+    "all_baseline_tracked_files_byte_identical_count": 270,
+    "all_changed_paths_whitelisted": true,
+    "git_diff_check_exit": 0
+  },
+  "manual_review": {
+    "section_1": "Logical copy budgets, bank, output, kernel fusion and batch sampling distinctions have source/byte evidence; logical traffic is distinguished from measured transactions.",
+    "section_2": "Both T2 sources, both independent edges, historical and same-pair controls, endpoint residuals, gap denominator and all four remaining candidates are present. Logits split has weakest timing evidence.",
+    "section_3": "Small-batch positive and negative results retained; throughput and latency denominators differ explicitly; vLLM v0.10.2 dispatch source and versioned API supplied.",
+    "section_4": "No trace, greedy workload, 13M model and unified-memory/single-device limits explicit; follow-up evidence needed is identified.",
+    "section_5": "All three proposals identify suggested layer, feasibility, benefit units/assumptions and effort. Proposals remain subject to Kimi decision."
+  },
+  "installed_public_docstrings": {
+    "mx.fast.scaled_dot_product_attention": "1a9ff631d9e7c3303f38475a03710f6861c0de040e530a5b58685b72fa5c5628",
+    "mx.metal.start_capture": "304e48bd96c1c33d928eb2682ddc197927f3b4259a4d27172e4760f00992c4f9",
+    "mx.metal.stop_capture": "044ac62d9f193a828531a955d9c2d07873ad61810470753797e5e7a556c38015"
+  },
+  "external_source_policy": "Only immutable/versioned URLs and analysis retained. Public code fetched read-only in memory; no external source file saved into repository.",
+  "tests": "Not run, as required by tasks/l7-diff-analysis.md section 5. No project lint command/configuration declared; whitespace verified.",
+  "new_measurements": false,
+  "artifact_sha256": {
+    "runs/l7-diff-analysis.md": "851c4a8ca6d7cb90428c4defb179a65e05ee3eb7b8c8c2b36009435043b0b040",
+    "results/l7/diff-accounting.json": "999b416ff0f1488b1f7981ebbdec6a8508536ae03d5a53071f13bb1d7d3f647a",
+    "results/l7/l7-diff-output.md": "ce81875eb178d06477c284b446a21b7efb1df045286a97427c7d85db7c204651"
+  },
+  "delivered_paths": [
+    "results/l7/diff-acceptance.json",
+    "results/l7/diff-accounting.json",
+    "results/l7/l7-diff-output.md",
+    "runs/l7-diff-analysis.md"
+  ],
+  "push_performed": false
+}

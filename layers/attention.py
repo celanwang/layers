@@ -241,3 +241,45 @@ class CausalSelfAttention(nn.Module):
         """Return one-token batched attention output and inspectable weights."""
         out, probs, _ = self.decode_batch_with_intermediates(x, cache, layer_idx)
         return out, probs
+
+    def decode_paged_batch_with_intermediates(self, x: mx.array, cache, layer_idx: int):
+        """Decode from a single block-table materialization, without row gathers."""
+        if x.ndim != 3 or x.shape[1:] != (1, self.d_model):
+            raise ValueError("decode input must have shape [batch, 1, d_model]")
+        shape = (x.shape[0], 1, self.n_head, self.d_head)
+        rows = x[:, 0, :]
+        q = mx.transpose((rows @ self.wq).reshape(shape), (0, 2, 1, 3))
+        k = mx.transpose((rows @ self.wk).reshape(shape), (0, 2, 1, 3))
+        v = mx.transpose((rows @ self.wv).reshape(shape), (0, 2, 1, 3))
+        pairs = mx.arange(0, self.d_head, 2, dtype=mx.float32)
+        frequencies = mx.exp(-pairs * (math.log(self.rope_base) / self.d_head))
+        rotary_q, rotary_k = _decode_rope(q, k, cache.positions, frequencies)
+        all_k, all_v, lengths = cache.append_pages(layer_idx, rotary_k, v)
+        context, probs, scores, valid = _decode_paged_attention(
+            rotary_q, all_k, all_v, mx.array(lengths, dtype=mx.int32)
+        )
+        context = mx.transpose(context, (0, 2, 1, 3)).reshape(x.shape)
+        out = (context[:, 0, :] @ self.wo)[:, None, :]
+        return out, probs, {
+            "rotary_q": rotary_q,
+            "rotary_k": rotary_k,
+            "scaled_scores": scores,
+            "probs": probs,
+            "valid_keys": valid,
+            "out": out,
+        }
+
+    def decode_paged_batch(self, x: mx.array, cache, layer_idx: int):
+        """Return one-token attention with block-aligned, length-masked KV."""
+        out, probs, _ = self.decode_paged_batch_with_intermediates(x, cache, layer_idx)
+        return out, probs
+
+
+@mx.compile
+def _decode_paged_attention(q, k, v, lengths):
+    """Explicit softmax over valid page slots; padded probabilities are zero."""
+    scores = (q @ mx.swapaxes(k, -1, -2)) * (1.0 / math.sqrt(q.shape[-1]))
+    valid = mx.arange(k.shape[-2])[None, :] < lengths[:, None]
+    scores = mx.where(valid[:, None, None, :], scores, -float("inf"))
+    probs = _stable_softmax(scores)
+    return probs @ v, probs, scores, valid

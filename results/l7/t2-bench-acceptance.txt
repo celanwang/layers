@@ -1,0 +1,20 @@
+$ .venv/bin/python bench/l7_sampling_bench.py
+device: Apple M4 Max, 48 GiB, mlx 0.32.4
+config_hash: 08e7ca285efb (commit 2f81b785f4bd)
+B=1 l6_vs_t1: l6 494.13, t1 468.78 tok/s; gain -5.13%; decode median/p90 ms: 129.521/132.249 -> 136.526/142.278
+B=1 t1_vs_t2: t1 468.91, t2 477.29 tok/s; gain +1.79%; decode median/p90 ms: 136.486/137.373 -> 134.091/137.066
+B=1 l6_vs_t2: l6 484.83, t2 466.04 tok/s; gain -3.88%; decode median/p90 ms: 132.004/134.099 -> 137.328/139.067
+B=2 l6_vs_t1: l6 750.43, t1 737.70 tok/s; gain -1.70%; decode median/p90 ms: 170.569/174.634 -> 173.513/178.068
+B=2 t1_vs_t2: t1 741.67, t2 764.61 tok/s; gain +3.09%; decode median/p90 ms: 172.583/175.190 -> 167.406/169.441
+B=2 l6_vs_t2: l6 762.02, t2 755.33 tok/s; gain -0.88%; decode median/p90 ms: 167.975/172.452 -> 169.463/173.955
+B=4 l6_vs_t1: l6 1104.05, t1 1150.70 tok/s; gain +4.23%; decode median/p90 ms: 231.873/232.327 -> 222.473/225.660
+B=4 t1_vs_t2: t1 1154.52, t2 1310.13 tok/s; gain +13.48%; decode median/p90 ms: 221.737/230.170 -> 195.401/205.235
+B=4 l6_vs_t2: l6 1101.28, t2 1310.10 tok/s; gain +18.96%; decode median/p90 ms: 232.456/239.911 -> 195.405/202.001
+B=8 l6_vs_t1: l6 1449.17, t1 1645.67 tok/s; gain +13.56%; decode median/p90 ms: 353.307/355.874 -> 311.120/320.273
+B=8 t1_vs_t2: t1 1663.67, t2 1918.45 tok/s; gain +15.31%; decode median/p90 ms: 307.753/312.361 -> 266.882/269.831
+B=8 l6_vs_t2: l6 1450.15, t2 1891.05 tok/s; gain +30.40%; decode median/p90 ms: 353.068/358.729 -> 270.749/272.826
+prediction: supported; paired T2 increment +15.31%
+written: results/l7/sampling-bench-20261021T155558005176Z.json
+PASS: paired token oracles, pool reclamation, unchanged L6 protocol; prediction recorded separately
+
+exit_code: 0

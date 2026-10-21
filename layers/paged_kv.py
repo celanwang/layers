@@ -305,6 +305,124 @@ class PagedKVPool:
             consumed += count
         return self.gather(seq_id, layer_idx)
 
+    def append_pages(self, seq_id: int, k: mx.array, v: mx.array, layer_idx: int = 0):
+        """Write a K/V chunk without reconstructing its logical prefix.
+
+        Validation, lazy page payloads, and CoW match :meth:`append`. This
+        additive entry point intentionally stops before the legacy gather.
+        """
+        if not 0 <= layer_idx < self.num_layers:
+            raise ValueError(f"layer_idx must be in [0, {self.num_layers})")
+        if k.ndim == 3:
+            k = mx.expand_dims(k, axis=0)
+            v = mx.expand_dims(v, axis=0)
+        if k.ndim != 4 or v.ndim != 4 or k.shape[0] != 1 or v.shape[0] != 1:
+            raise ValueError("K and V must have shape [1, heads, tokens, head_dim]")
+        if k.shape != v.shape or k.shape[-2] <= 0:
+            raise ValueError("K and V must have matching shapes with at least one token")
+
+        bytes_per_token = (
+            2 * k.shape[0] * k.shape[1] * k.shape[3] * self._dtype_size(k.dtype)
+        )
+        known_bytes = self._layer_bytes_per_token[layer_idx]
+        if known_bytes is not None and known_bytes != bytes_per_token:
+            raise ValueError("K/V shape or dtype changed within a transformer layer")
+        self._layer_bytes_per_token[layer_idx] = bytes_per_token
+
+        state = self._state(seq_id)
+        keys_in, values_in = k.shape[-2], v.shape[-2]
+        if keys_in != values_in:
+            raise ValueError("K and V token counts differ")
+        consumed = 0
+        while consumed < keys_in:
+            position = state.layer_lengths[layer_idx]
+            block_index, slot = divmod(position, self.block_size)
+            block_id = self._writable_page(state, block_index)
+            page = self._pages[block_id]
+            if page is None:
+                raise RuntimeError("writable block unexpectedly became free")
+            count = min(keys_in - consumed, self.block_size - slot)
+            old = page.layers.get(layer_idx)
+            prefix_k = (
+                old[0][..., :slot, :]
+                if old is not None
+                else mx.zeros((1, k.shape[1], slot, k.shape[3]), dtype=k.dtype)
+            )
+            prefix_v = (
+                old[1][..., :slot, :]
+                if old is not None
+                else mx.zeros((1, v.shape[1], slot, v.shape[3]), dtype=v.dtype)
+            )
+            suffix_start = slot + count
+            suffix_k = (
+                old[0][..., suffix_start:, :]
+                if old is not None
+                else mx.zeros(
+                    (1, k.shape[1], self.block_size - suffix_start, k.shape[3]),
+                    dtype=k.dtype,
+                )
+            )
+            suffix_v = (
+                old[1][..., suffix_start:, :]
+                if old is not None
+                else mx.zeros(
+                    (1, v.shape[1], self.block_size - suffix_start, v.shape[3]),
+                    dtype=v.dtype,
+                )
+            )
+            key_parts = [part for part in (prefix_k, k[..., consumed : consumed + count, :], suffix_k) if part.shape[-2]]
+            value_parts = [part for part in (prefix_v, v[..., consumed : consumed + count, :], suffix_v) if part.shape[-2]]
+            page.layers[layer_idx] = (
+                key_parts[0] if len(key_parts) == 1 else mx.concatenate(key_parts, axis=-2),
+                value_parts[0] if len(value_parts) == 1 else mx.concatenate(value_parts, axis=-2),
+            )
+            state.layer_lengths[layer_idx] += count
+            consumed += count
+
+    def materialize_batch(self, seq_ids, layer_idx: int = 0):
+        """Index one layer's physical pages once for a logical batch.
+
+        Return ``(keys, values, lengths)`` with tensors ``[B, H, N*S, D]``.
+        The compact bank contains each referenced physical page once; one
+        ``take`` selects both K/V and every row's block table. Tail slots and
+        dummy blocks are unspecified and must be masked with ``lengths``.
+        Empty layers return ``(None, None, lengths)`` without allocating pages.
+        """
+        if not 0 <= layer_idx < self.num_layers:
+            raise ValueError(f"layer_idx must be in [0, {self.num_layers})")
+        seq_ids = tuple(seq_ids)
+        if not seq_ids or len(set(seq_ids)) != len(seq_ids):
+            raise ValueError("a page batch requires non-empty, distinct sequence IDs")
+        states = [self._state(seq_id) for seq_id in seq_ids]
+        lengths = tuple(state.layer_lengths[layer_idx] for state in states)
+        blocks = math.ceil(max(lengths) / self.block_size)
+        if not blocks:
+            return None, None, lengths
+
+        page_indices, payloads, tables = {}, [], []
+        for state, length in zip(states, lengths):
+            needed = math.ceil(length / self.block_size)
+            if len(state.block_table) < needed:
+                raise RuntimeError("block table ended before the logical KV sequence")
+            table = []
+            for block_id in state.block_table[:needed]:
+                if block_id not in page_indices:
+                    page = self._pages[block_id]
+                    if page is None:
+                        raise RuntimeError("block table references a free page")
+                    if layer_idx not in page.layers:
+                        raise RuntimeError("a KV layer is missing from a referenced page")
+                    page_indices[block_id] = len(payloads)
+                    payloads.append(page.layers[layer_idx])
+                table.append(page_indices[block_id])
+            # Index a real page for unused blocks; the length mask hides it.
+            tables.append(table + [0] * (blocks - needed))
+
+        keys, values = zip(*payloads)
+        table = mx.array(tables, dtype=mx.int32)
+        keys_out, values_out = _materialize_page_bank(keys, values, table)
+        return keys_out, values_out, lengths
+
     def gather(self, seq_id: int, layer_idx: int = 0):
         """Gather a logical layer prefix into contiguous ``(k, v)`` tensors."""
         if not 0 <= layer_idx < self.num_layers:
@@ -360,3 +478,16 @@ class PagedKVCache:
 
     def append(self, layer_idx: int, k: mx.array, v: mx.array):
         return self.pool.append(self.seq_id, k, v, layer_idx=layer_idx)
+
+
+@mx.compile
+def _materialize_page_bank(keys, values, table):
+    """Compile only pure page-bank indexing, never pool mutations or lookup."""
+    bank = mx.concatenate((*keys, *values), axis=0)
+    indices = mx.stack((table, table + len(keys)), axis=0)
+    selected = mx.take(bank, indices, axis=0)  # [2, B, N, H, S, D]
+    selected = mx.transpose(selected, (0, 1, 3, 2, 4, 5))
+    selected = selected.reshape(
+        (2, table.shape[0], bank.shape[1], table.shape[1] * bank.shape[2], bank.shape[-1])
+    )
+    return selected[0], selected[1]
