@@ -1,0 +1,15 @@
+UNCHANGED tests/test_attention.py fa3893140ec58d4c3a8cc80069fefd0f8404a261e86ab49f2c5448c4779da495
+UNCHANGED tests/test_engine.py 763ebd5059ef23988425f46654998e40d82354762920c6b15a9439c713575980
+UNCHANGED tests/test_inference.py 73e51d3ff9cd7cc127f6b32f8e1ef2fa0a721577e6da1ce6846315679bf4dcb3
+UNCHANGED tests/test_model.py 590d001b0ca8c28f0cbfba3666d199c456edcc75702e6e34de7a0ba9bd8c3669
+UNCHANGED tests/test_optimizer.py ebba200dfb43ab12541f81c28319c737c42628d78821bce9d63acc0fa79243da
+UNCHANGED tests/test_quant.py 54a26e163755a3a47c493f548ed684948d148eb29be4a17ec49bc065fdc4ac71
+UNCHANGED tests/test_tokenizer.py 88439af7cd4d8b194e2811ebb2b2a7c758e387fed668368890e7fe3713d46bd7
+UNCHANGED layers/model.py f8835eb72eaf61f949d4cc85a6c53e7d4b09d093809034d0a098f58f537f88ca
+UNCHANGED layers/optimizer.py b2e7750dce99173f34bd3db26f38acf450fcfe7f01effb5e54770c83100ce8d3
+ADDITIVE layers/inference.py (all original lines retained in order)
+ADDITIVE scripts/train.py (all original lines retained in order)
+AST IDENTICAL: every original training function/class except CLI main
+WHITELIST PASS: tracked changes and untracked files are within the task whitelist
+No existing test source, model.py, optimizer.py, dependency or L3 artifact changed
+No repository lint configuration or installed Ruff; syntax compilation and whitespace validation used

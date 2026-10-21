@@ -1,0 +1,144 @@
+{
+  "history": "identical fp32 greedy tokens fed to both caches",
+  "curve": [
+    {
+      "step": 0,
+      "cache_tokens": 4,
+      "max_abs_diff": 0.002000723034143448,
+      "running_max_abs_diff": 0.002000723034143448,
+      "fp32_greedy_token": 13,
+      "int8_greedy_token": 13
+    },
+    {
+      "step": 1,
+      "cache_tokens": 5,
+      "max_abs_diff": 0.001384679228067398,
+      "running_max_abs_diff": 0.002000723034143448,
+      "fp32_greedy_token": 10,
+      "int8_greedy_token": 10
+    },
+    {
+      "step": 2,
+      "cache_tokens": 6,
+      "max_abs_diff": 0.0011588893830776215,
+      "running_max_abs_diff": 0.002000723034143448,
+      "fp32_greedy_token": 13,
+      "int8_greedy_token": 13
+    },
+    {
+      "step": 3,
+      "cache_tokens": 7,
+      "max_abs_diff": 0.002052031457424164,
+      "running_max_abs_diff": 0.002052031457424164,
+      "fp32_greedy_token": 9,
+      "int8_greedy_token": 9
+    },
+    {
+      "step": 4,
+      "cache_tokens": 8,
+      "max_abs_diff": 0.001519475132226944,
+      "running_max_abs_diff": 0.002052031457424164,
+      "fp32_greedy_token": 3,
+      "int8_greedy_token": 3
+    },
+    {
+      "step": 5,
+      "cache_tokens": 9,
+      "max_abs_diff": 0.001107916235923767,
+      "running_max_abs_diff": 0.002052031457424164,
+      "fp32_greedy_token": 25,
+      "int8_greedy_token": 25
+    },
+    {
+      "step": 6,
+      "cache_tokens": 10,
+      "max_abs_diff": 0.0012329556047916412,
+      "running_max_abs_diff": 0.002052031457424164,
+      "fp32_greedy_token": 3,
+      "int8_greedy_token": 3
+    },
+    {
+      "step": 7,
+      "cache_tokens": 11,
+      "max_abs_diff": 0.001368846744298935,
+      "running_max_abs_diff": 0.002052031457424164,
+      "fp32_greedy_token": 13,
+      "int8_greedy_token": 13
+    },
+    {
+      "step": 8,
+      "cache_tokens": 12,
+      "max_abs_diff": 0.0019028782844543457,
+      "running_max_abs_diff": 0.002052031457424164,
+      "fp32_greedy_token": 9,
+      "int8_greedy_token": 9
+    },
+    {
+      "step": 9,
+      "cache_tokens": 13,
+      "max_abs_diff": 0.003490164875984192,
+      "running_max_abs_diff": 0.003490164875984192,
+      "fp32_greedy_token": 13,
+      "int8_greedy_token": 13
+    },
+    {
+      "step": 10,
+      "cache_tokens": 14,
+      "max_abs_diff": 0.0016873255372047424,
+      "running_max_abs_diff": 0.003490164875984192,
+      "fp32_greedy_token": 9,
+      "int8_greedy_token": 9
+    },
+    {
+      "step": 11,
+      "cache_tokens": 15,
+      "max_abs_diff": 0.0027718394994735718,
+      "running_max_abs_diff": 0.003490164875984192,
+      "fp32_greedy_token": 13,
+      "int8_greedy_token": 13
+    },
+    {
+      "step": 12,
+      "cache_tokens": 16,
+      "max_abs_diff": 0.0006104633212089539,
+      "running_max_abs_diff": 0.003490164875984192,
+      "fp32_greedy_token": 25,
+      "int8_greedy_token": 25
+    },
+    {
+      "step": 13,
+      "cache_tokens": 17,
+      "max_abs_diff": 0.0009652804583311081,
+      "running_max_abs_diff": 0.003490164875984192,
+      "fp32_greedy_token": 3,
+      "int8_greedy_token": 3
+    },
+    {
+      "step": 14,
+      "cache_tokens": 18,
+      "max_abs_diff": 0.0023289918899536133,
+      "running_max_abs_diff": 0.003490164875984192,
+      "fp32_greedy_token": 13,
+      "int8_greedy_token": 13
+    },
+    {
+      "step": 15,
+      "cache_tokens": 19,
+      "max_abs_diff": 0.0016520842909812927,
+      "running_max_abs_diff": 0.003490164875984192,
+      "fp32_greedy_token": 9,
+      "int8_greedy_token": 9
+    },
+    {
+      "step": 16,
+      "cache_tokens": 20,
+      "max_abs_diff": 0.0032368525862693787,
+      "running_max_abs_diff": 0.003490164875984192,
+      "fp32_greedy_token": 13,
+      "int8_greedy_token": 25
+    }
+  ],
+  "max_abs_diff": 0.003490164875984192,
+  "first_aligned_greedy_disagreement_step": 16,
+  "monotonicity": "raw errors can decrease; running maximum is a monotone envelope"
+}

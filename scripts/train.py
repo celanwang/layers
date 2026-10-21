@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import hashlib
+import argparse
 import json
 import math
 import platform
@@ -15,6 +16,7 @@ from pathlib import Path
 import mlx.core as mx
 import mlx.nn as nn
 import numpy as np
+from mlx.utils import tree_map
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
@@ -399,7 +401,187 @@ def run_training() -> dict:
     return metrics
 
 
+class BF16TrainingEngine:
+    """bf16 forward/backward with a separate fp32 master and Adam state.
+
+    The existing GPT runs unchanged with bf16 parameter copies. Cast logits
+    before cross-entropy so its exponentials and loss reduction are fp32.
+    Gradients are promoted before clipping/update. No loss scaling is used:
+    bf16 has fp32's exponent range (unlike fp16).
+    """
+
+    def __init__(self, model: GPT, optimizer: AdamW, clip_norm: float = CLIP_NORM):
+        self.model = model
+        self.optimizer = optimizer
+        self.clip_norm = clip_norm
+        self.compute_model = GPT(
+            vocab_size=model.vocab_size, n_layer=model.n_layer,
+            d_model=model.d_model, n_head=model.n_head, ctx=model.ctx,
+            eps=model.final_norm.eps,
+        )
+        self._refresh_compute_weights()
+
+        def loss_fn(current_model, inputs, targets):
+            return cross_entropy(current_model(inputs).astype(mx.float32), targets)
+
+        self._loss_and_grad = nn.value_and_grad(self.compute_model, loss_fn)
+
+    def _refresh_compute_weights(self):
+        if any(p.dtype != mx.float32 for p in flatten_arrays(self.model.parameters())):
+            raise AssertionError("master weights must remain fp32")
+        self.compute_model.update(tree_map(
+            lambda parameter: parameter.astype(mx.bfloat16), self.model.parameters()
+        ))
+        mx.eval(self.compute_model.parameters())
+
+    def step(self, inputs, targets, learning_rate: float) -> tuple[float, float]:
+        loss, grads = self._loss_and_grad(self.compute_model, inputs, targets)
+        mx.eval(loss, grads)
+        grads = tree_map(lambda gradient: gradient.astype(mx.float32), grads)
+        clipped_grads, original_norm = clip_grad_norm(grads, self.clip_norm)
+        updated = self.optimizer.step(
+            self.model.trainable_parameters(), clipped_grads, learning_rate
+        )
+        self.model.update(updated)
+        mx.eval(self.model.parameters(), self.optimizer.first_moment, self.optimizer.second_moment)
+        self._refresh_compute_weights()
+        return float(loss.item()), float(original_norm.item())
+
+    def evaluate(self, inputs, targets) -> float:
+        loss = cross_entropy(self.compute_model(inputs).astype(mx.float32), targets)
+        mx.eval(loss)
+        return float(loss.item())
+
+
+def run_bf16_training() -> dict:
+    """Run the unchanged L3 v1 200-step recipe, recording only under L5.
+
+    L3 training timing excludes its first three steps, with 197 timed steps
+    as repeated observations. Preserve that estimator for the baseline
+    comparison; the standalone KV benchmark uses L0's 3+10 repetitions.
+    """
+    out_dir = ROOT / "results/l5"
+    out_dir.mkdir(parents=True, exist_ok=True)
+    baseline_path = ROOT / "results/l3/train-metrics.json"
+    baseline = json.loads(baseline_path.read_text())
+    steps = 200
+    _tokenizer, train_ids, heldout_ids, corpus = make_corpus()
+    config = build_config(corpus["data_sha256"], corpus["tokenizer_sha256"])
+    config["training"]["steps"] = steps
+    config.update({
+        "dtype": "bfloat16", "master_dtype": "float32", "adam_dtype": "float32",
+        "loss_dtype": "float32", "loss_scaling": False,
+        "device": device_info(), "baseline_sha256": sha256_file(baseline_path),
+        "git_commit": subprocess.run(
+            ["git", "rev-parse", "HEAD"], cwd=ROOT, capture_output=True, text=True, check=True
+        ).stdout.strip(),
+        "sources_sha256": {name: sha256_file(ROOT / name) for name in (
+            "scripts/train.py", "layers/model.py", "layers/optimizer.py",
+            "layers/attention.py", "layers/transformer.py", "layers/embedding.py",
+        )},
+    })
+    # Fail before expensive work if the claimed same-recipe comparison drifts.
+    for key in ("model", "training", "data_sha256", "tokenizer_sha256"):
+        if config[key] != baseline["config"][key]:
+            raise ValueError(f"L3 baseline configuration mismatch: {key}")
+    run_hash = config_hash(config)
+    heldout_inputs, heldout_targets = sample_batch(
+        heldout_ids, BATCH_SIZE, CONTEXT, np.random.default_rng(SEED + 1)
+    )
+    sampler = WindowBatchSampler(train_ids, BATCH_SIZE, CONTEXT, np.random.default_rng(SEED))
+    model = new_model(seed=SEED)
+    optimizer = AdamW(learning_rate=PEAK_LR, betas=BETAS, eps=EPS, weight_decay=WEIGHT_DECAY)
+    engine = BF16TrainingEngine(model, optimizer)
+    initial_loss = engine.evaluate(heldout_inputs, heldout_targets)
+    curve = [{"step": 0, "train_loss_nats": None, "heldout_loss_nats": initial_loss}]
+    seconds, losses = [], []
+    mx.reset_peak_memory()
+    active_before = int(mx.get_active_memory())
+    for step in range(1, steps + 1):
+        inputs, targets = sampler.next_batch()
+        learning_rate = cosine_lr(step, steps, PEAK_LR, WARMUP_STEPS)
+        started = time.perf_counter()
+        loss, _norm = engine.step(inputs, targets, learning_rate)
+        seconds.append(time.perf_counter() - started)
+        losses.append(loss)
+        if step % 10 == 0:
+            curve.append({"step": step, "train_loss_nats": float(np.mean(losses[-10:])),
+                          "heldout_loss_nats": engine.evaluate(heldout_inputs, heldout_targets)})
+    peak = int(mx.get_peak_memory())
+    tokens_per_step = BATCH_SIZE * CONTEXT
+    rates = [tokens_per_step / elapsed for elapsed in seconds[3:]]
+    rate = percentile(rates, 0.5)
+    mfu = rate * PARAMETER_FLOPS_PER_TOKEN / ORACLE_PEAK_FLOPS
+    final_loss = curve[-1]["heldout_loss_nats"]
+    master_fp32 = all(p.dtype == mx.float32 for p in flatten_arrays(model.parameters()))
+    adam_fp32 = all(p.dtype == mx.float32 for p in (
+        list(optimizer.first_moment.values()) + list(optimizer.second_moment.values())
+    ))
+    training = {
+        "steps": steps, "tokens_per_step": tokens_per_step, "warmup_excluded_steps": 3,
+        "timed_steps": len(rates), "step_seconds_samples": seconds,
+        "step_train_loss_samples": losses,
+        "step_seconds_median": percentile(seconds[3:], 0.5),
+        "step_seconds_p90": percentile(seconds[3:], 0.9),
+        "step_tokens_per_second_median": rate,
+        "step_tokens_per_second_p90": percentile(rates, 0.9),
+        "mfu_fraction": mfu, "mfu_percent": 100 * mfu,
+        "mfu_parameter_flops_per_token": PARAMETER_FLOPS_PER_TOKEN,
+        "mfu_oracle_peak_flops": ORACLE_PEAK_FLOPS,
+        "peak_metal_memory_bytes": peak, "active_memory_before_training_bytes": active_before,
+        "initial_heldout_loss_nats": initial_loss, "final_heldout_loss_nats": final_loss,
+        "heldout_loss_relative_reduction": 1 - final_loss / initial_loss,
+        "master_weights_fp32": master_fp32, "adam_states_fp32": adam_fp32,
+    }
+    reference = baseline["training"]
+    comparison = {
+        "baseline": str(baseline_path.relative_to(ROOT)),
+        "tokens_per_second_ratio": rate / reference["step_tokens_per_second_median"],
+        "mfu_relative_change": mfu / reference["mfu_fraction"] - 1,
+        "peak_memory_relative_reduction": 1 - peak / reference["peak_metal_memory_bytes"],
+        "final_loss_relative_difference": final_loss / reference["final_heldout_loss_nats"] - 1,
+        "mfu_definition": "same L3 parameter-only 78.7e6 FLOP/token / 14.75e12 peak; excludes attention FLOPs",
+        "timing_protocol": "unchanged L3: first 3 training steps excluded; median/p90 of 197 steps",
+    }
+    record = {
+        "iteration": "L5-T2b", "timestamp": datetime.now(timezone.utc).isoformat(),
+        "config_hash": run_hash, "config": config, "device": config["device"],
+        "corpus": corpus, "training": training, "loss_curve": curve, "comparison": comparison,
+        "prediction_verdicts": {
+            "mfu_increase_le_10_percent": comparison["mfu_relative_change"] <= 0.10,
+            "memory_reduction_35_to_40_percent": 0.35 <= comparison["peak_memory_relative_reduction"] <= 0.40,
+            "final_loss_difference_lt_2_percent": abs(comparison["final_loss_relative_difference"]) < 0.02,
+        },
+    }
+    stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")
+    path = out_dir / f"bf16-train-{stamp}.json"
+    record["result_path"] = str(path.relative_to(ROOT))
+    path.write_text(json.dumps(record, indent=2) + "\n", encoding="utf-8")
+    print(f"config_hash: {run_hash}", flush=True)
+    print(f"device: {config['device']['chip']} / {config['device']['memory_bytes']} bytes", flush=True)
+    print(f"bf16: {steps} steps; master fp32={master_fp32}; Adam fp32={adam_fp32}; loss fp32", flush=True)
+    print(f"heldout loss: {initial_loss:.8f} -> {final_loss:.8f} ({training['heldout_loss_relative_reduction']:.4%} reduction)", flush=True)
+    print(f"throughput: median={rate:.2f} tok/s; p90={training['step_tokens_per_second_p90']:.2f}; MFU={100*mfu:.4f}%", flush=True)
+    print(f"memory: peak={peak} bytes ({peak / 1024**2:.2f} MiB)", flush=True)
+    print("vs L3 fp32: " + json.dumps(comparison), flush=True)
+    print("predictions: " + json.dumps(record["prediction_verdicts"]), flush=True)
+    print(f"written: {path.relative_to(ROOT)}", flush=True)
+    if not all(math.isfinite(value) for value in losses + [row["heldout_loss_nats"] for row in curve]):
+        raise AssertionError("bf16 loss curve contains NaN or infinity; measurements retained")
+    if training["heldout_loss_relative_reduction"] < 0.28:
+        raise AssertionError("bf16 heldout loss reduction must be at least 28%; measurements retained")
+    if not (master_fp32 and adam_fp32):
+        raise AssertionError("bf16 path overwrote fp32 master/Adam state")
+    return record
+
+
 def main() -> None:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--precision", choices=("fp32", "bf16"), default="fp32")
+    args = parser.parse_args()
+    if args.precision == "bf16":
+        run_bf16_training()
+        return
     run_training()
 
 

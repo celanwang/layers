@@ -1,0 +1,226 @@
+{
+  "kind": "derived-accounting; no new end-to-end performance claim",
+  "input_sha256": {
+    "results/l0/hw-profile-20261021T065826Z.json": "f9b3f936a7696c2ede56c1d4d98b5b24df5f5fdc2446bb17565f44df21335b2e",
+    "results/l3/train-metrics.json": "2bbfe6db939de7b41bd57f598aa1544973cd7998be249a6d4f649db857df1bc1",
+    "results/l5/quant-bench-20261021T121645745015Z.json": "5189232191dd09ea207d9907bbed83892b009c9c9859ec551b6a4839c74cb0cc",
+    "results/l5/quant-bench-20261021T122153246044Z.json": "b07f06d9f2bb78b86e288ee09401bd60dfd5d1d85cdde50a9b446ea5ca5abe2c",
+    "results/l5/kv-bf16-bench-20261021T123306957293Z.json": "2cb5523b092f94e358fe26e89d155ad4b7a2030da0dd888f09d8d8dd9acca103",
+    "results/l5/kv-bf16-bench-20261021T124040042080Z.json": "53760473f8a41d96107e22e444524350ad884a134a0acf9fa3826ffdf73effd4",
+    "results/l5/precision-ablation-20261021T124703434945Z.json": "80056edfbfb811322234ba16f5b5f390b00826c73a5b682b5e0dc1c5c86ba991"
+  },
+  "input_config_hash": {
+    "results/l0/hw-profile-20261021T065826Z.json": "ccb4c0a70605",
+    "results/l3/train-metrics.json": "7997ac760223",
+    "results/l5/quant-bench-20261021T121645745015Z.json": "f782bb66df96",
+    "results/l5/quant-bench-20261021T122153246044Z.json": "fcbe6c7f8bdb",
+    "results/l5/kv-bf16-bench-20261021T123306957293Z.json": "b7ce7d1d3a50",
+    "results/l5/kv-bf16-bench-20261021T124040042080Z.json": "718fd1a5fea3",
+    "results/l5/precision-ablation-20261021T124703434945Z.json": "8ce12717067e"
+  },
+  "memory": {
+    "parameter_count": 13118464,
+    "fp32_peak_mib": 2618.3596229553223,
+    "bf16_peak_mib": 1446.000129699707,
+    "peak_reduction_mib": 1172.3594932556152,
+    "peak_reduction_fraction": 0.4477457882322452,
+    "four_state_mib": 200.171875,
+    "bf16_compute_weights_mib": 25.021484375,
+    "non_four_state_remainder_mib": 2418.1877479553223,
+    "illustration_formula": "four_state + (fp32_peak-four_state)/2 + bf16_compute_weights; not a liveness measurement",
+    "illustration_peak_mib": 1434.2872333526611,
+    "illustration_residual_mib": 11.712896347045898,
+    "representative_activation_mib": {
+      "fp32": 800,
+      "bf16": 400
+    }
+  },
+  "bf16": {
+    "batch1_comparison": {
+      "tokens_per_second_ratio": 1.2631376560378667,
+      "mfu_relative_change": 0.26313765603786665,
+      "peak_memory_relative_reduction": 0.4477517557089291,
+      "final_loss_relative_difference": 5.270758378861373e-06
+    },
+    "batch2_comparison": {
+      "tokens_per_second_ratio": 1.3420553234346784,
+      "mfu_relative_change": 0.34205532343467837,
+      "peak_memory_relative_reduction": 0.4477457882322452,
+      "final_loss_relative_difference": -8.43321340604497e-06
+    },
+    "gelu_median_speedup": 1.8303441132934093,
+    "rectangular_matmul_median_speedup": 1.1109276006079079,
+    "amdahl_assumptions": {
+      "gemm_speedup": 1.1225266362252664,
+      "traffic_sensitive_speedup": 2.0
+    },
+    "amdahl_time_fraction_not_profile": [
+      0.2537258577445741,
+      0.3728352057704628
+    ]
+  },
+  "kv": {
+    "formulas_bytes": {
+      "elements": "4096*n",
+      "fp32_storage": "16384*n",
+      "int8_including_scales": "4112*n",
+      "minimum_dequant_read_write": "20496*n",
+      "dequant_plus_attention_read": "36880*n",
+      "separate_q_cast_extra_read_write": "32768*n",
+      "compressed_concat_read_write_approx": "8224*n"
+    },
+    "static_counts_not_trace": {
+      "dequant_primitive_slots": 24,
+      "hypothetical_fused_dequant": 8,
+      "compressed_concat_slots": 16,
+      "fp32_concat_slots": 8,
+      "quantize_new_calls": 8,
+      "scalar_item_reads": 16,
+      "explicit_eval_calls": 12
+    },
+    "byte_rows": [
+      {
+        "current_context": 128,
+        "fp32_storage_mib": 2.0,
+        "int8_storage_mib": 0.501953125,
+        "minimum_dequant_read_write_mib": 2.501953125,
+        "dequant_plus_attention_mib": 4.501953125,
+        "separate_q_cast_extra_mib": 4.0
+      },
+      {
+        "current_context": 512,
+        "fp32_storage_mib": 8.0,
+        "int8_storage_mib": 2.0078125,
+        "minimum_dequant_read_write_mib": 10.0078125,
+        "dequant_plus_attention_mib": 18.0078125,
+        "separate_q_cast_extra_mib": 16.0
+      },
+      {
+        "current_context": 2048,
+        "fp32_storage_mib": 32.0,
+        "int8_storage_mib": 8.03125,
+        "minimum_dequant_read_write_mib": 40.03125,
+        "dequant_plus_attention_mib": 72.03125,
+        "separate_q_cast_extra_mib": 64.0
+      }
+    ],
+    "timing": [
+      {
+        "config_hash": "b7ce7d1d3a50",
+        "initial_context": 128,
+        "fp32_median_ms_per_token": 2.166894531228536,
+        "int8_median_ms_per_token": 7.05536718737676,
+        "extra_ms_per_token": 4.888472656148224
+      },
+      {
+        "config_hash": "b7ce7d1d3a50",
+        "initial_context": 512,
+        "fp32_median_ms_per_token": 2.093497406349343,
+        "int8_median_ms_per_token": 7.049350250099451,
+        "extra_ms_per_token": 4.955852843750108
+      },
+      {
+        "config_hash": "b7ce7d1d3a50",
+        "initial_context": 2048,
+        "fp32_median_ms_per_token": 2.146621093743306,
+        "int8_median_ms_per_token": 7.3455599060707755,
+        "extra_ms_per_token": 5.198938812327469
+      },
+      {
+        "config_hash": "718fd1a5fea3",
+        "initial_context": 128,
+        "fp32_median_ms_per_token": 2.3368789063624718,
+        "int8_median_ms_per_token": 6.933843750175583,
+        "extra_ms_per_token": 4.596964843813112
+      },
+      {
+        "config_hash": "718fd1a5fea3",
+        "initial_context": 512,
+        "fp32_median_ms_per_token": 2.15894531243066,
+        "int8_median_ms_per_token": 6.842958343668215,
+        "extra_ms_per_token": 4.684013031237555
+      },
+      {
+        "config_hash": "718fd1a5fea3",
+        "initial_context": 2048,
+        "fp32_median_ms_per_token": 2.087606781287832,
+        "int8_median_ms_per_token": 7.0853815311693324,
+        "extra_ms_per_token": 4.997774749881501
+      }
+    ],
+    "isolated_prequantized_time_reduction": [
+      {
+        "initial_context": 128,
+        "fraction": 0.8435518490479658
+      },
+      {
+        "initial_context": 512,
+        "fraction": 0.834600319791317
+      },
+      {
+        "initial_context": 2048,
+        "fraction": 0.799336389243039
+      }
+    ]
+  },
+  "weight": {
+    "fp32_projection_bytes": 50331648,
+    "int8_projection_bytes": 12619776,
+    "int4_projection_bytes": 6684672,
+    "optimistic_separate_dequant_matmul_int4_traffic_bytes": 107347968,
+    "static_slots_not_trace": {
+      "int8_per_projection": 4,
+      "int8_24_projections": 96,
+      "ideal_fused_24_projections": 24
+    }
+  },
+  "quality": {
+    "fp32_loss_nats": 4.271756640846108,
+    "int4_loss_nats": 4.296926835116932,
+    "cross_entropy_relative_change": 0.005892235065581675,
+    "fp32_perplexity": 71.64738386064096,
+    "int4_perplexity": 73.47364974851506,
+    "perplexity_relative_change": 0.0254896381342592,
+    "paper_source": "https://arxiv.org/html/2306.00978v5 Table 4; WikiText-2 INT4 g128",
+    "paper_rows": [
+      {
+        "model": "Llama-2-7B",
+        "perplexity": {
+          "fp16": 5.47,
+          "rtn": 5.73,
+          "gptq": 5.69,
+          "gptq_reorder": 5.63,
+          "awq": 5.6
+        },
+        "relative_changes": {
+          "rtn": 0.04753199268738584,
+          "gptq": 0.040219378427788,
+          "gptq_reorder": 0.029250457038391353,
+          "awq": 0.02376599634369292
+        }
+      },
+      {
+        "model": "LLaMA-7B",
+        "perplexity": {
+          "fp16": 5.68,
+          "rtn": 5.96,
+          "gptq": 6.22,
+          "gptq_reorder": 5.83,
+          "awq": 5.78
+        },
+        "relative_changes": {
+          "rtn": 0.04929577464788748,
+          "gptq": 0.09507042253521125,
+          "gptq_reorder": 0.026408450704225483,
+          "awq": 0.01760563380281699
+        }
+      }
+    ]
+  },
+  "limits": [
+    "Byte figures are logical array traffic, not measured DRAM transactions.",
+    "Component medians are not additive end-to-end causal percentages.",
+    "Memory and Amdahl calculations are illustrative models, not tensor/kernel profiles.",
+    "Historical fp32 training baseline is not paired with bf16."
+  ]
+}

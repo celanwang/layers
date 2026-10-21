@@ -5,6 +5,8 @@ from collections.abc import Iterator
 
 import mlx.core as mx
 
+from .quant import dequantize_kv, quantize_kv
+
 
 class KVCache:
     """Per-layer append-only storage for rotary keys and values."""
@@ -58,6 +60,65 @@ class KVCache:
     def _validate_layer(self, layer_idx: int) -> None:
         if type(layer_idx) is not int or not 0 <= layer_idx < self.n_layers:
             raise ValueError("layer_idx is outside this cache")
+
+
+class QuantKVCache(KVCache):
+    """Append-only INT8 storage, exposing the same fp32 reads as KVCache.
+
+    Each token is quantized once across its complete d_model vector. Reading
+    or appending never requantizes older tokens and retains no fp32 copy.
+    """
+
+    def __init__(self, n_layers: int):
+        super().__init__(n_layers)
+        self._key_scales: list[mx.array | None] = [None] * n_layers
+        self._value_scales: list[mx.array | None] = [None] * n_layers
+
+    @property
+    def storage_nbytes(self) -> int:
+        return sum(
+            array.nbytes
+            for arrays in (self._keys, self._values, self._key_scales, self._value_scales)
+            for array in arrays if array is not None
+        )
+
+    def get(self, layer_idx: int) -> tuple[mx.array | None, mx.array | None]:
+        self._validate_layer(layer_idx)
+        if self._keys[layer_idx] is None:
+            return None, None
+        return (
+            dequantize_kv(self._keys[layer_idx], self._key_scales[layer_idx]),
+            dequantize_kv(self._values[layer_idx], self._value_scales[layer_idx]),
+        )
+
+    def append(
+        self, layer_idx: int, keys: mx.array, values: mx.array
+    ) -> tuple[mx.array, mx.array]:
+        self._validate_layer(layer_idx)
+        if keys.ndim != 4 or values.ndim != 4:
+            raise ValueError("keys and values must have rank four")
+        if keys.shape[:-1] != values.shape[:-1]:
+            raise ValueError("keys and values must agree except in feature width")
+        previous_k, previous_v = self._keys[layer_idx], self._values[layer_idx]
+        if previous_k is not None:
+            if previous_k.shape[:2] != keys.shape[:2]:
+                raise ValueError("cache batch and head dimensions cannot change")
+            if previous_k.shape[-1] != keys.shape[-1]:
+                raise ValueError("key feature width cannot change")
+            if previous_v.shape[-1] != values.shape[-1]:
+                raise ValueError("value feature width cannot change")
+        # Quantize both before mutation; invalid V cannot leave a partial K.
+        qk, sk = quantize_kv(keys)
+        qv, sv = quantize_kv(values)
+        if previous_k is not None:
+            qk = mx.concatenate((previous_k, qk), axis=-2)
+            qv = mx.concatenate((previous_v, qv), axis=-2)
+            sk = mx.concatenate((self._key_scales[layer_idx], sk), axis=-2)
+            sv = mx.concatenate((self._value_scales[layer_idx], sv), axis=-2)
+        mx.eval(qk, qv, sk, sv)
+        self._keys[layer_idx], self._values[layer_idx] = qk, qv
+        self._key_scales[layer_idx], self._value_scales[layer_idx] = sk, sv
+        return self.get(layer_idx)
 
 
 class Sampler:
@@ -132,6 +193,7 @@ def generate(
     prompt: str | list[int],
     max_new: int,
     sampler: Sampler,
+    cache: KVCache | None = None,
 ) -> Iterator[str]:
     """Yield generated text incrementally while caching each layer's K/V."""
     if type(max_new) is not int or max_new < 0:
@@ -142,7 +204,12 @@ def generate(
     if any(type(token_id) is not int for token_id in prompt_ids):
         raise ValueError("prompt token IDs must be integers")
 
+    injected_cache = cache
     cache = KVCache(model.n_layer)
+    if injected_cache is not None:
+        if injected_cache.n_layers != model.n_layer:
+            raise ValueError("cache layer count must match model")
+        cache = injected_cache
     current_ids = mx.array(prompt_ids, dtype=mx.int32)
     decoder = codecs.getincrementaldecoder("utf-8")("replace")
     for _ in range(max_new):

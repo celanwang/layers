@@ -1,0 +1,20 @@
+L5 comparison acceptance; base commit b368452; no test suite rerun (task section 5).
+PASS Python syntax: compile(source, filename, exec); no bytecode written.
+PASS ablation config/source hashes: 8ce12717067e; warmup=3, reps=10; M4 Max / applegpu_g16s / MLX 0.32.4.
+PASS exact original/prequantized cache output at initial context 128: max_abs_difference=0.
+PASS exact original/prequantized cache output at initial context 512: max_abs_difference=0.
+PASS exact original/prequantized cache output at initial context 2048: max_abs_difference=0.
+PASS 19 timing distributions: 10 finite positive samples; L0 upper median and nearest-rank p90 recomputed.
+A1 context 128 median/p90 ms: {"dequant_full_only": [0.1936, 0.2067], "fp32_concat_only": [0.1659, 0.1727], "original_append_dequant": [5.7303, 5.9131], "prequantized_append_dequant": [0.8965, 0.9084], "quantize_new_only": [4.5424, 4.7862]}
+A1 context 512 median/p90 ms: {"dequant_full_only": [0.2099, 0.2332], "fp32_concat_only": [0.1689, 0.172], "original_append_dequant": [4.4622, 4.5912], "prequantized_append_dequant": [0.738, 0.7514], "quantize_new_only": [3.7688, 3.8213]}
+A1 context 2048 median/p90 ms: {"dequant_full_only": [0.32, 0.3331], "fp32_concat_only": [0.2678, 0.2718], "original_append_dequant": [4.4957, 4.5369], "prequantized_append_dequant": [0.9021, 0.9155], "quantize_new_only": [3.6194, 3.6703]}
+PASS derived input SHA-256, 1434.287 MiB memory illustration, 1172.359 MiB reduction, 2.548964% PPL and KV byte formulas.
+PASS local Markdown links: runs/l5-diff-analysis.md
+PASS local Markdown links: results/l5/l5-diff-report.md
+PASS required five sections, quantitative bf16/KV budgets, external positions, L0 open-question answer and context-n crossover recommendation.
+PASS full task whitelist: exactly six new allowed files; no baseline file modified/deleted, including existing measurements and benchmarks.
+PASS protected implementation/test/script/spec/dependency paths unchanged against task start.
+PASS manual review: existing independent reruns retained; static counts, illustrative budgets and component timings labeled; no unsupported causal percentage or method ranking.
+Linter: no repository configuration found; Ruff installed=False. No dependency added.
+PASS git diff --check and git diff --cached --check (exit 0); staged file list reviewed against the whitelist.
+No push performed; no test suite or existing benchmark rerun. Ablation execution exit status: 0.

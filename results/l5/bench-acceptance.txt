@@ -1,0 +1,11 @@
+device: Apple M4 Max, mlx 0.32.4
+config_hash: f782bb66df96 (commit d10f1f665a8a)
+heldout: split=400209, 44467 target tokens
+fp32: NPZ=52485384 B, loss=4.27175664, decode=394.87 tok/s (median=0.321625s, p90=0.325494s)
+int8: NPZ=14780712 B, loss=4.27190090, decode=284.60 tok/s (median=0.446236s, p90=0.458092s)
+int4-g64: NPZ=8845608 B, loss=4.29692684, decode=239.46 tok/s (median=0.530368s, p90=0.547352s)
+fp32: model compression=1.0000x, projection compression=1.0000x, loss change=+0.0000%, decode speedup=1.0000x
+int8: model compression=3.5509x, projection compression=3.9883x, loss change=+0.0034%, decode speedup=0.7208x
+int4-g64: model compression=5.9335x, projection compression=7.5294x, loss change=+0.5892%, decode speedup=0.6064x
+MLX public API Oracle: {"available": true, "native_mode": "affine (scale plus bias), unlike our zero-point-zero symmetric grid", "int8_oracle_group": "128 (API supports 32/64/128); production task uses full input width", "comparisons": [{"bits": 8, "group_size": 128, "our_grid_vs_mlx_dequantize_max_abs": 0.0, "our_vs_native_affine_max_abs": 0.002490326762199402, "our_roundtrip_rmse": 0.0006323691923171282, "native_affine_roundtrip_rmse": 0.000572813383769244}, {"bits": 4, "group_size": 64, "our_grid_vs_mlx_dequantize_max_abs": 0.0, "our_vs_native_affine_max_abs": 0.041611939668655396, "our_roundtrip_rmse": 0.01060362346470356, "native_affine_roundtrip_rmse": 0.008869619108736515}]}
+written: results/l5/quant-bench-20261021T121645745015Z.json
