@@ -1,0 +1,12 @@
+device: Apple M4 Max, 48 GiB, mlx 0.32.4
+config_hash: d0a78294f6d4 (commit 7e9bfdc91342)
+B=1: L4 359.77 tok/s, batched 425.35 tok/s, speedup 1.182x; decode median/p90 0.150465/0.153213s
+B=2: L4 346.73 tok/s, batched 654.14 tok/s, speedup 1.887x; decode median/p90 0.195678/0.200494s
+B=4: L4 358.36 tok/s, batched 1027.12 tok/s, speedup 2.866x; decode median/p90 0.249240/0.255728s
+B=8: L4 346.94 tok/s, batched 1385.02 tok/s, speedup 3.992x; decode median/p90 0.369669/0.371776s
+B=1 latency: L4 2.7795 ms/token, batched 2.3510 ms/token; regression -15.42%
+uneven B=8: small 1186.70 tok/s, large 1164.28 tok/s; penalty 1.89%
+padding fractions: small 0.7752%, large 40.7407%
+predictions: {"b1_regression_below_10_percent": true, "b8_speedup_at_least_4x": false}
+written: results/l6/batching-bench-20261021T130956006308Z.json
+FAIL: performance prediction(s) did not meet the specified thresholds; raw evidence retained

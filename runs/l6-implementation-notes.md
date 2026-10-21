@@ -31,3 +31,21 @@ and exercise shared-page completion plus new arrivals.
 Performance predictions remain hypotheses until the L0-protocol benchmark:
 B=8 speedup at least 4x; B=1 latency regression below 10%. Negative results
 will be retained alongside configuration and raw timing samples.
+
+## Initial measurement and bounded optimization
+
+The first uncompiled batch path passed all 97 tests. With 3 warmups and 10
+paired repeats it measured B=8 at 1385.02 tok/s versus L4 at 346.94 tok/s:
+3.992x, below the 4x gate. B=1 improved 15.42%. The full failed measurement
+is retained in `results/l6/batching-bench-20261021T130956006308Z.json` and
+`results/l6/bench-attempt1.txt`; the gate was not rounded up or weakened.
+
+The batch path now compiles two pure arithmetic helpers (RoPE and explicit
+masked attention) with `mx.compile`. Page operations remain inspectable Python;
+the original single-request operations and all measurement settings are intact.
+No `mx.fast` operation is used. We consulted only the installed public
+`mx.compile` API docstring, without reading implementation sources.
+
+The unchanged bf16 training regression test automatically emits an L5 JSON.
+Each newly generated artifact is relocated intact into `results/l6/` after the
+suite; existing L5 files are neither edited nor removed.

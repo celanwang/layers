@@ -61,6 +61,31 @@ def _stable_softmax(scores: mx.array) -> mx.array:
     return exponentials / mx.sum(exponentials, axis=-1, keepdims=True)
 
 
+@mx.compile
+def _decode_rope(q, k, positions, frequencies):
+    """Fuse only pure batch-path arithmetic; page mutation stays in Python."""
+    angles = positions[:, None, None, None] * frequencies
+    cos, sin = mx.cos(angles).astype(q.dtype), mx.sin(angles).astype(q.dtype)
+
+    def rotate(tensor):
+        even, odd = tensor[..., ::2], tensor[..., 1::2]
+        return mx.stack(
+            (even * cos - odd * sin, even * sin + odd * cos), axis=-1
+        ).reshape(tensor.shape)
+
+    return rotate(q), rotate(k)
+
+
+@mx.compile
+def _decode_attention(q, k, v, positions):
+    """Explicit masked attention, fused without any mx.fast operation."""
+    scores = (q @ mx.swapaxes(k, -1, -2)) * (1.0 / math.sqrt(q.shape[-1]))
+    valid = mx.arange(k.shape[-2])[None, :] <= positions[:, None]
+    scores = mx.where(valid[:, None, None, :], scores, -float("inf"))
+    probs = _stable_softmax(scores)
+    return probs @ v, probs, scores, valid
+
+
 class CausalSelfAttention(nn.Module):
     """Multi-head causal self-attention with inspectable intermediate arrays."""
 
@@ -193,23 +218,13 @@ class CausalSelfAttention(nn.Module):
         # The one-token query's absolute position differs between requests.
         pairs = mx.arange(0, self.d_head, 2, dtype=mx.float32)
         frequencies = mx.exp(-pairs * (math.log(self.rope_base) / self.d_head))
-        angles = cache.positions[:, None, None, None] * frequencies
-        cos, sin = mx.cos(angles).astype(q.dtype), mx.sin(angles).astype(q.dtype)
-
-        def rotate(tensor):
-            even, odd = tensor[..., ::2], tensor[..., 1::2]
-            return mx.stack(
-                (even * cos - odd * sin, even * sin + odd * cos), axis=-1
-            ).reshape(tensor.shape)
-
-        rotary_q, rotary_k = rotate(q), rotate(k)
+        rotary_q, rotary_k = _decode_rope(q, k, cache.positions, frequencies)
         all_k, all_v = cache.append(layer_idx, rotary_k, v)
-        scores = (rotary_q @ mx.swapaxes(all_k, -1, -2)) / math.sqrt(self.d_head)
         # positions are the old lengths; valid keys include the appended token.
-        valid = mx.arange(all_k.shape[-2])[None, :] <= cache.positions[:, None]
-        scores = mx.where(valid[:, None, None, :], scores, -float("inf"))
-        probs = _stable_softmax(scores)
-        context = mx.transpose(probs @ all_v, (0, 2, 1, 3)).reshape(x.shape)
+        context, probs, scores, valid = _decode_attention(
+            rotary_q, all_k, all_v, cache.positions
+        )
+        context = mx.transpose(context, (0, 2, 1, 3)).reshape(x.shape)
         out = context @ self.wo
         return out, probs, {
             "rotary_q": rotary_q,
