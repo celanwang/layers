@@ -1,0 +1,21 @@
+{
+  "base_commit": "f265563abf6883e8b6100c93e908198b68c87a07",
+  "implementation_commit": "fa4f4542acf5bd97eaa21f55895d9922857efe9f",
+  "commands": [
+    {
+      "command": ".venv/bin/python -m pytest tests/ -q",
+      "exit_code": 0,
+      "complete_output": "results/l5/t2-tests-acceptance.txt"
+    },
+    {
+      "command": ".venv/bin/python bench/l5_kv_bf16_bench.py",
+      "exit_code": 0,
+      "complete_output": "results/l5/t2-bench-acceptance.txt"
+    },
+    {
+      "command": "/Users/wangchen/Developer/layers/.venv/bin/python scripts/train.py --precision bf16",
+      "exit_code": 0,
+      "complete_output": "results/l5/t2-train-acceptance.txt"
+    }
+  ]
+}

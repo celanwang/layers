@@ -1,0 +1,9 @@
+config_hash: b3b52a21c348
+device: Apple M4 Max / 51539607552 bytes
+bf16: 200 steps; master fp32=True; Adam fp32=True; loss fp32
+heldout loss: 7.07899284 -> 4.97540474 (29.7159% reduction)
+throughput: median=78505.97 tok/s; p90=82213.78; MFU=41.8876%
+memory: peak=1516224648 bytes (1445.98 MiB)
+vs L3 fp32: {"baseline": "results/l3/train-metrics.json", "tokens_per_second_ratio": 1.2578548569590553, "mfu_relative_change": 0.2578548569590555, "peak_memory_relative_reduction": 0.4477517557089291, "final_loss_relative_difference": -7.196980986268198e-05, "mfu_definition": "same L3 parameter-only 78.7e6 FLOP/token / 14.75e12 peak; excludes attention FLOPs", "timing_protocol": "unchanged L3: first 3 training steps excluded; median/p90 of 197 steps"}
+predictions: {"mfu_increase_le_10_percent": false, "memory_reduction_35_to_40_percent": false, "final_loss_difference_lt_2_percent": true}
+written: results/l5/bf16-train-20261021T123344743861Z.json

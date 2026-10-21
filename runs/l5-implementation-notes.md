@@ -174,3 +174,50 @@
   Source-line subsequence checks confirm additive-only inference/train changes;
   AST comparisons confirm every original training function/class except CLI
   `main` is identical to its pre-task version.
+
+
+## T2 final acceptance and measurements
+
+- All three exact section-5 commands exited 0. Final suite: `91 passed,
+  1 warning in 21.28s`. The warning is PyTorch's existing quantized-tensor API
+  deprecation; both public-API Oracles still pass. No existing test was modified.
+- Full section-6 output report: `results/l5/l5-t2-report.md`. Command outputs,
+  scope/hash checks and status are stored in `results/l5/t2-*-acceptance.txt`,
+  `results/l5/t2-scope-checks.txt`, and `results/l5/t2-acceptance-status.json`.
+- Raw combined record: `results/l5/kv-bf16-bench-20261021T123306957293Z.json`; config hash
+  `b7ce7d1d3a50`; implementation commit `fa4f4542acf5bd97eaa21f55895d9922857efe9f`.
+  Hardware: Apple M4 Max / 48 GiB / MLX 0.32.4. L0 3 warmups + 10 repetitions
+  were completed for each KV context and for full 200-step bf16 training runs.
+
+| KV context | fp32 KV bytes | INT8 KV bytes | Compression | fp32 tok/s | INT8 tok/s | Speedup | Max logit diff | Greedy fork |
+|---|---:|---:|---:|---:|---:|---:|---:|---|
+| 128 | 2,097,152 | 526,336 | 3.9844x | 461.49 | 141.74 | 0.3071x | 0.03315496 | none in 32 decode calls |
+| 512 | 8,388,608 | 2,105,344 | 3.9844x | 477.67 | 141.86 | 0.2970x | 0.04887322 | none in 32 decode calls |
+| 2048 | 33,554,432 | 8,421,376 | 3.9844x | 465.85 | 136.14 | 0.2922x | 0.03614235 | none in 32 decode calls |
+
+- KV's approximately 2x memory prediction is revised to **3.9844x vs fp32**
+  (1.9922x versus a hypothetical fp16 payload). The neutral-speed prediction
+  is overturned: this educational path runs at 0.2922–0.3071x fp32. It performs
+  explicit quantizer validation/synchronization and full fp32 reads; no fused
+  integer attention kernel is implemented. Their individual costs are not profiled.
+- bf16 outer-run median: 78835.68 tok/s (p90
+  81668.33); MFU 42.0635% versus
+  33.3008% fp32; relative gain 26.3138%.
+  Median peak 1,516,224,648 B versus
+  2,745,549,060 B; reduction 44.7752%.
+  Median final loss 4.97578907 versus
+  4.97576284; difference +0.000527%.
+- Principle §6 verdicts: MFU gain <=10% **overturned**; memory reduction
+  35–40% **overturned** (larger reduction); final loss difference <2% **holds**.
+  All 13 benchmark runs had finite loss, >=28% reduction, fp32 masters/Adam.
+  Same-seed final losses vary slightly; all raw curves are retained.
+- The separate required CLI run passed: heldout
+  7.07899284 ->
+  4.97540474, reduction
+  29.7159%.
+- No whitelist, dependency, reference-source, existing-test, or push deviation.
+  The original fp32 source lines/functions are preserved. The report explicitly
+  records the v1 parameter-only MFU convention, historical baseline limitation,
+  long-context extrapolation and fp32 KV reference correction.
+- Stage commit: `fa4f454` (`feat(l5): add INT8 KV cache and bf16 training`).
+  Acceptance/results/report are archived in a separate local validation commit.
