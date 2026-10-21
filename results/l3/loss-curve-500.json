@@ -6,17 +6,17 @@
   },
   {
     "step": 10,
-    "train_loss_nats": 7.011551332473755,
+    "train_loss_nats": 7.011551284790039,
     "heldout_loss_nats": 6.916792869567871
   },
   {
     "step": 20,
-    "train_loss_nats": 6.785920143127441,
+    "train_loss_nats": 6.785920190811157,
     "heldout_loss_nats": 6.65937614440918
   },
   {
     "step": 30,
-    "train_loss_nats": 6.563742637634277,
+    "train_loss_nats": 6.563742589950562,
     "heldout_loss_nats": 6.4373273849487305
   },
   {
@@ -26,12 +26,12 @@
   },
   {
     "step": 50,
-    "train_loss_nats": 6.265069055557251,
-    "heldout_loss_nats": 6.176714897155762
+    "train_loss_nats": 6.265069103240966,
+    "heldout_loss_nats": 6.17671537399292
   },
   {
     "step": 60,
-    "train_loss_nats": 6.2285479545593265,
+    "train_loss_nats": 6.228547859191894,
     "heldout_loss_nats": 6.156622886657715
   },
   {
@@ -46,7 +46,7 @@
   },
   {
     "step": 90,
-    "train_loss_nats": 6.187205028533936,
+    "train_loss_nats": 6.187205123901367,
     "heldout_loss_nats": 6.124943733215332
   },
   {
@@ -56,7 +56,7 @@
   },
   {
     "step": 110,
-    "train_loss_nats": 6.004859447479248,
+    "train_loss_nats": 6.004859495162964,
     "heldout_loss_nats": 5.873819828033447
   },
   {
@@ -66,28 +66,28 @@
   },
   {
     "step": 130,
-    "train_loss_nats": 5.530392217636108,
+    "train_loss_nats": 5.53039231300354,
     "heldout_loss_nats": 5.382580757141113
   },
   {
     "step": 140,
-    "train_loss_nats": 5.324814176559448,
+    "train_loss_nats": 5.32481427192688,
     "heldout_loss_nats": 5.203378677368164
   },
   {
     "step": 150,
-    "train_loss_nats": 5.165851259231568,
+    "train_loss_nats": 5.165851163864136,
     "heldout_loss_nats": 5.078453540802002
   },
   {
     "step": 160,
-    "train_loss_nats": 5.023941612243652,
+    "train_loss_nats": 5.023941707611084,
     "heldout_loss_nats": 4.960048198699951
   },
   {
     "step": 170,
     "train_loss_nats": 4.920219135284424,
-    "heldout_loss_nats": 4.871387958526611
+    "heldout_loss_nats": 4.8713884353637695
   },
   {
     "step": 180,
@@ -106,27 +106,27 @@
   },
   {
     "step": 210,
-    "train_loss_nats": 4.5292140483856205,
+    "train_loss_nats": 4.529214096069336,
     "heldout_loss_nats": 4.62529182434082
   },
   {
     "step": 220,
-    "train_loss_nats": 4.470332622528076,
+    "train_loss_nats": 4.4703325748443605,
     "heldout_loss_nats": 4.588293552398682
   },
   {
     "step": 230,
-    "train_loss_nats": 4.45356969833374,
+    "train_loss_nats": 4.453569555282593,
     "heldout_loss_nats": 4.532207489013672
   },
   {
     "step": 240,
-    "train_loss_nats": 4.427003860473633,
+    "train_loss_nats": 4.4270039081573485,
     "heldout_loss_nats": 4.494757652282715
   },
   {
     "step": 250,
-    "train_loss_nats": 4.350088787078858,
+    "train_loss_nats": 4.350088739395142,
     "heldout_loss_nats": 4.468999862670898
   },
   {
@@ -141,22 +141,22 @@
   },
   {
     "step": 280,
-    "train_loss_nats": 4.271589183807373,
+    "train_loss_nats": 4.271589279174805,
     "heldout_loss_nats": 4.377809524536133
   },
   {
     "step": 290,
-    "train_loss_nats": 4.268186569213867,
+    "train_loss_nats": 4.268186855316162,
     "heldout_loss_nats": 4.349719524383545
   },
   {
     "step": 300,
-    "train_loss_nats": 4.143131399154663,
+    "train_loss_nats": 4.143131494522095,
     "heldout_loss_nats": 4.358336448669434
   },
   {
     "step": 310,
-    "train_loss_nats": 4.067901468276977,
+    "train_loss_nats": 4.067901396751404,
     "heldout_loss_nats": 4.342624664306641
   },
   {
@@ -166,92 +166,92 @@
   },
   {
     "step": 330,
-    "train_loss_nats": 4.059245944023132,
+    "train_loss_nats": 4.059246063232422,
     "heldout_loss_nats": 4.301321029663086
   },
   {
     "step": 340,
-    "train_loss_nats": 4.075919055938721,
+    "train_loss_nats": 4.075919103622437,
     "heldout_loss_nats": 4.274051666259766
   },
   {
     "step": 350,
-    "train_loss_nats": 4.057489728927612,
-    "heldout_loss_nats": 4.262423992156982
+    "train_loss_nats": 4.0574898481369015,
+    "heldout_loss_nats": 4.262424468994141
   },
   {
     "step": 360,
-    "train_loss_nats": 4.049816751480103,
-    "heldout_loss_nats": 4.252394676208496
+    "train_loss_nats": 4.049816846847534,
+    "heldout_loss_nats": 4.252395153045654
   },
   {
     "step": 370,
-    "train_loss_nats": 4.027478194236755,
+    "train_loss_nats": 4.0274783849716185,
     "heldout_loss_nats": 4.232090950012207
   },
   {
     "step": 380,
-    "train_loss_nats": 4.0319664716720585,
+    "train_loss_nats": 4.031966495513916,
     "heldout_loss_nats": 4.224720001220703
   },
   {
     "step": 390,
-    "train_loss_nats": 4.015899395942688,
+    "train_loss_nats": 4.0158994674682615,
     "heldout_loss_nats": 4.222561359405518
   },
   {
     "step": 400,
-    "train_loss_nats": 3.92337019443512,
+    "train_loss_nats": 3.9233703136444094,
     "heldout_loss_nats": 4.210796356201172
   },
   {
     "step": 410,
-    "train_loss_nats": 3.9067045927047728,
+    "train_loss_nats": 3.9067047119140623,
     "heldout_loss_nats": 4.209555149078369
   },
   {
     "step": 420,
-    "train_loss_nats": 3.9104904890060426,
+    "train_loss_nats": 3.9104905843734743,
     "heldout_loss_nats": 4.207019329071045
   },
   {
     "step": 430,
-    "train_loss_nats": 3.887106728553772,
-    "heldout_loss_nats": 4.201665878295898
+    "train_loss_nats": 3.8871068477630617,
+    "heldout_loss_nats": 4.201666355133057
   },
   {
     "step": 440,
-    "train_loss_nats": 3.8780789136886598,
+    "train_loss_nats": 3.8780789613723754,
     "heldout_loss_nats": 4.194295883178711
   },
   {
     "step": 450,
-    "train_loss_nats": 3.8851919174194336,
+    "train_loss_nats": 3.8851919412612914,
     "heldout_loss_nats": 4.188816547393799
   },
   {
     "step": 460,
-    "train_loss_nats": 3.8902252912521362,
+    "train_loss_nats": 3.89022536277771,
     "heldout_loss_nats": 4.184891700744629
   },
   {
     "step": 470,
-    "train_loss_nats": 3.8887313842773437,
-    "heldout_loss_nats": 4.18174409866333
+    "train_loss_nats": 3.8887315511703493,
+    "heldout_loss_nats": 4.181744575500488
   },
   {
     "step": 480,
-    "train_loss_nats": 3.886744999885559,
+    "train_loss_nats": 3.886745023727417,
     "heldout_loss_nats": 4.181888580322266
   },
   {
     "step": 490,
-    "train_loss_nats": 3.8591849327087404,
+    "train_loss_nats": 3.8591849565505982,
     "heldout_loss_nats": 4.173142433166504
   },
   {
     "step": 500,
-    "train_loss_nats": 3.822181725502014,
+    "train_loss_nats": 3.8221819162368775,
     "heldout_loss_nats": 4.17520809173584
   }
 ]

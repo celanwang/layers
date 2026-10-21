@@ -1,7 +1,7 @@
 {
   "iteration": "L3-T2",
   "measurement": "full-config training step throughput",
-  "timestamp": "2026-10-21T10:00:30.805779+00:00",
+  "timestamp": "2026-10-21T10:05:38.792036+00:00",
   "config_hash": "7997ac760223",
   "config": {
     "model": {
@@ -44,14 +44,14 @@
   "warmup_repetitions": 3,
   "measured_repetitions": 10,
   "latency": {
-    "median_s": 0.0654869999998482,
-    "p90_s": 0.06578570900092018,
+    "median_s": 0.06558941700131982,
+    "p90_s": 0.06592958300097962,
     "reps": 10,
     "warmup": 3
   },
   "throughput": {
-    "median_tokens_per_second": 62505.364879387336,
-    "p90_tokens_per_second": 62762.64427654417,
+    "median_tokens_per_second": 62326.319213980525,
+    "p90_tokens_per_second": 62603.64525821355,
     "tokens_per_step": 4096
   },
   "peak_metal_memory_bytes": 2745483524,
