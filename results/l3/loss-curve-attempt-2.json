@@ -1,0 +1,107 @@
+[
+  {
+    "step": 0,
+    "train_loss_nats": null,
+    "heldout_loss_nats": 7.071637153625488
+  },
+  {
+    "step": 10,
+    "train_loss_nats": 7.007198667526245,
+    "heldout_loss_nats": 6.908670425415039
+  },
+  {
+    "step": 20,
+    "train_loss_nats": 6.787957715988159,
+    "heldout_loss_nats": 6.65103006362915
+  },
+  {
+    "step": 30,
+    "train_loss_nats": 6.564965486526489,
+    "heldout_loss_nats": 6.426761627197266
+  },
+  {
+    "step": 40,
+    "train_loss_nats": 6.369337177276611,
+    "heldout_loss_nats": 6.266271591186523
+  },
+  {
+    "step": 50,
+    "train_loss_nats": 6.271087265014648,
+    "heldout_loss_nats": 6.175099849700928
+  },
+  {
+    "step": 60,
+    "train_loss_nats": 6.211802434921265,
+    "heldout_loss_nats": 6.144044399261475
+  },
+  {
+    "step": 70,
+    "train_loss_nats": 6.186571216583252,
+    "heldout_loss_nats": 6.128286838531494
+  },
+  {
+    "step": 80,
+    "train_loss_nats": 6.175904703140259,
+    "heldout_loss_nats": 6.118758201599121
+  },
+  {
+    "step": 90,
+    "train_loss_nats": 6.166964149475097,
+    "heldout_loss_nats": 6.10221004486084
+  },
+  {
+    "step": 100,
+    "train_loss_nats": 6.106368112564087,
+    "heldout_loss_nats": 6.025177001953125
+  },
+  {
+    "step": 110,
+    "train_loss_nats": 5.941985940933227,
+    "heldout_loss_nats": 5.825007438659668
+  },
+  {
+    "step": 120,
+    "train_loss_nats": 5.704405164718628,
+    "heldout_loss_nats": 5.607148170471191
+  },
+  {
+    "step": 130,
+    "train_loss_nats": 5.465773487091065,
+    "heldout_loss_nats": 5.413918495178223
+  },
+  {
+    "step": 140,
+    "train_loss_nats": 5.281913757324219,
+    "heldout_loss_nats": 5.288309097290039
+  },
+  {
+    "step": 150,
+    "train_loss_nats": 5.156147289276123,
+    "heldout_loss_nats": 5.19467830657959
+  },
+  {
+    "step": 160,
+    "train_loss_nats": 5.0691228866577145,
+    "heldout_loss_nats": 5.143462181091309
+  },
+  {
+    "step": 170,
+    "train_loss_nats": 4.99811372756958,
+    "heldout_loss_nats": 5.112314701080322
+  },
+  {
+    "step": 180,
+    "train_loss_nats": 4.955268239974975,
+    "heldout_loss_nats": 5.082112789154053
+  },
+  {
+    "step": 190,
+    "train_loss_nats": 4.935638809204102,
+    "heldout_loss_nats": 5.062206268310547
+  },
+  {
+    "step": 200,
+    "train_loss_nats": 4.911456108093262,
+    "heldout_loss_nats": 5.051713466644287
+  }
+]

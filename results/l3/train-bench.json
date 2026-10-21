@@ -1,0 +1,59 @@
+{
+  "iteration": "L3-T2",
+  "measurement": "full-config training step throughput",
+  "timestamp": "2026-10-21T10:05:38.792036+00:00",
+  "config_hash": "7997ac760223",
+  "config": {
+    "model": {
+      "vocab_size": 1028,
+      "n_layer": 4,
+      "d_model": 512,
+      "n_head": 8,
+      "ctx": 256
+    },
+    "training": {
+      "batch_size": 16,
+      "steps": 200,
+      "warmup_steps": 100,
+      "peak_lr": 0.0003,
+      "betas": [
+        0.9,
+        0.95
+      ],
+      "eps": 1e-08,
+      "weight_decay": 0.1,
+      "clip_norm": 1.0,
+      "seed": 42,
+      "sampling": "shuffled-non-overlapping-context-windows"
+    },
+    "dtype": "float32",
+    "data_sha256": "86c4e6aa9db7c042ec79f339dcb96d42b0075e16b8fc2e86bf0ca57e2dc565ed",
+    "tokenizer_sha256": "b8056fefeb320f2788aa709d8a0ab9a518980aaac9bef8391702331bbfe9dc87",
+    "python": "3.12.15",
+    "mlx": "0.32.4",
+    "platform": "macOS-15.8-arm64-arm-64bit"
+  },
+  "device": {
+    "chip": "Apple M4 Max",
+    "memory_bytes": 51539607552,
+    "os": "macOS-15.8-arm64-arm-64bit",
+    "python": "3.12.15",
+    "mlx": "0.32.4"
+  },
+  "parameter_count": 13118464,
+  "warmup_repetitions": 3,
+  "measured_repetitions": 10,
+  "latency": {
+    "median_s": 0.06558941700131982,
+    "p90_s": 0.06592958300097962,
+    "reps": 10,
+    "warmup": 3
+  },
+  "throughput": {
+    "median_tokens_per_second": 62326.319213980525,
+    "p90_tokens_per_second": 62603.64525821355,
+    "tokens_per_step": 4096
+  },
+  "peak_metal_memory_bytes": 2745483524,
+  "peak_metal_memory_mib": 2618.2971229553223
+}

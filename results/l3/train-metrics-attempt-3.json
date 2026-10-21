@@ -1,0 +1,95 @@
+{
+  "iteration": "L3-T2",
+  "timestamp": "2026-10-21T09:59:18.408736+00:00",
+  "config_hash": "212962c52883",
+  "config": {
+    "model": {
+      "vocab_size": 1028,
+      "n_layer": 4,
+      "d_model": 512,
+      "n_head": 8,
+      "ctx": 256
+    },
+    "training": {
+      "batch_size": 16,
+      "steps": 200,
+      "warmup_steps": 100,
+      "peak_lr": 0.0003,
+      "betas": [
+        0.9,
+        0.95
+      ],
+      "eps": 1e-08,
+      "weight_decay": 0.01,
+      "clip_norm": 1.0,
+      "seed": 42,
+      "sampling": "shuffled-non-overlapping-context-windows"
+    },
+    "dtype": "float32",
+    "data_sha256": "86c4e6aa9db7c042ec79f339dcb96d42b0075e16b8fc2e86bf0ca57e2dc565ed",
+    "tokenizer_sha256": "b8056fefeb320f2788aa709d8a0ab9a518980aaac9bef8391702331bbfe9dc87",
+    "python": "3.12.15",
+    "mlx": "0.32.4",
+    "platform": "macOS-15.8-arm64-arm-64bit"
+  },
+  "device": {
+    "chip": "Apple M4 Max",
+    "memory_bytes": 51539607552,
+    "os": "macOS-15.8-arm64-arm-64bit",
+    "python": "3.12.15",
+    "mlx": "0.32.4"
+  },
+  "corpus": {
+    "total_tokens": 444677,
+    "train_tokens": 400209,
+    "heldout_tokens": 44468,
+    "split_token_index": 400209,
+    "heldout_utf8_bytes": 106148,
+    "heldout_tokens_per_byte": 0.41892452048083806,
+    "data_sha256": "86c4e6aa9db7c042ec79f339dcb96d42b0075e16b8fc2e86bf0ca57e2dc565ed",
+    "tokenizer_sha256": "b8056fefeb320f2788aa709d8a0ab9a518980aaac9bef8391702331bbfe9dc87"
+  },
+  "model": {
+    "vocab_size": 1028,
+    "n_layer": 4,
+    "d_model": 512,
+    "n_head": 8,
+    "ctx": 256,
+    "parameter_count": 13118464,
+    "parameter_bytes_fp32": 52473856,
+    "predicted_4x_parameter_bytes": 209895424
+  },
+  "training": {
+    "steps": 200,
+    "tokens_per_step": 4096,
+    "warmup_excluded_steps": 3,
+    "timed_steps": 197,
+    "step_tokens_per_second_median": 62639.94583553,
+    "step_tokens_per_second_p90": 62989.94636928352,
+    "step_seconds_median": 0.06538316699879942,
+    "step_seconds_p90": 0.06578124999941792,
+    "final_train_loss_nats_10_step_mean": 4.940738534927368,
+    "initial_heldout_loss_nats": 7.078920841217041,
+    "final_heldout_loss_nats": 4.974192142486572,
+    "heldout_loss_relative_reduction": 0.2973233838801641,
+    "heldout_model_bits_per_byte": 3.0063038796282404,
+    "heldout_tokens_per_byte": 0.41892452048083806,
+    "mfu_fraction": 0.33422127032245497,
+    "mfu_percent": 33.4221270322455,
+    "peak_metal_memory_bytes": 2745549060,
+    "peak_metal_memory_mib": 2618.3596229553223,
+    "active_memory_before_training_bytes": 86265884,
+    "adamw_oracle": "five-step alignment is checked by tests/test_optimizer.py",
+    "single_batch_overfit_check": {
+      "steps": 50,
+      "initial_loss_nats": 2.763561248779297,
+      "final_loss_nats": 0.0003381967544555664
+    },
+    "checkpoint": "results/l3/ckpt-final.npz",
+    "loss_curve": "results/l3/loss-curve.json"
+  },
+  "l1_uniform_id_proxy_bits_per_byte": {
+    "layers_tokenizer": 4.19,
+    "cl100k_base": 4.69
+  }
+}

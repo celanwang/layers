@@ -1,0 +1,223 @@
+{
+  "iteration": "L3-T2 memory ablation",
+  "timestamp": "2026-10-21T10:23:50.372520+00:00",
+  "git_commit": "c0c61caa34f8e057861a5deded9c0842e9f91854",
+  "protocol": {
+    "process_isolation": true,
+    "measured_updates_per_case": 3,
+    "one_initial_eval_before_peak_reset": true,
+    "metric": "MLX get_peak_memory high-water since reset_peak_memory; active/cache recorded separately",
+    "device": {
+      "chip": "Apple M4 Max",
+      "memory_bytes": 51539607552,
+      "mlx_device": "Device(gpu, 0)"
+    },
+    "platform": "macOS-15.8-arm64-arm-64bit",
+    "python": "3.12.15",
+    "mlx": "0.32.4",
+    "no_independent_repetitions_or_quantiles": true
+  },
+  "cases": [
+    {
+      "active_after_bytes": 262443032,
+      "baseline_active_bytes": 52514832,
+      "baseline_cache_bytes": 1512569044,
+      "cache_after_bytes": 2759617620,
+      "case": "train-b16-l4",
+      "config": {
+        "autograd": true,
+        "batch_size": 16,
+        "context": 256,
+        "d_model": 512,
+        "dtype": "float32",
+        "measured_updates": 3,
+        "n_head": 8,
+        "n_layer": 4,
+        "optimizer": {
+          "betas": [
+            0.9,
+            0.95
+          ],
+          "clip_norm": 1.0,
+          "lr": 0.0003,
+          "name": "AdamW",
+          "weight_decay": 0.1
+        },
+        "pre_reset_eval": true,
+        "seed": 42,
+        "vocab_size": 1028
+      },
+      "config_hash": "664cbe92d3dc",
+      "initial_loss": 7.036487102508545,
+      "losses": [
+        7.036487102508545,
+        6.687877178192139,
+        6.497898578643799
+      ],
+      "mlx": "0.32.4",
+      "peak_bytes": 2797949192,
+      "platform": "macOS-15.8-arm64-arm-64bit"
+    },
+    {
+      "active_after_bytes": 262443032,
+      "baseline_active_bytes": 52514832,
+      "baseline_cache_bytes": 0,
+      "cache_after_bytes": 0,
+      "case": "train-b16-l4-cache0",
+      "config": {
+        "autograd": true,
+        "batch_size": 16,
+        "cache_limit": 0,
+        "context": 256,
+        "d_model": 512,
+        "dtype": "float32",
+        "measured_updates": 3,
+        "n_head": 8,
+        "n_layer": 4,
+        "optimizer": {
+          "betas": [
+            0.9,
+            0.95
+          ],
+          "clip_norm": 1.0,
+          "lr": 0.0003,
+          "name": "AdamW",
+          "weight_decay": 0.1
+        },
+        "pre_reset_eval": true,
+        "seed": 42,
+        "vocab_size": 1028
+      },
+      "config_hash": "bf9a3d1efe50",
+      "initial_loss": 7.036487102508545,
+      "losses": [
+        7.036487102508545,
+        6.687877178192139,
+        6.497898578643799
+      ],
+      "mlx": "0.32.4",
+      "peak_bytes": 2797949192,
+      "platform": "macOS-15.8-arm64-arm-64bit"
+    },
+    {
+      "active_after_bytes": 69357588,
+      "baseline_active_bytes": 52514832,
+      "baseline_cache_bytes": 1495742676,
+      "cache_after_bytes": 1495726288,
+      "case": "forward-b16-l4",
+      "config": {
+        "autograd": false,
+        "batch_size": 16,
+        "context": 256,
+        "d_model": 512,
+        "dtype": "float32",
+        "measured_updates": 3,
+        "n_head": 8,
+        "n_layer": 4,
+        "optimizer": {
+          "betas": [
+            0.9,
+            0.95
+          ],
+          "clip_norm": 1.0,
+          "lr": 0.0003,
+          "name": "AdamW",
+          "weight_decay": 0.1
+        },
+        "pre_reset_eval": true,
+        "seed": 42,
+        "vocab_size": 1028
+      },
+      "config_hash": "912279470244",
+      "initial_loss": 7.036487102508545,
+      "losses": [
+        7.036487102508545,
+        7.036487102508545,
+        7.036487102508545
+      ],
+      "mlx": "0.32.4",
+      "peak_bytes": 1565082904,
+      "platform": "macOS-15.8-arm64-arm-64bit"
+    },
+    {
+      "active_after_bytes": 262426648,
+      "baseline_active_bytes": 52498448,
+      "baseline_cache_bytes": 748302292,
+      "cache_after_bytes": 1942495328,
+      "case": "train-b8-l4",
+      "config": {
+        "autograd": true,
+        "batch_size": 8,
+        "context": 256,
+        "d_model": 512,
+        "dtype": "float32",
+        "measured_updates": 3,
+        "n_head": 8,
+        "n_layer": 4,
+        "optimizer": {
+          "betas": [
+            0.9,
+            0.95
+          ],
+          "clip_norm": 1.0,
+          "lr": 0.0003,
+          "name": "AdamW",
+          "weight_decay": 0.1
+        },
+        "pre_reset_eval": true,
+        "seed": 42,
+        "vocab_size": 1028
+      },
+      "config_hash": "7308181fd134",
+      "initial_loss": 7.035911560058594,
+      "losses": [
+        7.035911560058594,
+        6.566124439239502,
+        6.314085960388184
+      ],
+      "mlx": "0.32.4",
+      "peak_bytes": 2116833556,
+      "platform": "macOS-15.8-arm64-arm-64bit"
+    },
+    {
+      "active_after_bytes": 136531992,
+      "baseline_active_bytes": 27332624,
+      "baseline_cache_bytes": 789961860,
+      "cache_after_bytes": 2099472812,
+      "case": "train-b16-l2",
+      "config": {
+        "autograd": true,
+        "batch_size": 16,
+        "context": 256,
+        "d_model": 512,
+        "dtype": "float32",
+        "measured_updates": 3,
+        "n_head": 8,
+        "n_layer": 2,
+        "optimizer": {
+          "betas": [
+            0.9,
+            0.95
+          ],
+          "clip_norm": 1.0,
+          "lr": 0.0003,
+          "name": "AdamW",
+          "weight_decay": 0.1
+        },
+        "pre_reset_eval": true,
+        "seed": 42,
+        "vocab_size": 1028
+      },
+      "config_hash": "760599109688",
+      "initial_loss": 7.028683662414551,
+      "losses": [
+        7.028683662414551,
+        6.710343360900879,
+        6.546797752380371
+      ],
+      "mlx": "0.32.4",
+      "peak_bytes": 2058637464,
+      "platform": "macOS-15.8-arm64-arm-64bit"
+    }
+  ]
+}
