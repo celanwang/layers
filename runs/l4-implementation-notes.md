@@ -99,10 +99,13 @@ The one-token decode curve moved from 508.01 tok/s at 64 cached tokens to 470.28
   attention consumes them. Attention remains request-local: the engine calls
   the model once per request and does not build padded multi-request batches or
   use a paged attention kernel.
-- `Engine.add_request` prefills a new prompt eagerly. An active request with an
-  identical tokenized prompt can be forked at that prompt length, sharing the
-  prompt pages and saved prompt logits. Each `step` samples once for every
-  active request and advances every non-final request by one token.
+- `Engine.add_request` prefills a new prompt eagerly. It can fork the longest
+  token prefix shared with an active request. Identical prompts reuse their
+  saved prompt logits; a non-identical suffix is forwarded into the forked
+  cache. If the new prompt is a shorter prefix of an active prompt, the engine
+  re-forwards its last token to produce logits for the shorter context. Each
+  `step` samples once for every active request and advances every non-final
+  request by one token.
 - Capacity is fixed and admission is fail-fast. The default pool covers 16
   concurrent requests with contexts up to 512 tokens. A request over the
   active-sequence limit, or one that needs pages beyond a custom pool's
@@ -113,8 +116,8 @@ The one-token decode curve moved from 508.01 tok/s at 64 cached tokens to 470.28
 
 - `tests/test_engine.py` adds a paged-vs-T1 per-token logits oracle with two
   interleaved sequences, parent and sibling CoW isolation, repeated allocation
-  and release accounting, the average half-page fragmentation bound, scheduler
-  token equivalence, and explicit pool-exhaustion behavior.
+  and release accounting, the average half-page fragmentation bound, exact and
+  partial-prefix scheduler equivalence, and explicit pool-exhaustion behavior.
 - `bench/l4_engine_bench.py` follows L0's 3 warmups / 10 measured repetitions
   and reports medians, p90, device, configuration hash, fragmentation, total
   request-set wall time and throughput, and shared-prefix memory savings.

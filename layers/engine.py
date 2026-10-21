@@ -106,13 +106,36 @@ class Engine:
             raise ValueError("token IDs must be non-negative")
         return token_ids
 
-    def _prefix_source(self, prompt_ids: tuple[int, ...]) -> _Request | None:
+    def _prefix_source(
+        self, prompt_ids: tuple[int, ...]
+    ) -> tuple[_Request, int] | None:
         if not self.share_prefixes:
             return None
+        best_source = None
+        best_length = 0
+        best_exact = False
         for request in self._requests.values():
-            if request.active and request.prompt_ids == prompt_ids:
-                return request
-        return None
+            if not request.active:
+                continue
+            shared_length = 0
+            for left, right in zip(prompt_ids, request.prompt_ids):
+                if left != right:
+                    break
+                shared_length += 1
+            exact = request.prompt_ids == prompt_ids
+            if shared_length > best_length or (shared_length == best_length and exact):
+                best_source = request
+                best_length = shared_length
+                best_exact = exact
+        if best_source is None or best_length == 0:
+            return None
+
+        # A saved prompt logit is reusable only when the complete prompt is
+        # identical. For a shorter prompt that prefixes an active request,
+        # re-run its final token so the logits correspond to the shorter prefix.
+        if best_length == len(prompt_ids) and not best_exact:
+            best_length -= 1
+        return best_source, best_length
 
     def add_request(self, prompt, sampler, max_new_tokens: int | None = None) -> int:
         """Admit a prompt and return its sequence ID.
@@ -157,12 +180,22 @@ class Engine:
                 f"({reserved_blocks} required, {self.pool.capacity} available)"
             )
 
-        source = self._prefix_source(prompt_ids)
+        prefix = self._prefix_source(prompt_ids)
         seq_id = None
         try:
-            if source is not None:
-                seq_id = self.pool.fork(source.seq_id, prefix_len=len(prompt_ids))
-                prompt_logits = source.prompt_logits
+            if prefix is not None:
+                source, shared_length = prefix
+                seq_id = self.pool.fork(source.seq_id, prefix_len=shared_length)
+                suffix = prompt_ids[shared_length:]
+                if suffix:
+                    logits = self.model(
+                        mx.array(suffix, dtype=mx.int32),
+                        cache=PagedKVCache(self.pool, seq_id),
+                    )
+                    mx.eval(logits)
+                    prompt_logits = logits[-1]
+                else:
+                    prompt_logits = source.prompt_logits
             else:
                 seq_id = self.pool.alloc()
                 cache = PagedKVCache(self.pool, seq_id)

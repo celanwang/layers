@@ -161,6 +161,43 @@ def test_continuous_schedule_matches_independent_request_tokens():
     assert continuous_outputs == independent_outputs
 
 
+def test_engine_forks_longest_common_prompt_prefix():
+    model = tiny_model(ctx=48)
+    engine = Engine(
+        model,
+        max_context=48,
+        max_concurrent=2,
+        max_new_tokens=5,
+        block_size=4,
+        share_prefixes=True,
+    )
+    prompts = ([1, 2, 3, 4, 5, 6, 7], [1, 2, 3, 4, 5, 6, 8])
+    seq_a = engine.add_request(prompts[0], Sampler(temperature=0, seed=31))
+    seq_b = engine.add_request(prompts[1], Sampler(temperature=0, seed=32))
+    table_a = engine.pool.block_table(seq_a)
+    table_b = engine.pool.block_table(seq_b)
+    assert table_a[0] == table_b[0]
+    assert table_a[1] != table_b[1]
+    assert engine.pool.allocated_blocks == 3
+
+    engine.run()
+    shared_outputs = (engine.generated_tokens(seq_a), engine.generated_tokens(seq_b))
+    independent_outputs = []
+    for prompt, seed in zip(prompts, (31, 32)):
+        independent = Engine(
+            model,
+            max_context=48,
+            max_concurrent=1,
+            max_new_tokens=5,
+            block_size=4,
+            share_prefixes=False,
+        )
+        seq_id = independent.add_request(prompt, Sampler(temperature=0, seed=seed))
+        independent.run()
+        independent_outputs.append(independent.generated_tokens(seq_id))
+    assert shared_outputs == tuple(independent_outputs)
+
+
 def test_pool_exhaustion_is_explicit_and_recoverable():
     pool = PagedKVPool(
         num_layers=1, block_size=4, max_context=8, max_sequences=2, num_blocks=1
