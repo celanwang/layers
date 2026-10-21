@@ -1,0 +1,184 @@
+{
+  "iteration": "L0",
+  "timestamp": "2026-10-21T06:58:26.013960+00:00",
+  "config_hash": "ccb4c0a70605",
+  "device": {
+    "chip": "Apple M4 Max",
+    "memory_bytes": 51539607552,
+    "os": "macOS-15.8-arm64-arm-64bit",
+    "python": "3.12.15",
+    "mlx": "0.32.4"
+  },
+  "bandwidth": [
+    {
+      "op": "add(fp32)",
+      "elements": 16777216,
+      "bandwidth_gbs_median": 224.1,
+      "bandwidth_gbs_best": 269.8,
+      "median_s": 0.0008983749994513346,
+      "p90_s": 0.0009513749992038356,
+      "min_s": 0.0007463330002792645,
+      "reps": 10,
+      "warmup": 3
+    },
+    {
+      "op": "add(fp32)",
+      "elements": 67108864,
+      "bandwidth_gbs_median": 421.4,
+      "bandwidth_gbs_best": 428.9,
+      "median_s": 0.0019111670007987414,
+      "p90_s": 0.001932499999384163,
+      "min_s": 0.0018775839998852462,
+      "reps": 10,
+      "warmup": 3
+    },
+    {
+      "op": "add(fp32)",
+      "elements": 268435456,
+      "bandwidth_gbs_median": 450.6,
+      "bandwidth_gbs_best": 453.0,
+      "median_s": 0.0071492909992230125,
+      "p90_s": 0.007183458001236431,
+      "min_s": 0.007110791999366484,
+      "reps": 10,
+      "warmup": 3
+    }
+  ],
+  "matmul": [
+    {
+      "op": "matmul(mlx.core.float32)",
+      "shape": [
+        1024,
+        1024,
+        1024
+      ],
+      "tflops_median": 6.23,
+      "tflops_best": 6.98,
+      "median_s": 0.00034475000029488,
+      "p90_s": 0.0009211249998770654,
+      "min_s": 0.00030787499963480514,
+      "reps": 10,
+      "warmup": 3
+    },
+    {
+      "op": "matmul(mlx.core.float32)",
+      "shape": [
+        2048,
+        2048,
+        2048
+      ],
+      "tflops_median": 11.39,
+      "tflops_best": 11.91,
+      "median_s": 0.0015083340003911871,
+      "p90_s": 0.0015269169998646248,
+      "min_s": 0.001442832999600796,
+      "reps": 10,
+      "warmup": 3
+    },
+    {
+      "op": "matmul(mlx.core.float32)",
+      "shape": [
+        4096,
+        4096,
+        4096
+      ],
+      "tflops_median": 13.14,
+      "tflops_best": 13.17,
+      "median_s": 0.010462540998560144,
+      "p90_s": 0.010477542000444373,
+      "min_s": 0.010432249999212218,
+      "reps": 10,
+      "warmup": 3
+    },
+    {
+      "op": "matmul(mlx.core.float16)",
+      "shape": [
+        1024,
+        1024,
+        1024
+      ],
+      "tflops_median": 7.43,
+      "tflops_best": 7.55,
+      "median_s": 0.00028891700094391126,
+      "p90_s": 0.00029595799969683867,
+      "min_s": 0.00028433399893401656,
+      "reps": 10,
+      "warmup": 3
+    },
+    {
+      "op": "matmul(mlx.core.float16)",
+      "shape": [
+        2048,
+        2048,
+        2048
+      ],
+      "tflops_median": 12.48,
+      "tflops_best": 12.85,
+      "median_s": 0.0013762079997832188,
+      "p90_s": 0.0014657079991593491,
+      "min_s": 0.0013366659986786544,
+      "reps": 10,
+      "warmup": 3
+    },
+    {
+      "op": "matmul(mlx.core.float16)",
+      "shape": [
+        4096,
+        4096,
+        4096
+      ],
+      "tflops_median": 14.6,
+      "tflops_best": 14.81,
+      "median_s": 0.009413499999936903,
+      "p90_s": 0.009551583998472779,
+      "min_s": 0.0092811670001538,
+      "reps": 10,
+      "warmup": 3
+    },
+    {
+      "op": "matmul(mlx.core.bfloat16)",
+      "shape": [
+        1024,
+        1024,
+        1024
+      ],
+      "tflops_median": 7.18,
+      "tflops_best": 7.43,
+      "median_s": 0.0002990829998452682,
+      "p90_s": 0.00030699999842909165,
+      "min_s": 0.0002891250005632173,
+      "reps": 10,
+      "warmup": 3
+    },
+    {
+      "op": "matmul(mlx.core.bfloat16)",
+      "shape": [
+        2048,
+        2048,
+        2048
+      ],
+      "tflops_median": 12.48,
+      "tflops_best": 13.0,
+      "median_s": 0.0013767920008831425,
+      "p90_s": 0.0014294169995991979,
+      "min_s": 0.0013214999999036081,
+      "reps": 10,
+      "warmup": 3
+    },
+    {
+      "op": "matmul(mlx.core.bfloat16)",
+      "shape": [
+        4096,
+        4096,
+        4096
+      ],
+      "tflops_median": 14.75,
+      "tflops_best": 14.77,
+      "median_s": 0.009320540999397053,
+      "p90_s": 0.009331625000413624,
+      "min_s": 0.009305166000558529,
+      "reps": 10,
+      "warmup": 3
+    }
+  ]
+}
