@@ -6,4 +6,4 @@ tests/test_kv_quant.py::test_kv_roundtrip_bound_and_pytorch_public_api_oracle
     oracle = torch.quantize_per_channel(
 
 -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
-119 passed, 1 warning in 22.96s
+119 passed, 1 warning in 25.01s

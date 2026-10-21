@@ -1,0 +1,3 @@
+Serving layers-gpt at http://127.0.0.1:8611; L3 500-step base model; not instruction tuned. Messages are joined as role: content lines. Text-only chat subset.
+exit_code: 0
+shutdown_s: 0.073576

@@ -353,8 +353,17 @@ class ChatHandler(BaseHTTPRequestHandler):
                 self._headers(200, "text/event-stream")
                 self._sse(chunk({"role": "assistant", "content": ""}))
             parts = []
+            peer_check_at = time.monotonic()
             while True:
-                self._check_peer(job)
+                if job.cancelled.is_set():
+                    raise ConnectionAbortedError()
+                # Writes already detect a broken SSE socket. Poll EOF at most
+                # every 10 ms (also in JSON mode), rather than releasing the
+                # GIL for select on every generated token.
+                now = time.monotonic()
+                if now >= peer_check_at:
+                    self._check_peer(job)
+                    peer_check_at = now + 0.01
                 try:
                     content, finished, generated = job.output.get(timeout=0.01)
                 except queue.Empty:

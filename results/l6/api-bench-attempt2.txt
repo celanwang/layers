@@ -1,0 +1,10 @@
+device: Apple M4 Max, 48 GiB, MLX 0.32.4
+config_hash: 557c5a16bc2d (commit 0aa7dec7ec87)
+overhead: direct 2.1797 ms/token, API 2.3840 ms/token, 9.37%
+concurrency=1: 411.40 tok/s; request median 0.155525..0.155525s, p90 0.161971..0.161971s
+concurrency=4: 992.22 tok/s; request median 0.257599..0.257863s, p90 0.262691..0.262809s
+concurrency=8: 1321.87 tok/s; request median 0.386417..0.387179s, p90 0.397258..0.397993s
+oracle: 182 request comparisons passed; all trial pools reclaimed
+predictions: {"api_overhead_below_5_percent": false, "api_stream_equals_direct_engine": true, "eight_streams_isolated_completed_reclaimed": true}
+written: results/l6/api-bench-20261021T143755909668Z.json
+FAIL: API overhead >=5%; raw evidence retained

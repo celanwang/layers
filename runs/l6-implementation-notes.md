@@ -179,3 +179,47 @@ decode and text output; HTTP also includes fresh TCP setup and SSE consumption.
 Model/server startup is excluded. Concurrency 1/4/8 trials compare every output
 with an independently generated direct-engine result and assert empty pools
 after shutdown. No measurement threshold has been relaxed.
+
+### T2 serial acceptance and bounded optimization
+
+The first serial benchmark failed the overhead gate: direct 2.1797 ms/token,
+HTTP/SSE 2.3840 ms/token, +9.37%. Its full record is
+`results/l6/api-bench-20261021T143755909668Z.json` and console output is
+`api-bench-attempt2.txt`. Correctness, completion and pool reclamation passed.
+Profiling and a separate-client-process probe are retained in
+`api-overhead-profile.json` and `api-client-process-probe.json`. Moving the
+client into another process did not improve this probe, so the accepted
+benchmark remains unchanged, including client/server process placement.
+
+The implementation originally called select for peer EOF on every generated
+token. This releases the GIL for a syscall even when the subsequent SSE write
+already detects a broken socket. Peer checks are now limited to every 10 ms;
+the queue consumer still checks cancellation on every item, SSE writes still
+detect broken connections, and JSON-only disconnects are polled as well.
+The deterministic live-page disconnect tests continue to pass.
+
+With this one implementation change and the exact same benchmark protocol:
+
+- API overhead: direct 2.2592 ms/token versus API 2.3429 ms/token, **+3.70%**,
+  passing the strict <5% gate. Record: `api-bench-20261021T144110591270Z.json`,
+  configuration hash `4474cab6ff21`.
+- Streaming aggregate throughput at concurrency 1/4/8: **418.23 / 991.17 /
+  1298.17 tok/s**. Per-request median/p90 and all raw timing samples are in JSON.
+- All **182** direct/API text comparisons pass, including every concurrent
+  request; all trial pools are empty after shutdown.
+- Final `.venv/bin/python -m pytest tests/ -q`: **119 passed**, one existing
+  PyTorch deprecation warning. All 10 pre-existing test files are byte-identical
+  and all 12 existing engine methods are AST-identical. Syntax compilation and
+  whitespace checks pass. No separate lint configuration is present.
+- The exact curl/head acceptance request produced real SSE deltas. A second,
+  untruncated curl capture contains 34 JSON chunks (role + 32 content chunks +
+  terminal), then `[DONE]`; concatenated content equals direct engine output
+  with seed 42 and temperature 0. A separate CLI SIGTERM check exits 0 in
+  0.0736 s. See `api-curl-full.txt`, `api-curl-oracle.json` and
+  `api-cli-shutdown.txt`.
+
+The unchanged bf16 regression test's newly generated L5 JSON records are
+relocated intact to `results/l6/`. The pre-existing untracked L5 artifact
+`bf16-train-20261021T132935962922Z.json` is preserved in place. The complete
+T2 report and acceptance outputs are archived under `results/l6/`; no push
+or framework-source comparison is performed in this blind implementation task.
