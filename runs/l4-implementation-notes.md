@@ -84,3 +84,39 @@ The one-token decode curve moved from 508.01 tok/s at 64 cached tokens to 470.28
 - `b137e6f` — `feat(l4): add cached inference path`
 - `987fe15` — `fix(l4): support direct benchmark invocation`
 - `3f17a79` — `test(l4): assert finite decode logits`
+
+## L4-T2 Implementation Notes: Paged KV and Continuous Scheduling
+
+### Design
+
+- `PagedKVPool` owns a fixed 512-page pool by default: 16 concurrent sequences ×
+  512 context tokens ÷ 16 tokens per page. Page payloads are allocated lazily as
+  fixed-size per-layer MLX K/V arrays. Each sequence owns a logical block table;
+  `fork` increments page references and a write to a shared page copies that
+  page before replacing the written slots.
+- `PagedKVCache` adapts one sequence to the existing T1 cache protocol. It
+  gathers the sequence's logical K/V prefix into contiguous tensors before
+  attention consumes them. Attention remains request-local: the engine calls
+  the model once per request and does not build padded multi-request batches or
+  use a paged attention kernel.
+- `Engine.add_request` prefills a new prompt eagerly. An active request with an
+  identical tokenized prompt can be forked at that prompt length, sharing the
+  prompt pages and saved prompt logits. Each `step` samples once for every
+  active request and advances every non-final request by one token.
+- Capacity is fixed and admission is fail-fast. The default pool covers 16
+  concurrent requests with contexts up to 512 tokens. A request over the
+  active-sequence limit, or one that needs pages beyond a custom pool's
+  capacity, is rejected with `RequestCapacityError`; there is no hidden queue.
+  Callers can retry after an active request finishes and frees its pages.
+
+### Validation
+
+- `tests/test_engine.py` adds a paged-vs-T1 per-token logits oracle with two
+  interleaved sequences, parent and sibling CoW isolation, repeated allocation
+  and release accounting, the average half-page fragmentation bound, scheduler
+  token equivalence, and explicit pool-exhaustion behavior.
+- `bench/l4_engine_bench.py` follows L0's 3 warmups / 10 measured repetitions
+  and reports medians, p90, device, configuration hash, fragmentation, total
+  request-set wall time and throughput, and shared-prefix memory savings.
+- Acceptance command output and measured values are recorded in
+  `results/l4/l4-t2-report.md` and `results/l4/engine-bench-*.json`.
