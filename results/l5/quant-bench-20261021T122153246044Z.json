@@ -1,0 +1,353 @@
+{
+  "iteration": "L5-T1",
+  "timestamp": "2026-10-21T12:21:53.236848+00:00",
+  "config_hash": "fcbe6c7f8bdb",
+  "config": {
+    "git_commit": "8e5c9071de2a0a3b2eef933822d179fabd57ac68",
+    "sources_sha256": {
+      "layers/quant.py": "ada4b6976f979c640914cc40a3fad3a8e691fadb470fd03ba25844dfadc2d4f6",
+      "layers/__init__.py": "38721bb18ded64633fe7cb2b5e5e88e50e7076b47c73f3043e07277e87736cd1",
+      "layers/model.py": "f8835eb72eaf61f949d4cc85a6c53e7d4b09d093809034d0a098f58f537f88ca",
+      "layers/attention.py": "fa97e2c2c450ad9159f602e548226c8cd6ab4b355d38a18af15d22d0793654a9",
+      "layers/transformer.py": "4f88860f421287f466be0b5eec6ff4c8317d70237dffdfcc83432ad8e91ff11d",
+      "layers/inference.py": "c8c001aeaa5b660492944e957530800b09a0440a65e1f49f56782f1a6019ff98",
+      "bench/l5_quant_bench.py": "135ca4195d38b380fbfedfa3d1bd75b73d8c08c6a72dfab8f7d67259839ad5f5",
+      "scripts/train.py": "e69532892df9714f40baf9e5eb8f19512cd4d2dba5436455214dfbcf50299c01"
+    },
+    "checkpoint": "results/l3/ckpt-final-500.npz",
+    "checkpoint_sha256": "a6bc079ef679c90ea8a4fdff95cf5086d4d49b8c811ce0252b2c31c7f1531889",
+    "device": {
+      "chip": "Apple M4 Max",
+      "memory_bytes": 51539607552,
+      "os": "macOS-15.8-arm64-arm-64bit",
+      "python": "3.12.15",
+      "mlx": "0.32.4"
+    },
+    "corpus": {
+      "total_tokens": 444677,
+      "train_tokens": 400209,
+      "heldout_tokens": 44468,
+      "split_token_index": 400209,
+      "heldout_utf8_bytes": 106148,
+      "heldout_tokens_per_byte": 0.41892452048083806,
+      "data_sha256": "86c4e6aa9db7c042ec79f339dcb96d42b0075e16b8fc2e86bf0ca57e2dc565ed",
+      "tokenizer_sha256": "b8056fefeb320f2788aa709d8a0ab9a518980aaac9bef8391702331bbfe9dc87"
+    },
+    "warmup": 3,
+    "reps": 10,
+    "percentiles": "L0 upper median (sorted[n//2]), p90 (sorted[int(n*0.9)-1])",
+    "formats": [
+      [
+        "fp32",
+        null,
+        null
+      ],
+      [
+        "int8",
+        8,
+        null
+      ],
+      [
+        "int4-g64",
+        4,
+        64
+      ]
+    ],
+    "scale_dtype": "float16",
+    "matmul_dtype": "float32",
+    "int4_packing": "two signed nibbles per uint8, low nibble first",
+    "quality": {
+      "context": 256,
+      "batch_size": 16,
+      "evaluated_target_tokens": 44467,
+      "scope": "entire last 10% partition, nonoverlapping windows, token weighted, tail retained"
+    },
+    "generation": {
+      "prompt_tokens": 128,
+      "max_new": 128,
+      "sampler": "L4 Sampler(temperature=0)",
+      "prompt": "first 128 heldout IDs"
+    }
+  },
+  "measurements": [
+    {
+      "format": "fp32",
+      "storage": {
+        "array_payload_bytes": 52473856,
+        "projection_payload_bytes": 50331648,
+        "integer_bytes": 0,
+        "fp16_scale_bytes": 0,
+        "protected_fp32_bytes": 2142208,
+        "serialized_npz_bytes": 52485384,
+        "container_overhead_bytes": 11528,
+        "serialized_npz_sha256": "a6bc079ef679c90ea8a4fdff95cf5086d4d49b8c811ce0252b2c31c7f1531889",
+        "serialization": "numpy.savez, uncompressed, in memory; q/scales only for projections",
+        "whole_model_serialized_compression": 1.0,
+        "projection_payload_compression": 1.0
+      },
+      "heldout_loss_nats": 4.271756640846108,
+      "generation": {
+        "prompt_tokens": 128,
+        "generated_tokens": 128,
+        "timed_cached_decode_tokens": 127,
+        "decode_timing": "after first sampled token through final sampled token; sampling/streaming included",
+        "decode": {
+          "median_s": 0.3273193330023787,
+          "p90_s": 0.3327797080055461,
+          "min_s": 0.28905075000511715,
+          "warmup": 3,
+          "reps": 10,
+          "samples_s": [
+            0.29908104200148955,
+            0.3217254170012893,
+            0.32794283400289714,
+            0.33079049999651033,
+            0.32269404199905694,
+            0.3273193330023787,
+            0.28905075000511715,
+            0.31128091699793003,
+            0.3336302500028978,
+            0.3327797080055461
+          ],
+          "tokens_per_second_median": 388.0003018308639
+        },
+        "prefill_and_first_sample": {
+          "median_s": 0.003450416996201966,
+          "p90_s": 0.003975082996475976,
+          "min_s": 0.002256790998217184,
+          "warmup": 3,
+          "reps": 10,
+          "samples_s": [
+            0.002256790998217184,
+            0.003195958001015242,
+            0.003975082996475976,
+            0.003235249998397194,
+            0.003731042001163587,
+            0.003359583002747968,
+            0.0042066249952767976,
+            0.00319145800312981,
+            0.0034882499967352487,
+            0.003450416996201966
+          ]
+        },
+        "end_to_end": {
+          "median_s": 0.3306992080033524,
+          "p90_s": 0.3362623330031056,
+          "min_s": 0.2932729579988518,
+          "warmup": 3,
+          "reps": 10,
+          "samples_s": [
+            0.3013580409970018,
+            0.3249398330008262,
+            0.33193416699941736,
+            0.33405066699924646,
+            0.32644858400453813,
+            0.3306992080033524,
+            0.2932729579988518,
+            0.31449233300372725,
+            0.3371387919978588,
+            0.3362623330031056
+          ],
+          "tokens_per_second_median": 387.05868324517553
+        }
+      },
+      "heldout_loss_relative_increase": 0.0,
+      "decode_speedup": 1.0
+    },
+    {
+      "format": "int8",
+      "storage": {
+        "array_payload_bytes": 14761984,
+        "projection_payload_bytes": 12619776,
+        "integer_bytes": 12582912,
+        "fp16_scale_bytes": 36864,
+        "protected_fp32_bytes": 2142208,
+        "serialized_npz_bytes": 14780712,
+        "container_overhead_bytes": 18728,
+        "serialized_npz_sha256": "f91cce5168a646dcc9942291cd0e051a54cc77d82f56a58e78c5731eb3697a57",
+        "serialization": "numpy.savez, uncompressed, in memory; q/scales only for projections",
+        "whole_model_serialized_compression": 3.550937464988155,
+        "projection_payload_compression": 3.988315481986368
+      },
+      "heldout_loss_nats": 4.271900904691465,
+      "generation": {
+        "prompt_tokens": 128,
+        "generated_tokens": 128,
+        "timed_cached_decode_tokens": 127,
+        "decode_timing": "after first sampled token through final sampled token; sampling/streaming included",
+        "decode": {
+          "median_s": 0.3250225000010687,
+          "p90_s": 0.3313354589990922,
+          "min_s": 0.31480725000437815,
+          "warmup": 3,
+          "reps": 10,
+          "samples_s": [
+            0.31480725000437815,
+            0.32020816700241994,
+            0.3203720829988015,
+            0.32546095800353214,
+            0.323068208002951,
+            0.3313354589990922,
+            0.3250225000010687,
+            0.32722266700147884,
+            0.3243493329937337,
+            0.33339183300267905
+          ],
+          "tokens_per_second_median": 390.7421793862961
+        },
+        "prefill_and_first_sample": {
+          "median_s": 0.003502082996419631,
+          "p90_s": 0.004126792002352886,
+          "min_s": 0.0027878750042873435,
+          "warmup": 3,
+          "reps": 10,
+          "samples_s": [
+            0.0034114169975509867,
+            0.0032058329961728305,
+            0.00425179200101411,
+            0.0035504169936757535,
+            0.0034642089958651923,
+            0.0030457909961114638,
+            0.004126792002352886,
+            0.003572957997675985,
+            0.0027878750042873435,
+            0.003502082996419631
+          ]
+        },
+        "end_to_end": {
+          "median_s": 0.3290296249979292,
+          "p90_s": 0.33440733299357817,
+          "min_s": 0.31824408400279935,
+          "warmup": 3,
+          "reps": 10,
+          "samples_s": [
+            0.31824408400279935,
+            0.3234346659955918,
+            0.3246517090010457,
+            0.3290296249979292,
+            0.32654420899780234,
+            0.33440733299357817,
+            0.32916237500467105,
+            0.3308161669992842,
+            0.32715825000195764,
+            0.3369151660008356
+          ],
+          "tokens_per_second_median": 389.0227209808405
+        }
+      },
+      "heldout_loss_relative_increase": 3.377155055561687e-05,
+      "decode_speedup": 1.0070666892332145
+    },
+    {
+      "format": "int4-g64",
+      "storage": {
+        "array_payload_bytes": 8826880,
+        "projection_payload_bytes": 6684672,
+        "integer_bytes": 6291456,
+        "fp16_scale_bytes": 393216,
+        "protected_fp32_bytes": 2142208,
+        "serialized_npz_bytes": 8845608,
+        "container_overhead_bytes": 18728,
+        "serialized_npz_sha256": "6daa3bd2afb154fc01f140b8b71627c85cd7484087ffbb42deffa775f93e1111",
+        "serialization": "numpy.savez, uncompressed, in memory; q/scales only for projections",
+        "whole_model_serialized_compression": 5.933496487748497,
+        "projection_payload_compression": 7.529411764705882
+      },
+      "heldout_loss_nats": 4.296926835116932,
+      "generation": {
+        "prompt_tokens": 128,
+        "generated_tokens": 128,
+        "timed_cached_decode_tokens": 127,
+        "decode_timing": "after first sampled token through final sampled token; sampling/streaming included",
+        "decode": {
+          "median_s": 0.47300158299913164,
+          "p90_s": 0.4904207919971668,
+          "min_s": 0.45109816700278316,
+          "warmup": 3,
+          "reps": 10,
+          "samples_s": [
+            0.45109816700278316,
+            0.47300158299913164,
+            0.4731272080025519,
+            0.47276516699639615,
+            0.4904207919971668,
+            0.49055379100173013,
+            0.488601707998896,
+            0.4710664169979282,
+            0.46042149999993853,
+            0.4682979159988463
+          ],
+          "tokens_per_second_median": 268.49804432944813
+        },
+        "prefill_and_first_sample": {
+          "median_s": 0.0042172920002485625,
+          "p90_s": 0.005131292004080024,
+          "min_s": 0.003681624999444466,
+          "warmup": 3,
+          "reps": 10,
+          "samples_s": [
+            0.003681624999444466,
+            0.0039024170037009753,
+            0.0038361249971785583,
+            0.003837042000668589,
+            0.005157250001502689,
+            0.005131292004080024,
+            0.004749749998154584,
+            0.004362665997177828,
+            0.003980417001002934,
+            0.0042172920002485625
+          ]
+        },
+        "end_to_end": {
+          "median_s": 0.47693175000313204,
+          "p90_s": 0.4955991669994546,
+          "min_s": 0.45479475000320235,
+          "warmup": 3,
+          "reps": 10,
+          "samples_s": [
+            0.45479475000320235,
+            0.47693175000313204,
+            0.4769871660028002,
+            0.47662758399383165,
+            0.4955991669994546,
+            0.4957039170039934,
+            0.4933684580028057,
+            0.4754541249931208,
+            0.46442004200071096,
+            0.4725369169973419
+          ],
+          "tokens_per_second_median": 268.38221611196866
+        }
+      },
+      "heldout_loss_relative_increase": 0.005892235065581675,
+      "decode_speedup": 0.6920047305697486
+    }
+  ],
+  "mlx_public_api_oracle": {
+    "available": true,
+    "native_mode": "affine (scale plus bias), unlike our zero-point-zero symmetric grid",
+    "int8_oracle_group": "128 (API supports 32/64/128); production task uses full input width",
+    "comparisons": [
+      {
+        "bits": 8,
+        "group_size": 128,
+        "our_grid_vs_mlx_dequantize_max_abs": 0.0,
+        "our_vs_native_affine_max_abs": 0.002490326762199402,
+        "our_roundtrip_rmse": 0.0006323691923171282,
+        "native_affine_roundtrip_rmse": 0.000572813383769244
+      },
+      {
+        "bits": 4,
+        "group_size": 64,
+        "our_grid_vs_mlx_dequantize_max_abs": 0.0,
+        "our_vs_native_affine_max_abs": 0.041611939668655396,
+        "our_roundtrip_rmse": 0.01060362346470356,
+        "native_affine_roundtrip_rmse": 0.008869619108736515
+      }
+    ]
+  },
+  "quality_gates": {
+    "int8_relative_increase_lt_0.01": true,
+    "int4_relative_increase_lt_0.05": true
+  }
+}
