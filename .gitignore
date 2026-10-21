@@ -221,3 +221,7 @@ __marimo__/
 
 # IDE
 .idea/
+
+# Large local checkpoints (kept out of version control)
+results/l3/ckpt-final.npz
+results/l3/ckpt-final-500.npz
