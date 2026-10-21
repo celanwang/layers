@@ -87,6 +87,32 @@ both direct-script execution and the smoke check without changing L0.
 The training, rank order, byte reversibility, tie rule, and reserved-ID boundary
 follow the note. The note predicts a compression penalty from omitting regex
 pre-tokenization; this comparison also changes vocabulary size and training
-data, so it cannot isolate that cause. Measured results and open questions will
-be recorded after acceptance. Source-level comparison remains a later task,
-as required by this iteration's explicit prohibition.
+data, so it cannot isolate that cause. Source-level comparison remains a later
+task, as required by this iteration's explicit prohibition.
+
+## Measurements and open questions
+
+- Hardware: Apple M4 Max, 48 GiB, macOS 15.8, CPython 3.12.15. This tokenizer
+  executes synchronously on CPU; there is no Metal workload to synchronize.
+- The harness reuses L0's `WARMUP=3`, `REPS=10`, hardware metadata, and summary
+  helper unchanged. MB is decimal UTF-8 MB; all ten sorted samples are kept.
+  Median is L0's upper middle sample; p90 is its ninth ordered sample.
+- Configuration `62265f0f2948`: training 1,003,854 bytes takes median
+  1.013166 s / p90 1.058788 s, giving median throughput 0.990809 MB/s.
+  Encoding all 1,115,394 corpus bytes takes median 1.394982 s / p90 1.607092 s,
+  giving median throughput 0.799576 MB/s. Timings include UTF-8 conversion and
+  the operation, exclude file I/O and result destruction, and report latency
+  p90 separately from throughput at that latency.
+- The measurement JSON stores hardware, versions, git commit/status, source
+  hashes, corpus/split hashes, and the complete configuration-hash payload.
+  Both implementation and benchmark were committed before this measurement;
+  the only untracked directory at measurement time was `results/l1/`.
+- The principle note's bandwidth-bound prediction is not established by these
+  numbers: Python set/heap/object costs and serial control flow may dominate.
+  Profiling those costs and comparing to a native implementation remain open.
+- The expected compression disadvantage is not demonstrated by the uniform-ID
+  proxy. Own BPE needs about 48% more tokens than cl100k_base but has a much
+  smaller ID space. A controlled pre-tokenization ablation and model-loss BPB
+  would be needed to answer the causal and downstream questions.
+- All specified acceptance checks pass. No unresolved specification defect or
+  implementation deviation was found after the v2 clarifications.

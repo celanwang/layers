@@ -1,0 +1,7 @@
+Python syntax checks: 4 files passed
+Source and implementation-note whitespace checks: passed
+Corpus input excluded from whitespace normalization: original lines 2478-2479 preserved
+Artifact checks: config, source, corpus, and model hashes agree
+Protocol checks: 3 warmups, 10 repetitions, L0 median/p90; raw samples preserved
+Oracle checks: 10 ratios in range; held-out hashes and BPB match benchmark
+Whitelist audit: passed; no files outside task whitelist changed by this task
