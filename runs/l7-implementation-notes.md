@@ -60,3 +60,19 @@ MLP, normalization, and two-half vocabulary projection operation order.
   byte-identical. See `results/l7/scope-audit.json`.
 - Syntax compilation and `git diff --check` pass. No project lint
   configuration or installed lint runner is declared in the repository.
+
+## First paired measurement (retained)
+
+Implementation `fbbe38e`, config `16e6ba63e56f`,
+`paged-attn-bench-20261021T154156026596Z.json`: B=1/2/4/8 new throughput
+452.35 / 723.88 / 1182.44 / 1603.95 tok/s. Paired L6 throughput:
+491.92 / 764.22 / 1104.03 / 1434.17 tok/s.
+B=8 improves 1.118x against the paired oracle, but misses the >=1700
+prediction; it is above the <1550 setback boundary (intermediate verdict).
+Singleton latency rises 8.75%, so zero regression is not established.
+
+The new bank construction/index/transpose/reshape has multiple separate MLX
+host calls. A bounded follow-up will compile only that pure array transform,
+leaving page lookup/writes, sampling, and the exact measurement protocol intact.
+This is an implementation change, not repetition of an unchanged benchmark
+until a preferred timing appears. All first-run evidence remains archived.
