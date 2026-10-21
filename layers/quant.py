@@ -174,3 +174,28 @@ def quantize_model_(model, bits: int, group_size: int | None = None):
         block.attn = attention
         block.mlp = mlp
     return model
+
+
+def quantize_kv(x: mx.array) -> tuple[mx.array, mx.array]:
+    """INT8 per-token K or V: one fp16 scale across all heads/features.
+
+    Input/output integers have shape [batch, heads, sequence, features].
+    Scales have shape [batch, 1, sequence, 1], independently for K and V.
+    Reuse the T1 symmetric grid, including its stored-scale half-step bound.
+    """
+    if x.ndim != 4 or min(x.shape) <= 0:
+        raise ValueError("KV must be non-empty [batch, heads, sequence, features]")
+    batch, heads, length, width = x.shape
+    tokens = mx.transpose(x, (0, 2, 1, 3)).reshape(batch * length, heads * width)
+    q, scales = quantize(tokens, bits=8)
+    q = mx.transpose(q.reshape(batch, length, heads, width), (0, 2, 1, 3))
+    return q, scales.reshape(batch, 1, length, 1)
+
+
+def dequantize_kv(q: mx.array, scales: mx.array) -> mx.array:
+    """Reconstruct a per-token INT8 KV array in fp32 without retaining it."""
+    if q.ndim != 4 or min(q.shape) <= 0 or q.dtype != mx.int8:
+        raise ValueError("q must be non-empty rank-four INT8 KV")
+    if scales.shape != (q.shape[0], 1, q.shape[2], 1) or scales.dtype != mx.float16:
+        raise ValueError("scales must be fp16 [batch, 1, sequence, 1]")
+    return q.astype(mx.float32) * scales.astype(mx.float32)

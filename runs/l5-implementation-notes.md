@@ -103,3 +103,74 @@
 - During execution, an independent `c6a354f` documentation commit added the
   T2 specification on the shared branch. This task did not change or stage
   that file. Its own commits remain entirely within the T1 whitelist.
+
+## T2 implementation and assumptions
+
+- Read `AGENTS.md`, the L5 principle note, and `tasks/l5-kv-bf16.md` before
+  implementation. No quantization/mixed precision reference source was read.
+  The existing T1 quantizer is reused; public PyTorch quantized-tensor API
+  outputs independently check the new per-token layout. No dependencies added.
+- `quantize_kv` flattens **all heads and features** of each batch/token into
+  one vector and uses one fp16 scale. K and V have independent scales. The
+  stored INT8 layout remains `[batch, heads, sequence, features]`; scales are
+  `[batch, 1, sequence, 1]`. The half-step bound uses the stored scale.
+- `QuantKVCache` preserves L4 append/get/seq_len semantics, including transient
+  unequal layer lengths. It quantizes only new tokens, appends integers and
+  scales in lockstep, and never retains a floating-point cache. Reads reconstruct
+  fp32 arrays for the existing attention path. Validation precedes mutation.
+- `generate` accepts an optional cache instance; its existing default cache
+  construction and decode statements remain unchanged. No existing line is
+  removed from `layers/inference.py` or `scripts/train.py`.
+- `BF16TrainingEngine` keeps the original GPT as the fp32 master, and runs an
+  independent GPT with bf16 parameter copies, including embedding and norms.
+  Existing GPT/attention/MLP operations run with bf16 activations/backprop;
+  logits are promoted before fp32 cross-entropy. Gradients are promoted to
+  fp32 before clipping and the unchanged AdamW; compute copies refresh after
+  every update. Master weights never round-trip through bf16. No loss scaling:
+  bf16 retains fp32's exponent range; reduced mantissa precision is measured
+  against the fp32 baseline instead of concealed by scaling.
+- The default fp32 training function, engine, constants, threshold, artifact
+  paths, and arithmetic order remain verbatim. `--precision bf16` runs the
+  explicitly permitted **v1 200-step recipe**, with a 28% loss-reduction gate.
+  All model/training/data/tokenizer settings must match the archived v1 baseline.
+  Every new artifact goes under `results/l5/`, leaving L3 results intact.
+
+## T2 measurement definitions and early validation
+
+- Baseline existing suite before changes: `81 passed, 1 warning in 7.98s`.
+  New tests: `10 passed, 1 warning in 13.06s`; full initial output is retained
+  in `results/l5/t2-tests-initial.txt`. Initial standalone 200-step training
+  passed; output and timestamped raw record are retained under `results/l5/`.
+- KV benchmark uses contexts 128/512/2048 and 32 actual cached decode calls,
+  with prefill excluded. Prefill is chunked into calls of at most the unchanged
+  model ctx=256, preserving RoPE cache offsets. Beyond 256 is positional
+  extrapolation, useful for storage/speed measurement, not evidence of learned
+  long-context quality. L0: 3 warmups, 10 repetitions, upper median, nearest-rank
+  p90, raw samples and hashes. fp32/INT8 order alternates between repetitions.
+- KV storage is actual resident array payload including scales, recorded at
+  exactly n tokens and after decode. Temporary fp32 dequantization is excluded
+  from persistent KV bytes; total active allocation peaks are recorded separately.
+  INT8 vs **fp32** has a theoretical compression near 4x, not the principle
+  note's approximately 2x, which corresponds to a half-precision reference.
+- Compare per-step logits on the **same fp32-greedy history**. Raw max-abs errors
+  can decrease: softmax and projections do not imply monotone propagation.
+  Record the raw curve and its monotone running-maximum envelope, plus the first
+  aligned argmax disagreement. Independent free greedy runs also record their
+  first token divergence, without mixing changed histories into aligned errors.
+- bf16 benchmark applies L0's 3 warmup / 10 measured **independent 200-step
+  runs**. Inside each run it preserves L3's estimator: exclude the first three
+  steps, use the remaining 197 step rates and L3 median/p90. The outer aggregate
+  uses L0 upper median/p90 over run summaries. All warmup and measured raw
+  records are retained, with hardware/config/source/baseline hashes.
+- MFU uses the archived v1 baseline's exact parameter-only numerator
+  78.7e6 FLOP/token and 14.75e12 peak; it excludes attention FLOPs and should not
+  be confused with L3's later corrected 500-step MFU. Peak memory uses the same
+  active-Metal-allocation counter and reset boundary as L3. Historical speed
+  comparison is not a contemporaneous paired fp32 remeasurement.
+- Implementation-stage full suite: `91 passed, 1 warning in 20.68s`; complete
+  output in `results/l5/t2-tests-stage1.txt`. All 81 pre-existing tests are
+  unchanged. `git diff --check` and syntax compilation passed. Ruff remains
+  unavailable and there is no lint configuration; no dependency was installed.
+  Source-line subsequence checks confirm additive-only inference/train changes;
+  AST comparisons confirm every original training function/class except CLI
+  `main` is identical to its pre-task version.
