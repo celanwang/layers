@@ -1,0 +1,111 @@
+{
+  "iteration": "L4-T1",
+  "timestamp": "2026-10-21T11:38:51.335641+00:00",
+  "config_hash": "15cd4fbd762b",
+  "git_commit": "987fe1533f355ce9c3be8713935c986106d94308",
+  "device": {
+    "chip": "Apple M4 Max",
+    "memory_bytes": 51539607552,
+    "os": "macOS-15.8-arm64-arm-64bit",
+    "python": "3.12.15",
+    "mlx": "0.32.4"
+  },
+  "protocol": {
+    "warmup": 3,
+    "reps": 10,
+    "percentiles": [
+      "median",
+      "p90"
+    ],
+    "dtype": "float32",
+    "checkpoint": "results/l3/ckpt-final-500.npz"
+  },
+  "prefill_vs_decode": {
+    "prompt_tokens": 128,
+    "generated_tokens": 256,
+    "prefill": {
+      "median_s": 0.002432375000353204,
+      "p90_s": 0.0025619579973863438,
+      "min_s": 0.0023446670020348392,
+      "reps": 10,
+      "warmup": 3,
+      "tokens_per_second_median": 52623.46471305336
+    },
+    "decode": {
+      "median_s": 0.8127901670013671,
+      "p90_s": 0.8524722080001084,
+      "min_s": 0.7353315830005158,
+      "reps": 10,
+      "warmup": 3,
+      "tokens_per_second_median": 314.964440261947
+    }
+  },
+  "roofline": {
+    "assumed_bandwidth_gb_per_second": 450.0,
+    "weight_size_mb": 52.5,
+    "theoretical_tokens_per_second": 8571.428571428572,
+    "measured_decode_tokens_per_second": 314.964440261947,
+    "measured_fraction_of_roofline": 0.036745851363893814
+  },
+  "decode_rate_by_kv_length": [
+    {
+      "kv_tokens_before_decode": 64,
+      "decode_tokens": 1,
+      "decode_tokens_per_second_median": 508.0118549150489,
+      "median_s": 0.001968458000192186,
+      "p90_s": 0.0026505419991735835,
+      "min_s": 0.0016463749998365529,
+      "reps": 10,
+      "warmup": 3
+    },
+    {
+      "kv_tokens_before_decode": 128,
+      "decode_tokens": 1,
+      "decode_tokens_per_second_median": 518.5041149220909,
+      "median_s": 0.0019286250026198104,
+      "p90_s": 0.0034778750014083926,
+      "min_s": 0.0017971669985854533,
+      "reps": 10,
+      "warmup": 3
+    },
+    {
+      "kv_tokens_before_decode": 256,
+      "decode_tokens": 1,
+      "decode_tokens_per_second_median": 477.3173997756063,
+      "median_s": 0.002095042000291869,
+      "p90_s": 0.0022420829991460778,
+      "min_s": 0.0018959160006488673,
+      "reps": 10,
+      "warmup": 3
+    },
+    {
+      "kv_tokens_before_decode": 512,
+      "decode_tokens": 1,
+      "decode_tokens_per_second_median": 470.283934229285,
+      "median_s": 0.0021263749986246694,
+      "p90_s": 0.0023086250002961606,
+      "min_s": 0.002012999997532461,
+      "reps": 10,
+      "warmup": 3
+    }
+  ],
+  "cached_vs_uncached": {
+    "prompt_tokens": 32,
+    "max_new": 32,
+    "cached": {
+      "median_s": 0.09386737500244635,
+      "p90_s": 0.10379379100049846,
+      "min_s": 0.0764402919994609,
+      "reps": 10,
+      "warmup": 3
+    },
+    "uncached": {
+      "median_s": 0.1030256250014645,
+      "p90_s": 0.10923091699805809,
+      "min_s": 0.09082920800210559,
+      "reps": 10,
+      "warmup": 3
+    },
+    "uncached_over_cached_median_ratio": 1.0975658475458536
+  }
+}

@@ -70,13 +70,17 @@ class GPT(nn.Module):
             block.mlp.w1 = mx.random.normal((d_model, 4 * d_model)) * scale
             block.mlp.w2 = mx.random.normal((4 * d_model, d_model)) * scale
 
-    def __call__(self, ids: mx.array) -> mx.array:
+    def __call__(self, ids: mx.array, cache=None) -> mx.array:
         if ids.ndim not in (1, 2):
             raise ValueError("ids must have shape [sequence] or [batch, sequence]")
         if ids.shape[-1] > self.ctx:
             raise ValueError("sequence length exceeds ctx")
         x = self.token_embedding(ids)
-        for block in self.blocks:
-            x = block(x)
+        if cache is None:
+            for block in self.blocks:
+                x = block(x)
+        else:
+            for layer_idx, block in enumerate(self.blocks):
+                x = block(x, cache=cache, layer_idx=layer_idx)
         x = self.final_norm(x)
         return x @ mx.transpose(self.token_embedding.weight)

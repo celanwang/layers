@@ -67,7 +67,14 @@ class TransformerBlock(nn.Module):
         self.ln_mlp = LayerNorm(d_model, eps=eps)
         self.mlp = MLP(d_model=d_model, seed=seed)
 
-    def __call__(self, x: mx.array) -> mx.array:
-        attn_out, _ = self.attn(self.ln_attn(x))
+    def __call__(
+        self, x: mx.array, cache=None, layer_idx: int | None = None
+    ) -> mx.array:
+        if cache is None:
+            attn_out, _ = self.attn(self.ln_attn(x))
+        else:
+            attn_out, _ = self.attn(
+                self.ln_attn(x), cache=cache, layer_idx=layer_idx
+            )
         x = x + attn_out
         return x + self.mlp(self.ln_mlp(x))

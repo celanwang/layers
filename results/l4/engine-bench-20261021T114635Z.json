@@ -1,0 +1,144 @@
+{
+  "iteration": "L4-T2",
+  "timestamp": "2026-10-21T11:46:35.316606+00:00",
+  "config_hash": "5819d4ae7209",
+  "git_commit": "f97926b36ebf06915e3652d4bc97a2938cffa5b4",
+  "device": {
+    "chip": "Apple M4 Max",
+    "memory_bytes": 51539607552,
+    "os": "macOS-15.8-arm64-arm-64bit",
+    "python": "3.12.15",
+    "mlx": "0.32.4"
+  },
+  "protocol": {
+    "warmup": 3,
+    "reps": 10,
+    "percentiles": [
+      "median",
+      "p90"
+    ],
+    "dtype": "float32",
+    "checkpoint": "results/l3/ckpt-final-500.npz"
+  },
+  "fragmentation": [
+    {
+      "sequences": 1,
+      "lengths": [
+        204
+      ],
+      "block_size_tokens": 16,
+      "bytes_per_token": 16384,
+      "bytes_per_block": 262144,
+      "physical_blocks_used": 13,
+      "wasted_tokens": 4,
+      "wasted_bytes": 65536,
+      "theoretical_upper_bound_bytes": 131072,
+      "bound_passed": true
+    },
+    {
+      "sequences": 4,
+      "lengths": [
+        204,
+        80,
+        207,
+        37
+      ],
+      "block_size_tokens": 16,
+      "bytes_per_token": 16384,
+      "bytes_per_block": 262144,
+      "physical_blocks_used": 34,
+      "wasted_tokens": 16,
+      "wasted_bytes": 262144,
+      "theoretical_upper_bound_bytes": 524288,
+      "bound_passed": true
+    },
+    {
+      "sequences": 8,
+      "lengths": [
+        204,
+        80,
+        207,
+        37,
+        118,
+        68,
+        216,
+        61
+      ],
+      "block_size_tokens": 16,
+      "bytes_per_token": 16384,
+      "bytes_per_block": 262144,
+      "physical_blocks_used": 65,
+      "wasted_tokens": 49,
+      "wasted_bytes": 802816,
+      "theoretical_upper_bound_bytes": 1048576,
+      "bound_passed": true
+    },
+    {
+      "sequences": 16,
+      "lengths": [
+        204,
+        80,
+        207,
+        37,
+        118,
+        68,
+        216,
+        61,
+        179,
+        43,
+        44,
+        96,
+        155,
+        215,
+        195,
+        236
+      ],
+      "block_size_tokens": 16,
+      "bytes_per_token": 16384,
+      "bytes_per_block": 262144,
+      "physical_blocks_used": 141,
+      "wasted_tokens": 102,
+      "wasted_bytes": 1671168,
+      "theoretical_upper_bound_bytes": 2097152,
+      "bound_passed": true
+    }
+  ],
+  "continuous_batching_vs_sequential": {
+    "requests": 8,
+    "prompt_tokens": 4,
+    "generated_tokens_per_request": 16,
+    "total_generated_tokens": 128,
+    "continuous_batching": {
+      "median_s": 0.3219077499998093,
+      "p90_s": 0.3539248339984624,
+      "min_s": 0.2945836250000866,
+      "reps": 10,
+      "warmup": 3,
+      "tokens_per_second": 397.6294450819399
+    },
+    "sequential": {
+      "median_s": 0.3317938750005851,
+      "p90_s": 0.336483084000065,
+      "min_s": 0.3248576250007318,
+      "reps": 10,
+      "warmup": 3,
+      "tokens_per_second": 385.78168448641276
+    },
+    "throughput_speedup": 1.0307110499849155,
+    "throughput_improvement_percent": 3.0711049984915473
+  },
+  "prefix_sharing_memory": {
+    "requests": 8,
+    "shared_prompt_tokens": 32,
+    "shared": {
+      "physical_blocks_used": 2,
+      "allocated_bytes": 524288
+    },
+    "unshared": {
+      "physical_blocks_used": 16,
+      "allocated_bytes": 4194304
+    },
+    "bytes_saved": 3670016,
+    "savings_percent": 87.5
+  }
+}

@@ -94,10 +94,14 @@ class CausalSelfAttention(nn.Module):
         self.wo = mx.random.normal((d_model, d_model)) * scale
         self.rope = RotaryEmbedding(d_head, base=rope_base)
 
-    def forward_with_intermediates(self, x: mx.array):
+    def forward_with_intermediates(
+        self, x: mx.array, cache=None, layer_idx: int | None = None
+    ):
         """Return output, probabilities, and arrays used to form each result."""
         if x.ndim not in (2, 3) or x.shape[-1] != self.d_model:
             raise ValueError("x must have shape [n, d_model] or [batch, n, d_model]")
+        if cache is not None and layer_idx is None:
+            raise ValueError("layer_idx is required when a KV cache is supplied")
         unbatched = x.ndim == 2
         batched = mx.expand_dims(x, axis=0) if unbatched else x
         batch_size, sequence_length, _ = batched.shape
@@ -114,11 +118,28 @@ class CausalSelfAttention(nn.Module):
         q = mx.transpose(q, (0, 2, 1, 3))
         k = mx.transpose(k, (0, 2, 1, 3))
         v = mx.transpose(v, (0, 2, 1, 3))
-        rotary_q = self.rope(q)
-        rotary_k = self.rope(k)
-        scaled_scores = attention_scores(rotary_q, rotary_k)
+
+        if cache is None:
+            # Keep the original no-cache path and operation order unchanged.
+            rotary_q = self.rope(q)
+            rotary_k = self.rope(k)
+            scaled_scores = attention_scores(rotary_q, rotary_k)
+            attention_values = v
+        else:
+            cached_k, cached_v = cache.get(layer_idx)
+            offset = 0 if cached_k is None else cached_k.shape[-2]
+            rotary_q = self.rope(q, offset=offset)
+            rotary_k = self.rope(k, offset=offset)
+            all_k, attention_values = cache.append(layer_idx, rotary_k, v)
+            scaled_scores = (
+                rotary_q @ mx.swapaxes(all_k, -1, -2)
+            ) * (1.0 / math.sqrt(self.d_head))
+            query_positions = mx.arange(sequence_length) + offset
+            key_positions = mx.arange(all_k.shape[-2])
+            future = key_positions[None, :] > query_positions[:, None]
+            scaled_scores = mx.where(future, -float("inf"), scaled_scores)
         probs = _stable_softmax(scaled_scores)
-        context = probs @ v
+        context = probs @ attention_values
         context = mx.transpose(context, (0, 2, 1, 3)).reshape(
             (batch_size, sequence_length, self.d_model)
         )
@@ -150,7 +171,7 @@ class CausalSelfAttention(nn.Module):
             }
         return out, probs, intermediates
 
-    def __call__(self, x: mx.array):
+    def __call__(self, x: mx.array, cache=None, layer_idx: int | None = None):
         """Return ``(output, attention_weights)`` for a rank-2 or rank-3 input."""
-        out, weights, _ = self.forward_with_intermediates(x)
+        out, weights, _ = self.forward_with_intermediates(x, cache, layer_idx)
         return out, weights
