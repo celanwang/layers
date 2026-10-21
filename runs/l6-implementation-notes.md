@@ -80,3 +80,42 @@ is diagnostic only; inference remains GPU fp32 throughout.
 The unchanged bf16 training regression test automatically emits an L5 JSON.
 Each newly generated artifact is relocated intact into `results/l6/` after the
 suite; existing L5 files are neither edited nor removed.
+
+
+## Final acceptance
+
+- `.venv/bin/python -m pytest tests/ -q`: 98 passed (91 unchanged existing
+  tests plus 7 new tests), one existing PyTorch quantization deprecation warning.
+- `.venv/bin/python bench/l6_batching_bench.py`: exit 0; final record
+  `results/l6/batching-bench-20261021T132523026893Z.json`, config hash
+  `d2f97623b7b7`, implementation commit `e89de74f2ea8`.
+- Apple M4 Max / 48 GiB / MLX 0.32.4, GPU fp32, L3 500-step checkpoint,
+  3 warmups and 10 paired alternating repeats; raw samples, median/p90,
+  checkpoint hash and source hashes are retained in each benchmark JSON.
+- B=8: 1400.44 tok/s
+  versus unchanged L4 310.22 tok/s,
+  4.514x (>=4x gate passes).
+- B=1: -24.18% latency change
+  (<10% regression gate passes).
+- Uneven B=8: 2.17% throughput penalty;
+  padding occupies 40.7407% of key slots versus 0.7752% for near-equal lengths.
+  Earlier trials showed 3.31% and -0.35%; this small timing effect varies, and
+  the negative measurement is retained. The illustrative ~3k tok/s projection
+  is not reached by this teaching implementation.
+- Real-checkpoint oracle: 8 variable prefixes, 33 token events per request
+  (32 decode forwards), max absolute logit error 7.62939453125e-6 with rtol=0;
+  all seeded tokens match and all pages are reclaimed. See
+  `results/l6/checkpoint-logit-oracle.json`.
+- Scope audit: 9 pre-existing test files byte-identical, 25 existing functions
+  and methods AST-identical, inference.py and paged_kv.py byte-identical.
+  There are no new dependencies and no `mx.fast` calls. Syntax compilation
+  and whitespace checks pass; no separate lint configuration is present.
+
+## Scope interpretation and remaining limits
+
+There is no change to the requested measurement protocol or acceptance gates.
+Admission/prefill is inherited as a synchronous boundary operation between
+steps, rather than adding a pending request queue. HTTP/SSE and framework
+source comparisons are outside T1. No external inference/serving source was
+read and no push was performed. Failed measurements and diagnostic probes
+are preserved, not substituted for final acceptance.
