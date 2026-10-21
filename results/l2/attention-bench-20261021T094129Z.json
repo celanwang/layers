@@ -1,0 +1,336 @@
+{
+  "iteration": "L2",
+  "timestamp": "2026-10-21T09:41:29.468317+00:00",
+  "config_hash": "5a1c15a53469",
+  "config": {
+    "platform": "macOS-15.8-arm64-arm-64bit",
+    "python": "3.12.15 (main, Oct  3 2026, 00:54:33) [Clang 22.1.3 ]",
+    "mlx": "0.32.4",
+    "torch": "2.14.1",
+    "numpy": "2.5.4",
+    "git_commit": "bd6ab0da234f1fd5d0c0d6ac8218a899417f4e31",
+    "warmup": 3,
+    "reps": 10,
+    "lengths": [
+      128,
+      256,
+      512,
+      1024,
+      2048,
+      4096
+    ],
+    "kv_lengths": [
+      128,
+      256,
+      512,
+      1024,
+      2048,
+      4096,
+      8192
+    ],
+    "d_model": 512,
+    "n_head": 8,
+    "d_head": 64,
+    "dtype": "fp32 for attention; fp32 and bf16 for KV storage"
+  },
+  "device": {
+    "chip": "Apple M4 Max",
+    "memory_bytes": 51539607552,
+    "os": "macOS-15.8-arm64-arm-64bit",
+    "python": "3.12.15",
+    "mlx": "0.32.4"
+  },
+  "attention_kernels": [
+    {
+      "sequence_length": 128,
+      "shape_qkv": [
+        1,
+        8,
+        128,
+        64
+      ],
+      "naive": {
+        "median_s": 0.0003922500000044238,
+        "p90_s": 0.0007118749999790452,
+        "min_s": 0.00033966699993470684,
+        "reps": 10,
+        "warmup": 3
+      },
+      "fast": {
+        "median_s": 0.0001830000001064036,
+        "p90_s": 0.00018620800256030634,
+        "min_s": 0.00016979200154310092,
+        "reps": 10,
+        "warmup": 3
+      },
+      "naive_over_fast_median": 2.1434426217287093
+    },
+    {
+      "sequence_length": 256,
+      "shape_qkv": [
+        1,
+        8,
+        256,
+        64
+      ],
+      "naive": {
+        "median_s": 0.0005032920016674325,
+        "p90_s": 0.000619040998572018,
+        "min_s": 0.00045899999895482324,
+        "reps": 10,
+        "warmup": 3
+      },
+      "fast": {
+        "median_s": 0.0002430420026939828,
+        "p90_s": 0.00025679200189188123,
+        "min_s": 0.00023033300021779723,
+        "reps": 10,
+        "warmup": 3
+      },
+      "naive_over_fast_median": 2.070802561239317
+    },
+    {
+      "sequence_length": 512,
+      "shape_qkv": [
+        1,
+        8,
+        512,
+        64
+      ],
+      "naive": {
+        "median_s": 0.0009897919990180526,
+        "p90_s": 0.0010696249992179219,
+        "min_s": 0.0009470829972997308,
+        "reps": 10,
+        "warmup": 3
+      },
+      "fast": {
+        "median_s": 0.0002589579999039415,
+        "p90_s": 0.00037237500146147795,
+        "min_s": 0.00024533299801987596,
+        "reps": 10,
+        "warmup": 3
+      },
+      "naive_over_fast_median": 3.8222105491439087
+    },
+    {
+      "sequence_length": 1024,
+      "shape_qkv": [
+        1,
+        8,
+        1024,
+        64
+      ],
+      "naive": {
+        "median_s": 0.0015295420016627759,
+        "p90_s": 0.0017224170005647466,
+        "min_s": 0.0014276250003604218,
+        "reps": 10,
+        "warmup": 3
+      },
+      "fast": {
+        "median_s": 0.000429457999416627,
+        "p90_s": 0.0004453750007087365,
+        "min_s": 0.0003855840004689526,
+        "reps": 10,
+        "warmup": 3
+      },
+      "naive_over_fast_median": 3.561563654048815
+    },
+    {
+      "sequence_length": 2048,
+      "shape_qkv": [
+        1,
+        8,
+        2048,
+        64
+      ],
+      "naive": {
+        "median_s": 0.004393708000861807,
+        "p90_s": 0.0046328329990501516,
+        "min_s": 0.004321917000197573,
+        "reps": 10,
+        "warmup": 3
+      },
+      "fast": {
+        "median_s": 0.000665209001454059,
+        "p90_s": 0.0007139170011214446,
+        "min_s": 0.0006096670003898907,
+        "reps": 10,
+        "warmup": 3
+      },
+      "naive_over_fast_median": 6.605003827756001
+    },
+    {
+      "sequence_length": 4096,
+      "shape_qkv": [
+        1,
+        8,
+        4096,
+        64
+      ],
+      "naive": {
+        "median_s": 0.01703441700010444,
+        "p90_s": 0.017106417002651142,
+        "min_s": 0.016917042001296068,
+        "reps": 10,
+        "warmup": 3
+      },
+      "fast": {
+        "median_s": 0.0018599169998196885,
+        "p90_s": 0.0019471250016067643,
+        "min_s": 0.0018106249990523793,
+        "reps": 10,
+        "warmup": 3
+      },
+      "naive_over_fast_median": 9.158697405183059
+    }
+  ],
+  "kv_memory": [
+    {
+      "dtype": "fp32",
+      "sequence_length": 128,
+      "d_model": 512,
+      "measured_active_bytes": 524296,
+      "theoretical_bytes": 524288,
+      "measured_over_theoretical": 1.0000152587890625
+    },
+    {
+      "dtype": "fp32",
+      "sequence_length": 256,
+      "d_model": 512,
+      "measured_active_bytes": 1048584,
+      "theoretical_bytes": 1048576,
+      "measured_over_theoretical": 1.0000076293945312
+    },
+    {
+      "dtype": "fp32",
+      "sequence_length": 512,
+      "d_model": 512,
+      "measured_active_bytes": 2097160,
+      "theoretical_bytes": 2097152,
+      "measured_over_theoretical": 1.0000038146972656
+    },
+    {
+      "dtype": "fp32",
+      "sequence_length": 1024,
+      "d_model": 512,
+      "measured_active_bytes": 4194312,
+      "theoretical_bytes": 4194304,
+      "measured_over_theoretical": 1.0000019073486328
+    },
+    {
+      "dtype": "fp32",
+      "sequence_length": 2048,
+      "d_model": 512,
+      "measured_active_bytes": 8388616,
+      "theoretical_bytes": 8388608,
+      "measured_over_theoretical": 1.0000009536743164
+    },
+    {
+      "dtype": "fp32",
+      "sequence_length": 4096,
+      "d_model": 512,
+      "measured_active_bytes": 16777224,
+      "theoretical_bytes": 16777216,
+      "measured_over_theoretical": 1.0000004768371582
+    },
+    {
+      "dtype": "fp32",
+      "sequence_length": 8192,
+      "d_model": 512,
+      "measured_active_bytes": 33554440,
+      "theoretical_bytes": 33554432,
+      "measured_over_theoretical": 1.000000238418579
+    },
+    {
+      "dtype": "bf16",
+      "sequence_length": 128,
+      "d_model": 512,
+      "measured_active_bytes": 262148,
+      "theoretical_bytes": 262144,
+      "measured_over_theoretical": 1.0000152587890625
+    },
+    {
+      "dtype": "bf16",
+      "sequence_length": 256,
+      "d_model": 512,
+      "measured_active_bytes": 524292,
+      "theoretical_bytes": 524288,
+      "measured_over_theoretical": 1.0000076293945312
+    },
+    {
+      "dtype": "bf16",
+      "sequence_length": 512,
+      "d_model": 512,
+      "measured_active_bytes": 1048580,
+      "theoretical_bytes": 1048576,
+      "measured_over_theoretical": 1.0000038146972656
+    },
+    {
+      "dtype": "bf16",
+      "sequence_length": 1024,
+      "d_model": 512,
+      "measured_active_bytes": 2097156,
+      "theoretical_bytes": 2097152,
+      "measured_over_theoretical": 1.0000019073486328
+    },
+    {
+      "dtype": "bf16",
+      "sequence_length": 2048,
+      "d_model": 512,
+      "measured_active_bytes": 4194308,
+      "theoretical_bytes": 4194304,
+      "measured_over_theoretical": 1.0000009536743164
+    },
+    {
+      "dtype": "bf16",
+      "sequence_length": 4096,
+      "d_model": 512,
+      "measured_active_bytes": 8388612,
+      "theoretical_bytes": 8388608,
+      "measured_over_theoretical": 1.0000004768371582
+    },
+    {
+      "dtype": "bf16",
+      "sequence_length": 8192,
+      "d_model": 512,
+      "measured_active_bytes": 16777220,
+      "theoretical_bytes": 16777216,
+      "measured_over_theoretical": 1.000000238418579
+    }
+  ],
+  "softmax_fraction": {
+    "sequence_length": 1024,
+    "full_layer": {
+      "median_s": 0.0016655420004099142,
+      "p90_s": 0.001728999999613734,
+      "min_s": 0.0015603749998263083,
+      "reps": 10,
+      "warmup": 3
+    },
+    "score_and_mask": {
+      "median_s": 0.00043170799835934304,
+      "p90_s": 0.0004760409974551294,
+      "min_s": 0.0004170419997535646,
+      "reps": 10,
+      "warmup": 3
+    },
+    "softmax_only": {
+      "median_s": 0.0006761670010746457,
+      "p90_s": 0.0007122919996618293,
+      "min_s": 0.0005744580012105871,
+      "reps": 10,
+      "warmup": 3
+    },
+    "probability_times_value": {
+      "median_s": 0.0002496250017429702,
+      "p90_s": 0.00025304199880338274,
+      "min_s": 0.00024620800104457885,
+      "reps": 10,
+      "warmup": 3
+    },
+    "softmax_over_full_layer_percent": 40.59741519026426,
+    "measurement_note": "coarse isolated component timing divided by full forward median"
+  }
+}
