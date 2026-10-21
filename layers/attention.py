@@ -211,9 +211,11 @@ class CausalSelfAttention(nn.Module):
             raise ValueError("decode input must have shape [batch, 1, d_model]")
         batch_size = x.shape[0]
         shape = (batch_size, 1, self.n_head, self.d_head)
-        q = mx.transpose((x @ self.wq).reshape(shape), (0, 2, 1, 3))
-        k = mx.transpose((x @ self.wk).reshape(shape), (0, 2, 1, 3))
-        v = mx.transpose((x @ self.wv).reshape(shape), (0, 2, 1, 3))
+        # Use one [B, D] matrix multiply, rather than B [1, D] matvecs.
+        rows = x[:, 0, :]
+        q = mx.transpose((rows @ self.wq).reshape(shape), (0, 2, 1, 3))
+        k = mx.transpose((rows @ self.wk).reshape(shape), (0, 2, 1, 3))
+        v = mx.transpose((rows @ self.wv).reshape(shape), (0, 2, 1, 3))
 
         # The one-token query's absolute position differs between requests.
         pairs = mx.arange(0, self.d_head, 2, dtype=mx.float32)
@@ -225,7 +227,7 @@ class CausalSelfAttention(nn.Module):
             rotary_q, all_k, all_v, cache.positions
         )
         context = mx.transpose(context, (0, 2, 1, 3)).reshape(x.shape)
-        out = context @ self.wo
+        out = (context[:, 0, :] @ self.wo)[:, None, :]
         return out, probs, {
             "rotary_q": rotary_q,
             "rotary_k": rotary_k,

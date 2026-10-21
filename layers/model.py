@@ -94,4 +94,5 @@ class GPT(nn.Module):
         x = self.token_embedding(ids)
         for layer_idx, block in enumerate(self.blocks):
             x = block.decode_batch(x, cache, layer_idx)
-        return self.final_norm(x) @ mx.transpose(self.token_embedding.weight)
+        logits = self.final_norm(x[:, 0, :]) @ mx.transpose(self.token_embedding.weight)
+        return logits[:, None, :]

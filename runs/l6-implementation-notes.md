@@ -46,6 +46,14 @@ the original single-request operations and all measurement settings are intact.
 No `mx.fast` operation is used. We consulted only the installed public
 `mx.compile` API docstring, without reading implementation sources.
 
+The first compiled measurement passed at B=8 4.037x, with little margin (raw
+record `batching-bench-20261021T131308951824Z.json`). A follow-up shape audit
+made every dense projection explicitly rank two: attention Q/K/V/output,
+MLP, and vocabulary projection operate on `[B, D]` rows. Attention still uses
+`[B, H, 1, T]` and model inputs/outputs retain `[B, 1, ...]`. This directly
+expresses shared-weight GEMM rather than relying on backend conversion of a
+rank-three batch of one-row matrix multiplies. The L4 path is unchanged.
+
 The unchanged bf16 training regression test automatically emits an L5 JSON.
 Each newly generated artifact is relocated intact into `results/l6/` after the
 suite; existing L5 files are neither edited nor removed.

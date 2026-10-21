@@ -83,4 +83,4 @@ class TransformerBlock(nn.Module):
         """Apply this block to one token per independent cached request."""
         attn_out, _ = self.attn.decode_batch(self.ln_attn(x), cache, layer_idx)
         x = x + attn_out
-        return x + self.mlp(self.ln_mlp(x))
+        return x + self.mlp(self.ln_mlp(x[:, 0, :]))[:, None, :]
