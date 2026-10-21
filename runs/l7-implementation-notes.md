@@ -137,3 +137,39 @@ accepted 133-test T1 result. Changes are confined to the T2 whitelist.
 
 Only existing project code and installed public MLX API docstrings have been
 read. No external reference implementation source, dependency change or push.
+
+## L7-T2 component and oracle verification
+
+`sample_batch` builds the same per-row probability/seed/categorical graph as
+`Sampler.__call__`; only the eval/host-transfer boundary is shared. It also
+preserves `_draws` and the final global PRNG state. Greedy/top-k=1 still run
+categorical and consume their original draw; no argmax shortcut or new RNG
+key/shape is introduced. Validation occurs before any draw.
+
+`BatchedSamplingEngine` overrides only step orchestration. Its continuing-row
+cache adapter and decode call are the exact T1 calls; old `BatchedEngine`,
+`PagedAttentionEngine`, `Sampler`, KV and attention implementations are intact.
+Whole-batch fallback preserves custom callable and Sampler-subclass behavior.
+
+- New tests: 23 passed, including fp32/fp16/bf16 token-exact sampling, mixed
+  truncations, existing draw histories, batch membership/order changes, aliased
+  sampler state, and the final global PRNG state. Instrumentation confirms
+  exactly one eval of `[B]` and one `tolist`, rejecting item/NumPy/synchronize
+  and scalar sampler calls. Engine tests confirm T1 direct-page decode calls.
+- Section 5 full suite: 156 passed (133 previous + 23 new), one pre-existing
+  PyTorch deprecation warning, 27.30s. Output `t2-tests-acceptance.txt`.
+- Trained d512 oracle: 8 mixed-parameter requests x 33 tokens match L6/T1/T2;
+  T2/T1 logits are bit-exact, maximum absolute error versus L6 is 0.0;
+  complete pool reclamation. Evidence `t2-checkpoint-oracle.json`.
+- Syntax compilation and `git diff --check` pass. No lint configuration or
+  lint command is declared by the project.
+- Scope audit: 14 pre-existing top-level definitions (including complete old
+  classes) source-identical; 237 tracked files outside the whitelist byte-
+  identical. Existing implementation edits contain only added lines.
+- The unchanged bf16 test emits one timestamped `results/l5/` JSON; following
+  T1 precedent, only that newly emitted artifact was relocated intact into
+  `results/l7/`. This known test side effect is the sole transient write outside
+  the whitelist. No pre-existing artifact was changed or removed.
+
+Implementation and test verification are committed before the formal paired
+performance run so the measurement records a reproducible implementation hash.

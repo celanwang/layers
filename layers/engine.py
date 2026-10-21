@@ -431,3 +431,56 @@ class PagedAttentionEngine(BatchedEngine):
             request.active = False
             self.pool.free(request.seq_id)
         return events
+
+
+class BatchedSamplingEngine(PagedAttentionEngine):
+    """L7-T1 decode with a single sampling fence for standard Samplers.
+
+    Admission still accepts arbitrary callable samplers. If any request uses
+    one, the entire iteration follows the inherited T1 path, preserving its
+    call order and observable behavior. The old engines remain callable
+    oracles; no page, attention or model implementation is changed here.
+    """
+
+    def step(self) -> list[TokenEvent]:
+        from .inference import Sampler, sample_batch
+
+        current = [request for request in self._requests.values() if request.active]
+        if not current:
+            return []
+        if any(type(request.sampler) is not Sampler for request in current):
+            return super().step()
+
+        token_ids = sample_batch(
+            [request.sampler for request in current],
+            mx.stack([request.next_logits for request in current]),
+        )
+        events, continuing, tokens = [], [], []
+        finished_requests = []
+        for request, token_id in zip(current, token_ids):
+            request.generated.append(token_id)
+            finished = (
+                len(request.generated) >= request.max_new_tokens
+                or len(request.prompt_ids) + len(request.generated) >= self.max_context
+            )
+            events.append(TokenEvent(request.seq_id, token_id, finished))
+            if finished:
+                finished_requests.append(request)
+            else:
+                continuing.append(request)
+                tokens.append([token_id])
+
+        if continuing:
+            cache = _DirectPagedKVCache(
+                self.pool, [request.seq_id for request in continuing]
+            )
+            logits = _decode_paged_batch(self.model, mx.array(tokens, dtype=mx.int32), cache)
+            mx.eval(logits)
+            for row, request in enumerate(continuing):
+                request.next_logits = logits[row, 0]
+
+        # Release only after the iteration, including all surviving-row writes.
+        for request in finished_requests:
+            request.active = False
+            self.pool.free(request.seq_id)
+        return events

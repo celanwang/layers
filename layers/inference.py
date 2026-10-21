@@ -181,6 +181,35 @@ class Sampler:
         return int(token.item())
 
 
+def sample_batch(samplers: list[Sampler], logits: mx.array) -> list[int]:
+    """Draw from ``[B, V]`` logits with one eval and one host transfer.
+
+    Each row builds exactly the scalar Sampler graph, including its global
+    seed reset and categorical draw for greedy distributions. RNG keys are
+    captured when categorical is constructed, so later seed resets do not
+    alter earlier lazy draws. Do not replace this with a batched categorical:
+    changing its shape would change the seeded random stream.
+    """
+    if logits.ndim != 2 or logits.shape[1] == 0:
+        raise ValueError("logits must have shape [B, non-empty vocabulary]")
+    if len(samplers) != logits.shape[0]:
+        raise ValueError("one sampler is required for each logits row")
+    if any(type(sampler) is not Sampler for sampler in samplers):
+        raise TypeError("sample_batch requires standard Sampler instances")
+    if not samplers:
+        return []
+
+    tokens = []
+    for row, sampler in enumerate(samplers):
+        probs = sampler.probabilities(logits[row])
+        mx.random.seed(sampler.seed + sampler._draws)
+        sampler._draws += 1
+        tokens.append(mx.random.categorical(mx.log(probs)))
+    batch = mx.stack(tokens)
+    mx.eval(batch)
+    return batch.tolist()
+
+
 def _token_bytes(tokenizer, token_id: int) -> bytes:
     if 0 <= token_id < tokenizer.vocab_size:
         return tokenizer._vocab[token_id]
