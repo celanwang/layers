@@ -1,0 +1,384 @@
+{
+  "kind": "derived accounting only; no new timing or kernel profiling",
+  "source_revision": "7293ad3",
+  "sources": [
+    {
+      "path": "results/l6/batching-bench-20261021T133044874890Z.json",
+      "sha256": "d40815d1ec25492394218f736d7fdd82601f213df694599365a888c7fd827fa2",
+      "config_hash": "2d2e2aeed61b",
+      "device": {
+        "chip": "Apple M4 Max",
+        "memory_bytes": 51539607552,
+        "os": "macOS-15.8-arm64-arm-64bit",
+        "python": "3.12.15",
+        "mlx": "0.32.4"
+      },
+      "protocol": {
+        "warmup": 3,
+        "reps": 10,
+        "percentiles": [
+          "median",
+          "p90"
+        ],
+        "dtype": "float32",
+        "checkpoint": "results/l3/ckpt-final-500.npz",
+        "checkpoint_sha256": "a6bc079ef679c90ea8a4fdff95cf5086d4d49b8c811ce0252b2c31c7f1531889",
+        "seed": 20261021,
+        "batch_sizes": [
+          1,
+          2,
+          4,
+          8
+        ],
+        "prompt_tokens_scaling": 32,
+        "generated_tokens_per_request": 64,
+        "block_size": 16,
+        "share_prefixes": false,
+        "small_variance_lengths": [
+          95,
+          95,
+          96,
+          96,
+          96,
+          96,
+          97,
+          97
+        ],
+        "large_variance_lengths": [
+          8,
+          24,
+          40,
+          72,
+          120,
+          152,
+          168,
+          184
+        ],
+        "timing": "decode includes sampling, scheduling, KV gather/pad/scatter, and synchronization; prefill separate",
+        "decode_forwards_per_request": 63,
+        "trial_order": "paired, alternating; fresh engine and pool per trial"
+      }
+    },
+    {
+      "path": "results/l6/batching-bench-20261021T132523026893Z.json",
+      "sha256": "fdd3851bfd6ceba1b9e5c890f1e6e2b8a17f187a84bf7343e1f742964f7f4a6f",
+      "config_hash": "d2f97623b7b7",
+      "device": {
+        "chip": "Apple M4 Max",
+        "memory_bytes": 51539607552,
+        "os": "macOS-15.8-arm64-arm-64bit",
+        "python": "3.12.15",
+        "mlx": "0.32.4"
+      },
+      "protocol": {
+        "warmup": 3,
+        "reps": 10,
+        "percentiles": [
+          "median",
+          "p90"
+        ],
+        "dtype": "float32",
+        "checkpoint": "results/l3/ckpt-final-500.npz",
+        "checkpoint_sha256": "a6bc079ef679c90ea8a4fdff95cf5086d4d49b8c811ce0252b2c31c7f1531889",
+        "seed": 20261021,
+        "batch_sizes": [
+          1,
+          2,
+          4,
+          8
+        ],
+        "prompt_tokens_scaling": 32,
+        "generated_tokens_per_request": 64,
+        "block_size": 16,
+        "share_prefixes": false,
+        "small_variance_lengths": [
+          95,
+          95,
+          96,
+          96,
+          96,
+          96,
+          97,
+          97
+        ],
+        "large_variance_lengths": [
+          8,
+          24,
+          40,
+          72,
+          120,
+          152,
+          168,
+          184
+        ],
+        "timing": "decode includes sampling, scheduling, KV gather/pad/scatter, and synchronization; prefill separate",
+        "decode_forwards_per_request": 63,
+        "trial_order": "paired, alternating; fresh engine and pool per trial"
+      }
+    },
+    {
+      "path": "results/l6/api-bench-20261021T144110591270Z.json",
+      "sha256": "b80a7975acb19d99d4fad667a2b89fb56118fea3d1f5da2807a11b33ed1f1445",
+      "config_hash": "4474cab6ff21",
+      "device": {
+        "chip": "Apple M4 Max",
+        "memory_bytes": 51539607552,
+        "os": "macOS-15.8-arm64-arm-64bit",
+        "python": "3.12.15",
+        "mlx": "0.32.4"
+      },
+      "protocol": {
+        "warmup": 3,
+        "reps": 10,
+        "percentiles": [
+          "median",
+          "p90"
+        ],
+        "generated_tokens_per_request": 64,
+        "temperature": 0,
+        "top_p": 1,
+        "seed": 20261021,
+        "batch_sizes": [
+          1,
+          4,
+          8
+        ],
+        "prompts": [
+          "To be or not to be, that is the question. Scene 0.",
+          "To be or not to be, that is the question. Scene 1.",
+          "To be or not to be, that is the question. Scene 2.",
+          "To be or not to be, that is the question. Scene 3.",
+          "To be or not to be, that is the question. Scene 4.",
+          "To be or not to be, that is the question. Scene 5.",
+          "To be or not to be, that is the question. Scene 6.",
+          "To be or not to be, that is the question. Scene 7."
+        ],
+        "dtype": "float32",
+        "checkpoint": "results/l3/ckpt-final-500.npz",
+        "checkpoint_sha256": "a6bc079ef679c90ea8a4fdff95cf5086d4d49b8c811ce0252b2c31c7f1531889",
+        "tokenizer_sha256": "b8056fefeb320f2788aa709d8a0ab9a518980aaac9bef8391702331bbfe9dc87",
+        "share_prefixes": false,
+        "block_size": 16,
+        "max_concurrent": 8,
+        "pending_queue_size": 32,
+        "output_queue_size": 128,
+        "timing": "end-to-end request including prefill; API includes fresh TCP connection and SSE consumption",
+        "trial_order": "paired alternating direct/API; fresh engine/pool/server per trial; startup excluded",
+        "overhead": "100 * (API median seconds/token / direct median seconds/token - 1)",
+        "latency": "per-request wall time, and time to first nonempty content (not necessarily first token for UTF-8)"
+      }
+    },
+    {
+      "path": "results/l6/api-bench-20261021T145054448274Z.json",
+      "sha256": "92fcdbe7c25fb20859be8a22d45a4faeffb742ac0789bdb8965835a728a245c1",
+      "config_hash": "846a3910f2ad",
+      "device": {
+        "chip": "Apple M4 Max",
+        "memory_bytes": 51539607552,
+        "os": "macOS-15.8-arm64-arm-64bit",
+        "python": "3.12.15",
+        "mlx": "0.32.4"
+      },
+      "protocol": {
+        "warmup": 3,
+        "reps": 10,
+        "percentiles": [
+          "median",
+          "p90"
+        ],
+        "generated_tokens_per_request": 64,
+        "temperature": 0,
+        "top_p": 1,
+        "seed": 20261021,
+        "batch_sizes": [
+          1,
+          4,
+          8
+        ],
+        "prompts": [
+          "To be or not to be, that is the question. Scene 0.",
+          "To be or not to be, that is the question. Scene 1.",
+          "To be or not to be, that is the question. Scene 2.",
+          "To be or not to be, that is the question. Scene 3.",
+          "To be or not to be, that is the question. Scene 4.",
+          "To be or not to be, that is the question. Scene 5.",
+          "To be or not to be, that is the question. Scene 6.",
+          "To be or not to be, that is the question. Scene 7."
+        ],
+        "dtype": "float32",
+        "checkpoint": "results/l3/ckpt-final-500.npz",
+        "checkpoint_sha256": "a6bc079ef679c90ea8a4fdff95cf5086d4d49b8c811ce0252b2c31c7f1531889",
+        "tokenizer_sha256": "b8056fefeb320f2788aa709d8a0ab9a518980aaac9bef8391702331bbfe9dc87",
+        "share_prefixes": false,
+        "block_size": 16,
+        "max_concurrent": 8,
+        "pending_queue_size": 32,
+        "output_queue_size": 128,
+        "timing": "end-to-end request including prefill; API includes fresh TCP connection and SSE consumption",
+        "trial_order": "paired alternating direct/API; fresh engine/pool/server per trial; startup excluded",
+        "overhead": "100 * (API median seconds/token / direct median seconds/token - 1)",
+        "latency": "per-request wall time, and time to first nonempty content (not necessarily first token for UTF-8)"
+      }
+    },
+    {
+      "path": "results/l4/decode-bench-20261021T114111Z.json",
+      "sha256": "b69272b753d9b3af174c4039a607bc47c980476b0b9a8044a6890b39f76a36ab",
+      "config_hash": "fa0b5fac54b5",
+      "device": {
+        "chip": "Apple M4 Max",
+        "memory_bytes": 51539607552,
+        "os": "macOS-15.8-arm64-arm-64bit",
+        "python": "3.12.15",
+        "mlx": "0.32.4"
+      },
+      "protocol": {
+        "warmup": 3,
+        "reps": 10,
+        "percentiles": [
+          "median",
+          "p90"
+        ],
+        "dtype": "float32",
+        "checkpoint": "results/l3/ckpt-final-500.npz"
+      }
+    }
+  ],
+  "statistic": "Use benchmark upper median (sorted samples[n//2]); preserve each source p90. Fractions are computed within trials before taking upper median. Component medians need not sum to end-to-end median.",
+  "scaling": [
+    {
+      "source_pointer": "/throughput_scaling/0",
+      "batch_size": 1,
+      "prefill_median_ms": 2.258500004245434,
+      "prefill_p90_ms": 4.544250004983041,
+      "decode_median_ms": 134.99166600377066,
+      "decode_p90_ms": 138.450708000164,
+      "end_to_end_median_ms": 137.2425830049906,
+      "prefill_fraction_upper_median": 0.016976736464424394,
+      "decode_window_ms_per_forward_equivalent": 2.142724857202709,
+      "aggregate_decode_tok_s": 474.1033420404806,
+      "speedup_against_paired_l4": 1.3257676514066614
+    },
+    {
+      "source_pointer": "/throughput_scaling/1",
+      "batch_size": 2,
+      "prefill_median_ms": 4.813999999896623,
+      "prefill_p90_ms": 6.5993340031127445,
+      "decode_median_ms": 176.56595799780916,
+      "decode_p90_ms": 185.4829170042649,
+      "end_to_end_median_ms": 181.4282080013072,
+      "prefill_fraction_upper_median": 0.025352490360282896,
+      "decode_window_ms_per_forward_equivalent": 2.802634253933479,
+      "aggregate_decode_tok_s": 724.9415541448155,
+      "speedup_against_paired_l4": 2.21871312816501
+    },
+    {
+      "source_pointer": "/throughput_scaling/2",
+      "batch_size": 4,
+      "prefill_median_ms": 8.514124994690064,
+      "prefill_p90_ms": 15.426208003191277,
+      "decode_median_ms": 238.0172080011107,
+      "decode_p90_ms": 249.22033300390467,
+      "end_to_end_median_ms": 246.63441699522082,
+      "prefill_fraction_upper_median": 0.034726480296342205,
+      "decode_window_ms_per_forward_equivalent": 3.778050920652551,
+      "aggregate_decode_tok_s": 1075.5524869395383,
+      "speedup_against_paired_l4": 3.205212755015343
+    },
+    {
+      "source_pointer": "/throughput_scaling/3",
+      "batch_size": 8,
+      "prefill_median_ms": 20.369166995806154,
+      "prefill_p90_ms": 24.96458300447557,
+      "decode_median_ms": 356.44316699472256,
+      "decode_p90_ms": 372.8457920005894,
+      "end_to_end_median_ms": 377.92091599840205,
+      "prefill_fraction_upper_median": 0.051307588696601285,
+      "decode_window_ms_per_forward_equivalent": 5.657828047535279,
+      "aggregate_decode_tok_s": 1436.41412547426,
+      "speedup_against_paired_l4": 4.11534084765976
+    }
+  ],
+  "gap": {
+    "observed_speedup": 4.11534084765976,
+    "ideal_eightfold_tok_s": 2792.3113611181825,
+    "ideal_window_ms": 183.36064062532387,
+    "actual_window_ms": 356.44316699472256,
+    "window_excess_ms": 173.0825263693987,
+    "time_reduction_to_ideal_fraction": 0.48558239404253,
+    "b8_over_b1_window_ratio": 2.6404827612451736,
+    "b8_over_batched_singleton_throughput_ratio": 3.029748997954994,
+    "b1_batched_improvement_vs_ideal_window_ms": -48.36897462155321,
+    "b_dependent_window_increment_ms": 221.4515009909519,
+    "identity": "(T8 - L4_8/8) = (T1 - L4_8/8) + (T8 - T1); wall-clock contrasts, not disjoint causal kernel components",
+    "endpoint_affine_model": {
+      "formula": "T_equiv_ms(B)=a+b*B; endpoint illustration only, not measured kernel shares",
+      "a_ms": 1.6405672585837705,
+      "b_ms_per_row": 0.5021575986189385,
+      "residuals_ms": [
+        {
+          "batch_size": 1,
+          "actual_minus_model": 0.0
+        },
+        {
+          "batch_size": 2,
+          "actual_minus_model": 0.1577517981118315
+        },
+        {
+          "batch_size": 4,
+          "actual_minus_model": 0.1288532675930263
+        },
+        {
+          "batch_size": 8,
+          "actual_minus_model": 8.881784197001252e-16
+        }
+      ],
+      "b8_row_term_fraction": 0.7100358574350008,
+      "impossible_remove_all_row_work_ceiling_tok_s": 4953.7646716171785
+    }
+  },
+  "padding": {
+    "source_pointer": "/uneven_lengths",
+    "real_slots": 64512,
+    "small_padded_slots": 65016,
+    "large_padded_slots": 108864,
+    "large_wasted_slots": 44352,
+    "large_padding_fraction": 0.4074074074074074,
+    "small_decode_median_ms": 420.9107079950627,
+    "large_decode_median_ms": 431.2447499978589,
+    "window_difference_ms": 10.334042002796195,
+    "throughput_penalty_percent": 2.396328767561229,
+    "slots_only_ideal_speedup_upper_factor": 1.6875,
+    "small_attention_matmul_flops_fraction": 0.03840672117620584,
+    "warning": "Uneven versus near-equal lengths is not a padding-only ablation; scaling B8 uses equal 32-token prompts with zero row padding."
+  },
+  "prefill_blocking_estimate": {
+    "source_pointer": "results/l4/decode-bench-20261021T114111Z.json#/prefill_vs_decode/prefill",
+    "measured_128_median_ms": 2.4325410013261717,
+    "measured_128_p90_ms": 2.653791001648642,
+    "linear_token_scaling_256_ms": 4.865082002652343,
+    "doubled_source_p90_ms_not_measured_256_p90": 5.307582003297284,
+    "b8_decode_equivalent_step_ms": 5.657828047535279,
+    "hypothetical_gap_ms": 10.522910050187622,
+    "eight_streams_sum_extra_delay_ms": 38.92065602121875,
+    "unmodified_api_256_prompt_prefill_ms": 0,
+    "assumptions": "Admission headroom >=9 and context >=257; source uses contiguous KV not L6 paged KV. Linear estimate only; paging/tokenization/queue cost and quadratic attention scaling unmeasured. Current ctx=256 rejects a 256-token prompt with positive output before prefill."
+  },
+  "api": [
+    {
+      "source": "results/l6/api-bench-20261021T144110591270Z.json",
+      "direct_ms_token": 2.2591992186562493,
+      "api_ms_token": 2.342867187508091,
+      "overhead_percent": 3.703434746299461,
+      "extra_ms_token": 0.08366796885184158,
+      "api_time_reduction_if_all_net_overhead_removed_fraction": 0.03571178481560966
+    },
+    {
+      "source": "results/l6/api-bench-20261021T145054448274Z.json",
+      "direct_ms_token": 2.2200416718760607,
+      "api_ms_token": 2.3106100156837783,
+      "overhead_percent": 4.079578548234286,
+      "extra_ms_token": 0.09056834380771761,
+      "api_time_reduction_if_all_net_overhead_removed_fraction": 0.03919672432516297
+    }
+  ]
+}
