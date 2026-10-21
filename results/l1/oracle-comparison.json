@@ -1,0 +1,94 @@
+{
+  "formula": "token_count * log2(total_id_space) / utf8_bytes (uniform-ID proxy)",
+  "evaluation": "last 10% of corpus, excluded from training; no language-model loss",
+  "training_bytes": 1003854,
+  "training_sha256": "a9e24e23a1ec77744dad26844bfd5a09b6e041954e1eef0000e7f24cba6db735",
+  "evaluation_bytes": 111540,
+  "evaluation_sha256": "c54f3753a4e6e3c3d1759212815a7caf826e68a33021b25312984400bed40a1f",
+  "bpe_vocab_size": 1024,
+  "total_id_space": 1028,
+  "own_tokens": 46683,
+  "own_bits_per_byte": 4.187668736148627,
+  "tiktoken_encoding": "cl100k_base",
+  "tiktoken_id_space": 100277,
+  "tiktoken_tokens": 31469,
+  "tiktoken_bits_per_byte": 4.687236513422232,
+  "hf_samples": [
+    {
+      "start": 0,
+      "characters": 2048,
+      "own_tokens": 869,
+      "hf_tokens": 913,
+      "ratio": 0.9518072289156626
+    },
+    {
+      "start": 12165,
+      "characters": 2048,
+      "own_tokens": 863,
+      "hf_tokens": 910,
+      "ratio": 0.9483516483516483
+    },
+    {
+      "start": 24331,
+      "characters": 2048,
+      "own_tokens": 814,
+      "hf_tokens": 862,
+      "ratio": 0.9443155452436195
+    },
+    {
+      "start": 36497,
+      "characters": 2048,
+      "own_tokens": 857,
+      "hf_tokens": 913,
+      "ratio": 0.9386637458926615
+    },
+    {
+      "start": 48663,
+      "characters": 2048,
+      "own_tokens": 857,
+      "hf_tokens": 898,
+      "ratio": 0.9543429844097996
+    },
+    {
+      "start": 60828,
+      "characters": 2048,
+      "own_tokens": 805,
+      "hf_tokens": 874,
+      "ratio": 0.9210526315789473
+    },
+    {
+      "start": 72994,
+      "characters": 2048,
+      "own_tokens": 846,
+      "hf_tokens": 896,
+      "ratio": 0.9441964285714286
+    },
+    {
+      "start": 85160,
+      "characters": 2048,
+      "own_tokens": 870,
+      "hf_tokens": 901,
+      "ratio": 0.9655937846836848
+    },
+    {
+      "start": 97326,
+      "characters": 2048,
+      "own_tokens": 859,
+      "hf_tokens": 895,
+      "ratio": 0.9597765363128492
+    },
+    {
+      "start": 109492,
+      "characters": 2048,
+      "own_tokens": 883,
+      "hf_tokens": 949,
+      "ratio": 0.9304531085353003
+    }
+  ],
+  "hf_bytelevel_use_regex": true,
+  "versions": {
+    "pytest": "9.1.1",
+    "tokenizers": "0.23.3",
+    "tiktoken": "0.14.0"
+  }
+}

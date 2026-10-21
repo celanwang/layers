@@ -1,0 +1,9 @@
+device: Apple M4 Max, 48 GiB, CPU
+config_hash: 62265f0f2948
+protocol: warmup=3, reps=10, BPE vocab=1024, total IDs=1028
+corpus: 1115394 bytes; training=1003854; heldout=111540
+train: 0.990809 MB/s (median); median=1.013166s; p90=1.058788s
+encode: 0.799576 MB/s (median); median=1.394982s; p90=1.607092s
+heldout bits/byte (uniform-ID proxy): own=4.187669, cl100k_base=4.687237
+written: results/l1/tokenizer-throughput-20261021T074112897335Z.json
+model: results/l1/tokenizer-1024.json

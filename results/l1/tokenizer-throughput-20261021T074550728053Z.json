@@ -1,0 +1,120 @@
+{
+  "iteration": "L1",
+  "timestamp": "2026-10-21T07:45:50.727740+00:00",
+  "config_hash": "b89b1c2cdecf",
+  "config": {
+    "git_commit": "ddb224061e46259b42cee4264c0e902e5eb65eff",
+    "git_status_porcelain": [],
+    "device": {
+      "chip": "Apple M4 Max",
+      "memory_bytes": 51539607552,
+      "os": "macOS-15.8-arm64-arm-64bit",
+      "python": "3.12.15",
+      "mlx": "0.32.4"
+    },
+    "python_full_version": "3.12.15 (main, Oct  3 2026, 00:54:33) [Clang 22.1.3 ]",
+    "platform": "macOS-15.8-arm64-arm-64bit",
+    "packages": {
+      "pytest": "9.1.1",
+      "tiktoken": "0.14.0",
+      "tokenizers": "0.23.3",
+      "mlx": "0.32.4"
+    },
+    "source_sha256": {
+      "layers/__init__.py": "5bd1057a6e260fe46a3b249e39e8c2ed971df7f33c65c81ac996c6dbfba7bafa",
+      "layers/tokenizer.py": "41d291294d6364775c3cbb2250579542f102cefb85ce4c8c72fa60fb4bb6fea3",
+      "bench/l1_tokenizer_throughput.py": "7b72e805244de358aef67985dbd5aeed0bf53af2d55913ff0e83201f53c144e1",
+      "bench/l0_hw_profile.py": "00cf120683d2a22c1ce2fba3ec8cc5b1292b492ef88e57cf5ace907fb4fc0281"
+    },
+    "corpus": {
+      "path": "data/tiny-shakespeare.txt",
+      "url": "https://raw.githubusercontent.com/karpathy/char-rnn/master/data/tinyshakespeare/input.txt",
+      "sha256": "86c4e6aa9db7c042ec79f339dcb96d42b0075e16b8fc2e86bf0ca57e2dc565ed",
+      "bytes": 1115394,
+      "split": "first 90% of Unicode characters train; last 10% held out",
+      "training_bytes": 1003854,
+      "training_sha256": "a9e24e23a1ec77744dad26844bfd5a09b6e041954e1eef0000e7f24cba6db735",
+      "heldout_bytes": 111540,
+      "heldout_sha256": "c54f3753a4e6e3c3d1759212815a7caf826e68a33021b25312984400bed40a1f"
+    },
+    "bpe_vocab_size": 1024,
+    "special_tokens": 4,
+    "pretokenization": false,
+    "warmup": 3,
+    "reps": 10,
+    "clock": "time.perf_counter",
+    "execution": "synchronous CPython on CPU; single process",
+    "units": "decimal MB = 1e6 UTF-8 bytes",
+    "quantiles": "L0: sorted seconds[n//2], seconds[int(n*0.9)-1]",
+    "timed_scope": "UTF-8 conversion and operation; excludes file I/O and output destruction",
+    "encode_input": "entire corpus, including train and heldout"
+  },
+  "device": {
+    "chip": "Apple M4 Max",
+    "memory_bytes": 51539607552,
+    "os": "macOS-15.8-arm64-arm-64bit",
+    "python": "3.12.15",
+    "mlx": "0.32.4"
+  },
+  "training": {
+    "median_s": 1.0642325829976471,
+    "p90_s": 1.106361583002581,
+    "min_s": 1.046434957999736,
+    "reps": 10,
+    "warmup": 3,
+    "input_bytes": 1003854,
+    "samples_s": [
+      1.046434957999736,
+      1.0487327080008981,
+      1.0577760840023984,
+      1.059474791996763,
+      1.0611433750018477,
+      1.0642325829976471,
+      1.0872126249996654,
+      1.095860666999215,
+      1.106361583002581,
+      1.1079264580002928
+    ],
+    "throughput_mbs_median": 0.9432656132106222,
+    "throughput_mbs_at_p90_latency": 0.907347123600963,
+    "throughput_mbs_best": 0.9593085478708302
+  },
+  "encode": {
+    "median_s": 1.6504200410017802,
+    "p90_s": 1.6840486669971142,
+    "min_s": 1.544363875000272,
+    "reps": 10,
+    "warmup": 3,
+    "input_bytes": 1115394,
+    "samples_s": [
+      1.544363875000272,
+      1.6352171250000538,
+      1.6400807079990045,
+      1.6427876660018228,
+      1.6446012499982317,
+      1.6504200410017802,
+      1.654827499998646,
+      1.6626116250008636,
+      1.6840486669971142,
+      1.7289592089982762
+    ],
+    "throughput_mbs_median": 0.6758243188339936,
+    "throughput_mbs_at_p90_latency": 0.6623288399312698,
+    "throughput_mbs_best": 0.7222352309942524
+  },
+  "comparison": {
+    "formula": "token_count * log2(total_id_space) / utf8_bytes (uniform-ID proxy)",
+    "evaluation_bytes": 111540,
+    "own_tokens": 46683,
+    "own_id_space": 1028,
+    "own_bits_per_byte": 4.187668736148627,
+    "tiktoken_encoding": "cl100k_base",
+    "tiktoken_tokens": 31469,
+    "tiktoken_id_space": 100277,
+    "tiktoken_bits_per_byte": 4.687236513422232
+  },
+  "model": {
+    "path": "results/l1/tokenizer-1024.json",
+    "sha256": "b8056fefeb320f2788aa709d8a0ab9a518980aaac9bef8391702331bbfe9dc87"
+  }
+}

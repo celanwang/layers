@@ -1,0 +1,7 @@
+Command: .venv/bin/python -m pytest tests/test_tokenizer.py -q
+Configuration: HF ByteLevel(add_prefix_space=False, use_regex=False)
+Captured stdout before interruption:
+............................
+Process terminated with SIGTERM (shell exit 143) during the final Oracle check.
+Observation at 150 seconds: 99.3% CPU, 628384 KiB RSS; no completed Oracle result.
+This is an interrupted experiment, not an acceptance pass.

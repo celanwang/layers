@@ -41,7 +41,7 @@ layers 采用**以 nanochat / CS336 作业线为参照系的对照式自研**，
 
 ## 3. 工作模式：Kimi 规划把关 + Codex 执行
 
-本项目采用「Kimi to Codex」双层协作模式：**执行侧尽可能完全交给 Codex**（默认使用 codex 6.1-sol / luna 模型，权限 Never Ask），**关键判断与决策始终由 Kimi 处理**。
+本项目采用「Kimi to Codex」双层协作模式：**执行侧尽可能完全交给 Codex**（默认 `gpt-6.1-sol`，需要时切换 `gpt-6-luna`，权限 Never Ask），**关键判断与决策始终由 Kimi 处理**。
 
 ### 3.1 角色分工
 
@@ -81,7 +81,7 @@ layers 采用**以 nanochat / CS336 作业线为参照系的对照式自研**，
 - 权限：执行层以 `approval_policy=never`（Never Ask）+ `sandbox_mode=danger-full-access` 运行，**自动化与权限拉到最大，不设置审批询问**。安全边界不由沙箱提供，完全由任务规格白名单、禁止事项与规划层独立验收保证。
 - commit 不再是受限操作：阶段性自动提交是硬性要求，见第 4 节；`git push` 默认不执行（仅在用户明确要求时进行），合并与发布权始终在 Kimi / 用户手里。
 - 并行：用 `git worktree` 隔离，但**限制并行度**——多路并行会快速烧穿额度，默认串行，最多 2 路。
-- 额度中断预案：探针任务确认额度 → `codex exec resume --last` 串行续接 → 必要时用 cron 自动恢复。
+- 额度中断预案：探针任务确认额度 → `codex exec resume --last` 串行续接 → 必要时用 cron 自动恢复。注意 `resume` 子命令**不支持 `-C`**，必须在项目目录内调用（它按 cwd 匹配历史会话）。
 - 任务粒度：单个原子任务以 10–30 分钟执行量为宜；规格必须自包含（`codex exec` 单轮无法反问澄清）。
 
 ### 3.6 本项目的特殊调整（学习型项目）
