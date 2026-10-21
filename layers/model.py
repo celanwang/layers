@@ -84,3 +84,14 @@ class GPT(nn.Module):
                 x = block(x, cache=cache, layer_idx=layer_idx)
         x = self.final_norm(x)
         return x @ mx.transpose(self.token_embedding.weight)
+
+    def decode_batch(self, ids: mx.array, cache) -> mx.array:
+        """Return ``[batch, 1, vocab]`` logits using a paged batch cache."""
+        if ids.ndim != 2 or ids.shape != (len(cache.seq_ids), 1) or not ids.shape[0]:
+            raise ValueError("ids must have shape [non-empty cache batch, 1]")
+        if any(length >= self.ctx for length in cache.lengths):
+            raise ValueError("batched decode would exceed ctx")
+        x = self.token_embedding(ids)
+        for layer_idx, block in enumerate(self.blocks):
+            x = block.decode_batch(x, cache, layer_idx)
+        return self.final_norm(x) @ mx.transpose(self.token_embedding.weight)

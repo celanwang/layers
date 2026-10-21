@@ -1,7 +1,7 @@
 """Small, inspectable components for learning language models."""
 
 from .attention import CausalSelfAttention, RotaryEmbedding, attention_scores
-from .engine import Engine, RequestCapacityError, TokenEvent
+from .engine import BatchedEngine, Engine, RequestCapacityError, TokenEvent
 from .embedding import TokenEmbedding
 from .inference import KVCache, Sampler, generate
 from .model import GPT, cross_entropy
@@ -11,6 +11,7 @@ from .tokenizer import BPETokenizer
 from .transformer import LayerNorm, MLP, TransformerBlock
 
 __all__ = [
+    "BatchedEngine",
     "BPETokenizer",
     "CausalSelfAttention",
     "Engine",

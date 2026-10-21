@@ -175,3 +175,52 @@ class CausalSelfAttention(nn.Module):
         """Return ``(output, attention_weights)`` for a rank-2 or rank-3 input."""
         out, weights, _ = self.forward_with_intermediates(x, cache, layer_idx)
         return out, weights
+
+    def decode_batch_with_intermediates(self, x: mx.array, cache, layer_idx: int):
+        """Decode one token per row with independent RoPE positions and KV masks.
+
+        ``cache`` appends each row to its own paged sequence, then gathers and
+        right-pads the prefixes. No padded slot is ever stored in the pool.
+        """
+        if x.ndim != 3 or x.shape[1:] != (1, self.d_model):
+            raise ValueError("decode input must have shape [batch, 1, d_model]")
+        batch_size = x.shape[0]
+        shape = (batch_size, 1, self.n_head, self.d_head)
+        q = mx.transpose((x @ self.wq).reshape(shape), (0, 2, 1, 3))
+        k = mx.transpose((x @ self.wk).reshape(shape), (0, 2, 1, 3))
+        v = mx.transpose((x @ self.wv).reshape(shape), (0, 2, 1, 3))
+
+        # The one-token query's absolute position differs between requests.
+        pairs = mx.arange(0, self.d_head, 2, dtype=mx.float32)
+        frequencies = mx.exp(-pairs * (math.log(self.rope_base) / self.d_head))
+        angles = cache.positions[:, None, None, None] * frequencies
+        cos, sin = mx.cos(angles).astype(q.dtype), mx.sin(angles).astype(q.dtype)
+
+        def rotate(tensor):
+            even, odd = tensor[..., ::2], tensor[..., 1::2]
+            return mx.stack(
+                (even * cos - odd * sin, even * sin + odd * cos), axis=-1
+            ).reshape(tensor.shape)
+
+        rotary_q, rotary_k = rotate(q), rotate(k)
+        all_k, all_v = cache.append(layer_idx, rotary_k, v)
+        scores = (rotary_q @ mx.swapaxes(all_k, -1, -2)) / math.sqrt(self.d_head)
+        # positions are the old lengths; valid keys include the appended token.
+        valid = mx.arange(all_k.shape[-2])[None, :] <= cache.positions[:, None]
+        scores = mx.where(valid[:, None, None, :], scores, -float("inf"))
+        probs = _stable_softmax(scores)
+        context = mx.transpose(probs @ all_v, (0, 2, 1, 3)).reshape(x.shape)
+        out = context @ self.wo
+        return out, probs, {
+            "rotary_q": rotary_q,
+            "rotary_k": rotary_k,
+            "scaled_scores": scores,
+            "probs": probs,
+            "valid_keys": valid,
+            "out": out,
+        }
+
+    def decode_batch(self, x: mx.array, cache, layer_idx: int):
+        """Return one-token batched attention output and inspectable weights."""
+        out, probs, _ = self.decode_batch_with_intermediates(x, cache, layer_idx)
+        return out, probs
