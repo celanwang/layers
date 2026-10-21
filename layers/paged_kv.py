@@ -419,15 +419,9 @@ class PagedKVPool:
             tables.append(table + [0] * (blocks - needed))
 
         keys, values = zip(*payloads)
-        bank = mx.concatenate((*keys, *values), axis=0)
         table = mx.array(tables, dtype=mx.int32)
-        indices = mx.stack((table, table + len(payloads)), axis=0)
-        selected = mx.take(bank, indices, axis=0)  # [2, B, N, H, S, D]
-        selected = mx.transpose(selected, (0, 1, 3, 2, 4, 5))
-        selected = selected.reshape(
-            (2, len(seq_ids), bank.shape[1], blocks * self.block_size, bank.shape[-1])
-        )
-        return selected[0], selected[1], lengths
+        keys_out, values_out = _materialize_page_bank(keys, values, table)
+        return keys_out, values_out, lengths
 
     def gather(self, seq_id: int, layer_idx: int = 0):
         """Gather a logical layer prefix into contiguous ``(k, v)`` tensors."""
@@ -484,3 +478,16 @@ class PagedKVCache:
 
     def append(self, layer_idx: int, k: mx.array, v: mx.array):
         return self.pool.append(self.seq_id, k, v, layer_idx=layer_idx)
+
+
+@mx.compile
+def _materialize_page_bank(keys, values, table):
+    """Compile only pure page-bank indexing, never pool mutations or lookup."""
+    bank = mx.concatenate((*keys, *values), axis=0)
+    indices = mx.stack((table, table + len(keys)), axis=0)
+    selected = mx.take(bank, indices, axis=0)  # [2, B, N, H, S, D]
+    selected = mx.transpose(selected, (0, 1, 3, 2, 4, 5))
+    selected = selected.reshape(
+        (2, table.shape[0], bank.shape[1], table.shape[1] * bank.shape[2], bank.shape[-1])
+    )
+    return selected[0], selected[1]

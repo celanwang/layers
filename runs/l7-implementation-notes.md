@@ -76,3 +76,13 @@ host calls. A bounded follow-up will compile only that pure array transform,
 leaving page lookup/writes, sampling, and the exact measurement protocol intact.
 This is an implementation change, not repetition of an unchanged benchmark
 until a preferred timing appears. All first-run evidence remains archived.
+
+## Compiled materialization verification
+
+Moved the pure bank concatenate/index/transpose/reshape into a compiled helper.
+Consulted only the installed public `mx.compile` docstring (array-tree inputs
+and shape specialization); no MLX implementation source was opened.
+Page metadata and CoW remain ordinary Python. A single `mx.take` still selects
+both K/V. The full suite passes again: 133 passed, one existing warning,
+31.65 seconds; syntax and whitespace checks pass. This implementation change
+is the sole reason for the second paired acceptance measurement.
