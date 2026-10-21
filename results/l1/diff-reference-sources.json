@@ -1,0 +1,168 @@
+{
+  "nanochat": {
+    "repository": "karpathy/nanochat",
+    "commit": "92d63d4e8bb4df75c3b71618f31ddde2378b2bcd",
+    "files": [
+      {
+        "path": "README.md",
+        "sha256": "77b8dfce94f45ed7c29eecdbd52e4e4137a060036b38c250519341ba3270daca",
+        "lines": 230,
+        "url": "https://github.com/karpathy/nanochat/blob/92d63d4e8bb4df75c3b71618f31ddde2378b2bcd/README.md"
+      },
+      {
+        "path": "nanochat/tokenizer.py",
+        "sha256": "e6f12cb88fead3e6d0d45a7dd2af4192280712d92bfde83e2399cc4b3a0860fb",
+        "lines": 279,
+        "url": "https://github.com/karpathy/nanochat/blob/92d63d4e8bb4df75c3b71618f31ddde2378b2bcd/nanochat/tokenizer.py"
+      },
+      {
+        "path": "pyproject.toml",
+        "sha256": "c91fdd03ae9705565572eee31924d4c0bca24bf5431a8eabff4c061882f94929",
+        "lines": 69,
+        "url": "https://github.com/karpathy/nanochat/blob/92d63d4e8bb4df75c3b71618f31ddde2378b2bcd/pyproject.toml"
+      },
+      {
+        "path": "scripts/tok_train.py",
+        "sha256": "93237def990ddd96c9698bcc980881900e982dc8fc30dff913b132302b967aea",
+        "lines": 91,
+        "url": "https://github.com/karpathy/nanochat/blob/92d63d4e8bb4df75c3b71618f31ddde2378b2bcd/scripts/tok_train.py"
+      }
+    ]
+  },
+  "minbpe": {
+    "repository": "karpathy/minbpe",
+    "commit": "1acefe89412b20245db5a22d2a02001e547dc602",
+    "files": [
+      {
+        "path": "README.md",
+        "sha256": "afff7898661e44eb30ed314398ae16baa61b6fb0a5aaf386cfecb56302607521",
+        "lines": 150,
+        "url": "https://github.com/karpathy/minbpe/blob/1acefe89412b20245db5a22d2a02001e547dc602/README.md"
+      },
+      {
+        "path": "minbpe/base.py",
+        "sha256": "b5329a834e114459dce29a6889e05b0d5d15ead8738bf66f65396139822863b4",
+        "lines": 165,
+        "url": "https://github.com/karpathy/minbpe/blob/1acefe89412b20245db5a22d2a02001e547dc602/minbpe/base.py"
+      },
+      {
+        "path": "minbpe/basic.py",
+        "sha256": "d240f8b54f25d8c65e81f3da1cc7c3a390a7692cdbf62d6ff6d0c1cba1b031b8",
+        "lines": 74,
+        "url": "https://github.com/karpathy/minbpe/blob/1acefe89412b20245db5a22d2a02001e547dc602/minbpe/basic.py"
+      },
+      {
+        "path": "minbpe/regex.py",
+        "sha256": "2f79fc32d719c5805782c441e6311c10790ba9873ee1ec7e920a2d04d3a77e38",
+        "lines": 164,
+        "url": "https://github.com/karpathy/minbpe/blob/1acefe89412b20245db5a22d2a02001e547dc602/minbpe/regex.py"
+      }
+    ]
+  },
+  "rustbpe": {
+    "repository": "karpathy/rustbpe",
+    "commit": "ddf848f6961a0655dc8693742fc338e5682c0d3b",
+    "files": [
+      {
+        "path": "Cargo.toml",
+        "sha256": "3a5782f2060de2474a471e4be8071c87fd15b1cc943e3af3d5ae0aeebd04e8d1",
+        "lines": 40,
+        "url": "https://github.com/karpathy/rustbpe/blob/ddf848f6961a0655dc8693742fc338e5682c0d3b/Cargo.toml"
+      },
+      {
+        "path": "README.md",
+        "sha256": "ac5e93646bce7c14c82bfc6b04ccfbe1291e9171103ca4e225a27a6b813e8d08",
+        "lines": 176,
+        "url": "https://github.com/karpathy/rustbpe/blob/ddf848f6961a0655dc8693742fc338e5682c0d3b/README.md"
+      },
+      {
+        "path": "src/lib.rs",
+        "sha256": "2b6bdae64ab82cf7c6731766bb94d2feecb27cacddae8d37ef6c94b4f0f3b450",
+        "lines": 1070,
+        "url": "https://github.com/karpathy/rustbpe/blob/ddf848f6961a0655dc8693742fc338e5682c0d3b/src/lib.rs"
+      }
+    ]
+  },
+  "tiktoken": {
+    "repository": "openai/tiktoken",
+    "commit": "4e71bbe0c078468e00fefbf94b39849389f346e5",
+    "files": [
+      {
+        "path": "README.md",
+        "sha256": "3e6cf1c4d6df2d4b9fc3d9a09d8e68a3734f4dd4d0a11341abd3a7c62256bc2a",
+        "lines": 131,
+        "url": "https://github.com/openai/tiktoken/blob/4e71bbe0c078468e00fefbf94b39849389f346e5/README.md"
+      },
+      {
+        "path": "tiktoken/core.py",
+        "sha256": "3c136f06b05992855dc329216dfa1fa5b6718cccd3d79f658262de8f871f45f0",
+        "lines": 449,
+        "url": "https://github.com/openai/tiktoken/blob/4e71bbe0c078468e00fefbf94b39849389f346e5/tiktoken/core.py"
+      },
+      {
+        "path": "tiktoken/load.py",
+        "sha256": "43c3cfb29dc48a74e70e0c85bb01cfd96a3de069a98de8778ccab7f72a2836cc",
+        "lines": 171,
+        "url": "https://github.com/openai/tiktoken/blob/4e71bbe0c078468e00fefbf94b39849389f346e5/tiktoken/load.py"
+      },
+      {
+        "path": "tiktoken_ext/openai_public.py",
+        "sha256": "954392738e60d0fb6dca1dad80872efc47c8e2733babecbbf0a23970ed66c2cb",
+        "lines": 162,
+        "url": "https://github.com/openai/tiktoken/blob/4e71bbe0c078468e00fefbf94b39849389f346e5/tiktoken_ext/openai_public.py"
+      }
+    ]
+  },
+  "tokenizers": {
+    "repository": "huggingface/tokenizers",
+    "commit": "301277072263fb3830eb66eec7e47adadf76f1dc",
+    "tag": "v0.23.3",
+    "files": [
+      {
+        "path": "tokenizers/src/models/bpe/parity_trainer.rs",
+        "sha256": "297e6168c2659b6be17f83255ab771a383d972d24edcb23338111b369606d0d3",
+        "lines": 2228,
+        "url": "https://github.com/huggingface/tokenizers/blob/301277072263fb3830eb66eec7e47adadf76f1dc/tokenizers/src/models/bpe/parity_trainer.rs"
+      },
+      {
+        "path": "tokenizers/src/models/bpe/trainer.rs",
+        "sha256": "c018495f81488938d68ce5e7e247af28db3969b83635929eff73852e15d0c7ba",
+        "lines": 868,
+        "url": "https://github.com/huggingface/tokenizers/blob/301277072263fb3830eb66eec7e47adadf76f1dc/tokenizers/src/models/bpe/trainer.rs"
+      },
+      {
+        "path": "tokenizers/src/models/bpe/word.rs",
+        "sha256": "42a5547426082590675979ed72e03ce59a16f7cf0b57aaac6890d43ce0a79ad0",
+        "lines": 353,
+        "url": "https://github.com/huggingface/tokenizers/blob/301277072263fb3830eb66eec7e47adadf76f1dc/tokenizers/src/models/bpe/word.rs"
+      },
+      {
+        "path": "tokenizers/src/pre_tokenizers/byte_level.rs",
+        "sha256": "f9b5a747a0ad936f0c49cff8f32bc8f166126704ab02d5af0505ad032fe6d99a",
+        "lines": 593,
+        "url": "https://github.com/huggingface/tokenizers/blob/301277072263fb3830eb66eec7e47adadf76f1dc/tokenizers/src/pre_tokenizers/byte_level.rs"
+      }
+    ]
+  },
+  "public_benchmark": {
+    "url": "https://github.com/karpathy/nanochat/discussions/1",
+    "title": "Introducing nanochat: The best ChatGPT that $100 can buy.",
+    "author": "karpathy",
+    "updated_at": "2026-08-21T02:03:18Z",
+    "body_sha256": "5f84e429dc7ca6c3e8c1a847dd9cb33ee84304c6e561ff356b7d5cee375d30a5",
+    "body_lines": {
+      "hardware": 1,
+      "training_claim": 43
+    },
+    "reported_characters": 2000000000,
+    "reported_vocab_size_including_specials": 65536,
+    "reported_seconds_approximate": 60,
+    "hardware_context": "8x H100 Lambda node; CPU model/count and training thread count unreported",
+    "warmups": null,
+    "repetitions": null,
+    "quantiles": null,
+    "configuration_hash": null,
+    "limitation": "Author narrative estimate, not a controlled local benchmark; tokenizer training is CPU work."
+  },
+  "retrieved_utc": "2026-10-21"
+}

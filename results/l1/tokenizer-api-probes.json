@@ -1,0 +1,103 @@
+{
+  "config": {
+    "packages": {
+      "tiktoken": "0.14.0",
+      "tokenizers": "0.23.3"
+    },
+    "own_model_sha256": "b8056fefeb320f2788aa709d8a0ab9a518980aaac9bef8391702331bbfe9dc87",
+    "command": "See runs/l1-diff-analysis.md, section 4, reproduction command"
+  },
+  "literal": "<|endoftext|>",
+  "own_ids": [
+    1025
+  ],
+  "own_special_ids": {
+    "<|beginoftext|>": 1024,
+    "<|endoftext|>": 1025,
+    "<|padding|>": 1026,
+    "<|unknown|>": 1027
+  },
+  "tiktoken_default_error": "ValueError",
+  "tiktoken_allowed_ids": [
+    100257
+  ],
+  "tiktoken_ordinary_ids": [
+    27,
+    91,
+    8862,
+    728,
+    428,
+    91,
+    29
+  ],
+  "tiktoken_disallowed_empty_ids": [
+    27,
+    91,
+    8862,
+    728,
+    428,
+    91,
+    29
+  ],
+  "own_model_bytes": 40090,
+  "own_canonical_serialization_matches_file": true,
+  "own_canonical_serialization_sha256": "b8056fefeb320f2788aa709d8a0ab9a518980aaac9bef8391702331bbfe9dc87",
+  "own_reconstructed_serialization_matches": true,
+  "tiktoken_rank_entries": 100256,
+  "tiktoken_n_vocab": 100277,
+  "tiktoken_special_ids": {
+    "<|endoftext|>": 100257,
+    "<|fim_prefix|>": 100258,
+    "<|fim_middle|>": 100259,
+    "<|fim_suffix|>": 100260,
+    "<|endofprompt|>": 100276
+  },
+  "cross_regex_vocab_probe": {
+    "learned_vocab_entries": 768,
+    "entries_spanning_multiple_hf_regex_chunks": 335,
+    "heldout_encoded_tokens_using_those_entries": 15119,
+    "top_examples": [
+      {
+        "id": 261,
+        "piece": ", ",
+        "heldout_uses": 511
+      },
+      {
+        "id": 443,
+        "piece": "IO:\n",
+        "heldout_uses": 363
+      },
+      {
+        "id": 259,
+        "piece": "s ",
+        "heldout_uses": 259
+      },
+      {
+        "id": 305,
+        "piece": "e, ",
+        "heldout_uses": 247
+      },
+      {
+        "id": 280,
+        "piece": ".\n\n",
+        "heldout_uses": 246
+      },
+      {
+        "id": 294,
+        "piece": "the ",
+        "heldout_uses": 244
+      },
+      {
+        "id": 256,
+        "piece": "e ",
+        "heldout_uses": 237
+      },
+      {
+        "id": 285,
+        "piece": "and ",
+        "heldout_uses": 230
+      }
+    ],
+    "caveat": "Mechanism probe on own learned pieces, not a per-rule attribution of the retraining ablation."
+  }
+}

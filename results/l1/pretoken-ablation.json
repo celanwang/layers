@@ -1,0 +1,190 @@
+{
+  "timestamp_utc": "2026-10-21T07:50:53.052145+00:00",
+  "config": {
+    "git_commit": "4d071c00e41d483edf61796377ea40895971b934",
+    "python": "3.12.15 (main, Oct  3 2026, 00:54:33) [Clang 22.1.3 ]",
+    "platform": "macOS-15.8-arm64-arm-64bit",
+    "packages": {
+      "tokenizers": "0.23.3",
+      "tiktoken": "0.14.0"
+    },
+    "source_sha256": {
+      "bench/l1_pretoken_ablation.py": "dffe82dc5cda2eb394e0fba817011827c1d14e9a6eeec9d47ec369a3773f8fcc",
+      "layers/tokenizer.py": "41d291294d6364775c3cbb2250579542f102cefb85ce4c8c72fa60fb4bb6fea3"
+    },
+    "corpus": {
+      "path": "data/tiny-shakespeare.txt",
+      "sha256": "86c4e6aa9db7c042ec79f339dcb96d42b0075e16b8fc2e86bf0ca57e2dc565ed",
+      "bytes": 1115394,
+      "training_bytes": 1003854,
+      "training_sha256": "a9e24e23a1ec77744dad26844bfd5a09b6e041954e1eef0000e7f24cba6db735",
+      "heldout_bytes": 111540,
+      "heldout_sha256": "c54f3753a4e6e3c3d1759212815a7caf826e68a33021b25312984400bed40a1f",
+      "split": "first 90% of Unicode characters train; last 10% held out",
+      "iterator_items": 1
+    },
+    "hf": {
+      "cases": [
+        {
+          "use_regex": true,
+          "requested_vocab": 1024
+        },
+        {
+          "use_regex": true,
+          "requested_vocab": 8192
+        },
+        {
+          "use_regex": true,
+          "requested_vocab": 100256
+        },
+        {
+          "use_regex": false,
+          "requested_vocab": 1024
+        }
+      ],
+      "model": "BPE()",
+      "add_prefix_space": false,
+      "decoder": "ByteLevel()",
+      "initial_alphabet": "all 256 bytes",
+      "min_frequency": 1,
+      "special_tokens": [],
+      "normalizer": null,
+      "encode_add_special_tokens": false
+    },
+    "baseline_sha256": "5a522069ff86d62baff0117e198e44fd62d4fd9fae34a9b1107c87e4ab9c71c8",
+    "own_model_sha256": "b8056fefeb320f2788aa709d8a0ab9a518980aaac9bef8391702331bbfe9dc87",
+    "measurement": "single deterministic token-count evaluation; no latency claims"
+  },
+  "config_hash": "dfa84ff23211",
+  "complete": true,
+  "baseline": {
+    "own_tokens": 46683,
+    "cl100k_tokens": 31469,
+    "cl100k_mergeable_vocab": 100256,
+    "cl100k_n_vocab": 100277
+  },
+  "encode_counterexamples": [
+    {
+      "text": "abc",
+      "merges": [
+        [
+          98,
+          99
+        ],
+        [
+          97,
+          98
+        ]
+      ],
+      "rank_ids": [
+        97,
+        256
+      ],
+      "rank_pieces": [
+        "a",
+        "bc"
+      ],
+      "longest_ids": [
+        257,
+        99
+      ],
+      "longest_pieces": [
+        "ab",
+        "c"
+      ],
+      "tiktoken_ids": [
+        97,
+        256
+      ],
+      "roundtrip": true
+    },
+    {
+      "text": "abcd",
+      "merges": [
+        [
+          98,
+          99
+        ],
+        [
+          97,
+          98
+        ],
+        [
+          99,
+          100
+        ]
+      ],
+      "rank_ids": [
+        97,
+        256,
+        100
+      ],
+      "rank_pieces": [
+        "a",
+        "bc",
+        "d"
+      ],
+      "longest_ids": [
+        257,
+        258
+      ],
+      "longest_pieces": [
+        "ab",
+        "cd"
+      ],
+      "tiktoken_ids": [
+        97,
+        256,
+        100
+      ],
+      "roundtrip": true
+    }
+  ],
+  "hf_cases": [
+    {
+      "use_regex": true,
+      "requested_vocab": 1024,
+      "actual_vocab": 1024,
+      "heldout_tokens": 49420,
+      "roundtrip": true,
+      "model_sha256": "3d27adac38a47e8dcf5692228b8391e808e5bfb482c77639ea56426c7ccaddd2"
+    },
+    {
+      "use_regex": true,
+      "requested_vocab": 8192,
+      "actual_vocab": 8192,
+      "heldout_tokens": 35005,
+      "roundtrip": true,
+      "model_sha256": "b27b36a7ff11104a2d87dcc4d579f8894b4b45a2208644868e8f18fe5188fe63"
+    },
+    {
+      "use_regex": true,
+      "requested_vocab": 100256,
+      "actual_vocab": 20319,
+      "heldout_tokens": 33444,
+      "roundtrip": true,
+      "model_sha256": "b488eb08c8fc46f37a36f0176b17f333f8b715b7144be232e2fa52aad12033b1"
+    },
+    {
+      "use_regex": false,
+      "requested_vocab": 1024,
+      "actual_vocab": 1024,
+      "heldout_tokens": 46683,
+      "roundtrip": true,
+      "model_sha256": "3f693bc1518a8005c8573907b287ae4ab96c949430ead867ce815f3a8a2c4b26"
+    }
+  ],
+  "decomposition": {
+    "original_gap_tokens": 15214,
+    "original_gap_percent_of_cl100k": 48.34599129301853,
+    "own_minus_hf_no_regex": 0,
+    "no_regex_effect_tokens": -2737,
+    "no_regex_share_of_original_gap_percent": -17.990009202050743,
+    "residual_hf_regex_minus_cl100k": 17951,
+    "residual_share_of_original_gap_percent": 117.99000920205074,
+    "controlled_vocab_effect_tokens": 15976,
+    "large_hf_minus_cl100k": 1975,
+    "identity": "own-cl100k = (own-HF_false_1024) + (HF_false_1024-HF_true_1024) + (HF_true_1024-HF_true_large) + (HF_true_large-cl100k)",
+    "caveat": "Residual is NOT a pure vocabulary-size causal effect: training data, regex, tie rules and learned ranks also differ from cl100k. Large HF vocabulary may saturate below the requested size."
+  }
+}
