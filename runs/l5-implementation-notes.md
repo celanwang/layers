@@ -63,5 +63,43 @@
   installed and this repository defines no lint configuration; no dependency
   was added.
 
-The final benchmark, acceptance output, prediction verdicts and file manifest
-will be archived under `results/l5/` after measuring the committed code.
+## Final acceptance and measurements
+
+- Both exact section-5 commands exited 0. The final test run was
+  `81 passed, 1 warning in 7.43s`; existing tests remain byte-for-byte unchanged.
+- Complete section-6 report (file manifest, full command output, measurements,
+  prediction verdicts and deviations): `results/l5/l5-t1-report.md`.
+- Raw record: `results/l5/quant-bench-20261021T121645745015Z.json`.
+  Source commit: `d10f1f665a8a58a28abcce2ea723db40bc8a2843`;
+  config hash: `f782bb66df96`; Apple M4 Max / 48 GiB / MLX 0.32.4;
+  3 warmups, 10 repetitions; 44,467 heldout targets.
+
+| Format | Serialized bytes | Whole-model compression | Projection compression | Loss | Relative loss increase | Decode tok/s | Speedup |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| fp32 | 52,485,384 | 1.0000x | 1.0000x | 4.27175664 | 0.0000% | 394.87 | 1.0000x |
+| INT8 | 14,780,712 | 3.5509x | 3.9883x | 4.27190090 | +0.0034% | 284.60 | 0.7208x |
+| INT4 g64 | 8,845,608 | 5.9335x | 7.5294x | 4.29692684 | +0.5892% | 239.46 | 0.6064x |
+
+### Predictions and open findings
+
+- Memory: INT4's approximately 7.5x projection compression holds. The INT8
+  approximately 4.1x premise is overturned as written: fp32-to-INT8 has a
+  4x upper bound before scale overhead; measured projection compression is
+  3.9883x. Protected fp32 arrays further lower whole-model compression.
+- Quality: both predictions hold, with increases below 1% and 5%.
+- Speed: the numeric INT8 interval [0.8x, 1.3x] is overturned by 0.7208x;
+  the qualitative slowdown prediction holds. INT4 is slower still. Added
+  unpack/dequantize work plausibly contributes, but kernel-level attribution
+  is an open question; this measurement does not profile dispatch or memory.
+- MLX reconstructs our adapted signed grid exactly in both formats. Native
+  affine results differ because they use a bias and a different grid; full
+  error/RMSE comparisons are retained in JSON and the report.
+
+### Execution commits and scope
+
+- `d10f1f6` — `feat(l5): add handwritten weight quantization`.
+- `71bf8ee` — `test(l5): record quantization acceptance`.
+- Report archival is a separate documentation commit. No push was performed.
+- During execution, an independent `c6a354f` documentation commit added the
+  T2 specification on the shared branch. This task did not change or stage
+  that file. Its own commits remain entirely within the T1 whitelist.
