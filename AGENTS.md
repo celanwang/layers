@@ -116,10 +116,11 @@ layers 的核心目标是"建出来以理解"。执行侧仍尽可能完全交�
 - **L1 Tokenizer**：已收官并合并 main（`8c0aa0c`）。byte-level BPE 盲做实现 + 三重 Oracle 对齐 + 对照精读消融；复盘见 `runs/l1-retrospective.md`。
 - **L2 注意力**：已收官并合并 main（`fa073f4`）。嵌入 + RoPE + 多头因果注意力（MLX naive 主路径，fast 内核仅对照）；PyTorch 逐中间量对齐；复盘见 `runs/l2-retrospective.md`。
 - **L3 训练循环**：已收官并合并 main（`02fcd21`）。13.1M GPT 组装（PyTorch 梯度级对齐）+ 手写 AdamW/cosine/clip；500 步 heldout -41%，MFU 精确口径 35.7%；复盘见 `runs/l3-retrospective.md`。
+- **L4 推理**：已收官并合并 main（`9196e0e`）。KV cache + 采样 + 流式 UTF-8 + mini 引擎（分页 KV 池、fork CoW、连续批处理调度）；60 项测试；复盘见 `runs/l4-retrospective.md`。mini-vLLM 开放问题闭环（mini 形态，与 vLLM 的 kernel batching 差距已定量界定）。
 
 ### 仍开放
 
-- **L4 选题（已定方向，待启动）**：推理 / KV Cache（decode 循环、KV cache 接口、流式 UTF-8、采样策略、生成吞吐与内存墙测量，接 L0/L2 基线）。
-- 后续迭代顺序（候选：量化/混合精度 → 服务化）。
-- Infra 线深度：是否包含自研 mini 推理引擎（mini-vLLM 形态）——L4 启动时需一并确认。
+- **L5 选题（已定方向，待启动）**：量化 / 混合精度——权重量化（INT8/4bit）+ KV cache 量化 + bf16 训练对照（接 L3 缺失件），精度损失 vs 吞吐/内存收益曲线。
+- 后续迭代顺序（候选：服务化 L6——kernel batching、prefill/decode 混排、OpenAI 兼容 API）。
+- 专项小实验（可插空）：KV cache 转正条件的配对测量（n≥256 cached/uncached）。
 - 除已收官迭代外，新迭代仍遵循"讨论确认后再落地"的节奏。
