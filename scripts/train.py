@@ -28,7 +28,7 @@ TOKENIZER_PATH = ROOT / "results/l1/tokenizer-1024.json"
 RESULTS_DIR = ROOT / "results/l3"
 CONTEXT = 256
 BATCH_SIZE = 16
-STEPS = 200
+STEPS = 500
 WARMUP_STEPS = 100
 PEAK_LR = 3e-4
 BETAS = (0.9, 0.95)
@@ -311,9 +311,9 @@ def run_training() -> dict:
     model_bpb = final_heldout_loss / math.log(2.0) * tokens_per_byte
     overfit = run_single_batch_overfit_check()
 
-    checkpoint_path = RESULTS_DIR / "ckpt-final.npz"
+    checkpoint_path = RESULTS_DIR / f"ckpt-final-{STEPS}.npz"
     save_checkpoint(model, checkpoint_path)
-    curve_path = RESULTS_DIR / "loss-curve.json"
+    curve_path = RESULTS_DIR / f"loss-curve-{STEPS}.json"
     curve_path.write_text(json.dumps(loss_curve, indent=2) + "\n", encoding="utf-8")
     metrics = {
         "iteration": "L3-T2",
@@ -358,7 +358,7 @@ def run_training() -> dict:
             "cl100k_base": 4.69,
         },
     }
-    metrics_path = RESULTS_DIR / "train-metrics.json"
+    metrics_path = RESULTS_DIR / f"train-metrics-{STEPS}.json"
     metrics_path.write_text(json.dumps(metrics, indent=2) + "\n", encoding="utf-8")
 
     if not all(
