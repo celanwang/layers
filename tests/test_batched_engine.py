@@ -155,3 +155,30 @@ def test_singleton_context_limit_capacity_and_invalid_batch_fail_before_append()
     assert batched.pool.seq_len(seq_id) == 1
     batched.run()
     assert batched.pool.allocated_blocks == 0
+
+
+def test_trained_checkpoint_variable_prefix_logits_stay_within_absolute_tolerance():
+    # Width 512 exposes GEMM accumulation error hidden by the tiny fixture.
+    from bench.l6_batching_bench import load_model
+
+    gpt = load_model()
+    batched = BatchedEngine(gpt, block_size=4, max_concurrent=8)
+    references, samplers = [], []
+    for row, length in enumerate((1, 2, 4, 7, 11, 16, 23, 31)):
+        prompt = ((np.arange(length) + row * 29) % gpt.vocab_size).tolist()
+        oracle = Engine(gpt, block_size=4, max_concurrent=1)
+        left, right = RecordingSampler(500 + row), RecordingSampler(500 + row)
+        batched.add_request(prompt, left, max_new_tokens=33)
+        oracle.add_request(prompt, right, max_new_tokens=33)
+        references.append(oracle)
+        samplers.append((left, right))
+    for _ in range(33):
+        events = batched.step()
+        for row, oracle in enumerate(references):
+            event = oracle.step()[0]
+            assert (events[row].token_id, events[row].finished) == (event.token_id, event.finished)
+            np.testing.assert_allclose(
+                samplers[row][0].logits[-1], samplers[row][1].logits[-1],
+                atol=1e-5, rtol=0,
+            )
+    assert batched.pool.allocated_blocks == batched.pool.active_sequences == 0

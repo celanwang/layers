@@ -94,5 +94,12 @@ class GPT(nn.Module):
         x = self.token_embedding(ids)
         for layer_idx, block in enumerate(self.blocks):
             x = block.decode_batch(x, cache, layer_idx)
-        logits = self.final_norm(x[:, 0, :]) @ mx.transpose(self.token_embedding.weight)
+        normalized = self.final_norm(x[:, 0, :])
+        weights = mx.transpose(self.token_embedding.weight)
+        # Two shorter reductions limit fp32 GEMM accumulation error in logits.
+        # Both halves still project all request rows together, reading each
+        # weight half once. The unchanged L4 GEMV is the numerical oracle.
+        midpoint = self.d_model // 2
+        logits = normalized[:, :midpoint] @ weights[:midpoint]
+        logits = logits + normalized[:, midpoint:] @ weights[midpoint:]
         return logits[:, None, :]

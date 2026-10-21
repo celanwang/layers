@@ -54,6 +54,29 @@ MLP, and vocabulary projection operate on `[B, D]` rows. Attention still uses
 expresses shared-weight GEMM rather than relying on backend conversion of a
 rank-three batch of one-row matrix multiplies. The L4 path is unchanged.
 
+## Trained-checkpoint precision diagnosis
+
+An additional check with the real width-512 checkpoint, eight variable prefixes,
+and 33 sampled tokens found two absolute logit errors above `1e-5` out of
+271,392 comparisons (max `1.1444091796875e-5`), although every token matched.
+The failure is retained in `checkpoint-oracle-attempt1.json`. Disabling
+compilation and changing dense layout produced the same two outliers
+(`linear-layout-probes.json`), ruling out compilation as their source.
+
+An fp64 CPU diagnostic decomposed each failing final logit into propagated
+normalized-input drift and output-projection accumulation error. Input drift
+was only `1.62e-6` / `-1.04e-6`; the batch vocabulary dot-product errors were
+`8.39e-6` / `-1.02e-5` relative to fp64, versus reference GEMV errors below
+`4.85e-7`. Thus the final long fp32 reduction dominated these failures.
+`projection-precision-probe.json` preserves the decomposition and alternatives.
+
+The batch vocabulary projection now sums two half-width GEMMs, shortening
+the fp32 accumulation chains while continuing to share both weight halves
+across all request rows. The diagnostic max absolute error fell to
+`7.62939453125e-6`; no tolerance was relaxed. A trained-checkpoint regression
+test covers the same eight prefixes and 32 actual decode forwards. CPU fp64
+is diagnostic only; inference remains GPU fp32 throughout.
+
 The unchanged bf16 training regression test automatically emits an L5 JSON.
 Each newly generated artifact is relocated intact into `results/l6/` after the
 suite; existing L5 files are neither edited nor removed.
