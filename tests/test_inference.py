@@ -86,6 +86,18 @@ class _ByteSequenceModel:
         return mx.array(logits)
 
 
+class _FiniteLogitsModel:
+    def __init__(self, model):
+        self.model = model
+        self.n_layer = model.n_layer
+
+    def __call__(self, ids, cache=None):
+        logits = self.model(ids, cache=cache)
+        mx.eval(logits)
+        assert np.isfinite(as_numpy(logits)).all()
+        return logits
+
+
 def test_streaming_utf8_buffers_split_cjk_and_emoji_bytes():
     tokenizer = BPETokenizer()
     expected = "中🙂"
@@ -116,7 +128,7 @@ def test_l3_checkpoint_greedy_generation_smoke_200_tokens():
 
     chunks = list(
         generate(
-            model,
+            _FiniteLogitsModel(model),
             tokenizer,
             prompt,
             max_new=200,
