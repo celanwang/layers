@@ -107,3 +107,33 @@ is the sole reason for the second paired acceptance measurement.
 - Full report: `results/l7/l7-t1-report.md`; section 6 / -o summary:
   `results/l7/l7-t1-output.md`. Both retained measurements are described there.
   No new dependencies, external framework implementation reading, or push.
+
+## L7-T2 authorized implementation plan
+
+Read `AGENTS.md`, `runs/l7-decode-perf-principle.md`, and
+`tasks/l7-batched-sampling.md`. The user explicitly authorizes execution of T2.
+Baseline is `0668953` on `l7-decode-perf`, with a clean worktree and the
+accepted 133-test T1 result. Changes are confined to the T2 whitelist.
+
+- Add `sample_batch(samplers, logits)` for `[B, V]` input. Reuse each existing
+  `Sampler.probabilities` verbatim; retain per-row `seed(seed + draws)`, draw
+  increments and scalar categorical shape, including greedy cases. Stack lazy
+  token arrays, evaluate once, and transfer once with `tolist()`.
+- Add `BatchedSamplingEngine(PagedAttentionEngine)` as the additive step
+  implementation, preserving T1 cache/decode calls, events and deferred frees.
+  Existing engines and `Sampler` stay source-identical. Arbitrary callable
+  samplers continue through the inherited T1 path; the single-fence guarantee
+  applies to batches of standard `Sampler` instances.
+- Test token-exact sampling with mixed parameters, prior draws, request/row
+  permutations, dynamic arrivals/completions, shared-prefix cancellation,
+  context/capacity limits, and the trained d512 checkpoint. Instrument eval
+  and host transfer to enforce one batch synchronization and no scalar reads.
+- Import the unchanged L6 paired harness for each of L6/T1, T1/T2, L6/T2,
+  retaining 3 warmups / 10 repeats, alternating order, raw timings, hashes and
+  token oracles. Compute the T2 prediction from the directly paired T1/T2 arm.
+- Run both section 5 commands, audit additive scope, commit verified stages,
+  and archive all outcomes. No literal `-o` path was supplied: the summary is
+  `results/l7/l7-t2-output.md`; full report `results/l7/l7-t2-report.md`.
+
+Only existing project code and installed public MLX API docstrings have been
+read. No external reference implementation source, dependency change or push.
