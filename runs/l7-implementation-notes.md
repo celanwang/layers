@@ -86,3 +86,24 @@ Page metadata and CoW remain ordinary Python. A single `mx.take` still selects
 both K/V. The full suite passes again: 133 passed, one existing warning,
 31.65 seconds; syntax and whitespace checks pass. This implementation change
 is the sole reason for the second paired acceptance measurement.
+
+## Final acceptance and interpretation
+
+- Full suite: 133 passed / one existing warning; all 119 old tests unchanged.
+- Final benchmark exits 0; config `4e04eb84dc1c`, implementation
+  `e5b5755002e6f2427a5b1fd322b1ea3c98e6a606`, record
+  `results/l7/paged-attn-bench-20261021T154404587918Z.json`.
+- B=1/2/4/8 new throughput: 476.41 / 725.73 / 1178.33 / 1605.61 tok/s;
+  paired L6: 482.71 / 740.84 / 1109.55 / 1421.73 tok/s.
+- B=8: 1.1293x paired L6,
+  1.1178x historical 1436.41 tok/s.
+  >=1700 prediction not reached; <1550 setback not triggered (intermediate).
+- Singleton decode latency +1.32%; strict zero regression is not proven.
+  Do not report unqualified performance success. T2 sampling remains untouched.
+- Final audit reconfirms 53 existing methods and 30 existing files unchanged;
+  existing implementation changes are entirely additive and whitelisted.
+- Protocol equality, config hash, all source hashes and 240 raw timing samples
+  are verified in `results/l7/evidence-verification.json`.
+- Full report: `results/l7/l7-t1-report.md`; section 6 / -o summary:
+  `results/l7/l7-t1-output.md`. Both retained measurements are described there.
+  No new dependencies, external framework implementation reading, or push.

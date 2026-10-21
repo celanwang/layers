@@ -86,5 +86,7 @@
     "tests/test_optimizer.py": "ebba200dfb43ab12541f81c28319c737c42628d78821bce9d63acc0fa79243da",
     "tests/test_quant.py": "54a26e163755a3a47c493f548ed684948d148eb29be4a17ec49bc065fdc4ac71",
     "tests/test_tokenizer.py": "88439af7cd4d8b194e2811ebb2b2a7c758e387fed668368890e7fe3713d46bd7"
-  }
+  },
+  "final_existing_implementation_diff_has_zero_deletions": true,
+  "only_whitelisted_paths_changed": true
 }
