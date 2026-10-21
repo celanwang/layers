@@ -118,6 +118,7 @@ layers 的核心目标是"建出来以理解"。执行侧仍尽可能完全交�
 - **L3 训练循环**：已收官并合并 main（`02fcd21`）。13.1M GPT 组装（PyTorch 梯度级对齐）+ 手写 AdamW/cosine/clip；500 步 heldout -41%，MFU 精确口径 35.7%；复盘见 `runs/l3-retrospective.md`。
 - **L4 推理**：已收官并合并 main（`9196e0e`）。KV cache + 采样 + 流式 UTF-8 + mini 引擎（分页 KV 池、fork CoW、连续批处理调度）；60 项测试；复盘见 `runs/l4-retrospective.md`。mini-vLLM 开放问题闭环（mini 形态，与 vLLM 的 kernel batching 差距已定量界定）。
 - **L5 量化/混合精度**：已收官并合并 main（`4c3b4d8`）。手写 PTQ（INT8/INT4 g64）+ INT8 KV + bf16 训练；L0 开放问题 1（半精度加速比异常）闭环；91 项测试；复盘见 `runs/l5-retrospective.md`。
+- **L6 服务化**：已收官并合并 main。T1 kernel batching（BatchedEngine 拼批 paged decode，B=8 聚合 1436 tok/s = 4.1×，B=1 延迟反改善 24.6%）+ T2 stdlib HTTP/SSE API（OpenAI 兼容子集，零新依赖，API 开销 3.7–4.1%，8 路零串话、断连即回收）；119 项测试；复盘见 `runs/l6-retrospective.md`。**L0–L6 全管线收官**；后续候选为 L7 专项（最小服务范围：EOS/stop、观测、鉴权/TLS、生命周期），明确不做推测解码与多 LoRA。
 
 ### 仍开放
 

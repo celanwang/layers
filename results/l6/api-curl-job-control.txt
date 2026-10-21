@@ -1,0 +1,21 @@
+Serving layers-gpt at http://127.0.0.1:8611; L3 500-step base model; not instruction tuned. Messages are joined as role: content lines. Text-only chat subset.
+data: {"id":"chatcmpl-6f9b064e09834f8782391f795b770f7e","created":1792593928,"model":"layers-gpt","object":"chat.completion.chunk","choices":[{"index":0,"delta":{"role":"assistant","content":""},"logprobs":null,"finish_reason":null}]}
+
+data: {"id":"chatcmpl-6f9b064e09834f8782391f795b770f7e","created":1792593928,"model":"layers-gpt","object":"chat.completion.chunk","choices":[{"index":0,"delta":{"content":"\n"},"logprobs":null,"finish_reason":null}]}
+
+data: {"id":"chatcmpl-6f9b064e09834f8782391f795b770f7e","created":1792593928,"model":"layers-gpt","object":"chat.completion.chunk","choices":[{"index":0,"delta":{"content":"Of"},"logprobs":null,"finish_reason":null}]}
+
+data: {"id":"chatcmpl-6f9b064e09834f8782391f795b770f7e","created":1792593928,"model":"layers-gpt","object":"chat.completion.chunk","choices":[{"index":0,"delta":{"content":" "},"logprobs":null,"finish_reason":null}]}
+
+data: {"id":"chatcmpl-6f9b064e09834f8782391f795b770f7e","created":1792593928,"model":"layers-gpt","object":"chat.completion.chunk","choices":[{"index":0,"delta":{"content":"re"},"logprobs":null,"finish_reason":null}]}
+
+data: {"id":"chatcmpl-6f9b064e09834f8782391f795b770f7e","created":1792593928,"model":"layers-gpt","object":"chat.completion.chunk","choices":[{"index":0,"delta":{"content":"ven"},"logprobs":null,"finish_reason":null}]}
+
+data: {"id":"chatcmpl-6f9b064e09834f8782391f795b770f7e","created":1792593928,"model":"layers-gpt","object":"chat.completion.chunk","choices":[{"index":0,"delta":{"content":"ge"},"logprobs":null,"finish_reason":null}]}
+
+data: {"id":"chatcmpl-6f9b064e09834f8782391f795b770f7e","created":1792593928,"model":"layers-gpt","object":"chat.completion.chunk","choices":[{"index":0,"delta":{"content":"ther"},"logprobs":null,"finish_reason":null}]}
+
+data: {"id":"chatcmpl-6f9b064e09834f8782391f795b770f7e","created":1792593928,"model":"layers-gpt","object":"chat.completion.chunk","choices":[{"index":0,"delta":{"content":", "},"logprobs":null,"finish_reason":null}]}
+
+data: {"id":"chatcmpl-6f9b064e09834f8782391f795b770f7e","created":1792593928,"model":"layers-gpt","object":"chat.completion.chunk","choices":[{"index":0,"delta":{"content":"the "},"logprobs":null,"finish_reason":null}]}
+

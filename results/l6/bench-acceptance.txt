@@ -1,0 +1,12 @@
+device: Apple M4 Max, 48 GiB, mlx 0.32.4
+config_hash: e306d784f96d (commit 4c0db056050e)
+B=1: L4 361.52 tok/s, batched 474.26 tok/s, speedup 1.312x; decode median/p90 0.134947/0.137462s
+B=2: L4 355.19 tok/s, batched 731.85 tok/s, speedup 2.060x; decode median/p90 0.174899/0.190939s
+B=4: L4 359.19 tok/s, batched 1100.93 tok/s, speedup 3.065x; decode median/p90 0.232532/0.241916s
+B=8: L4 340.99 tok/s, batched 1376.69 tok/s, speedup 4.037x; decode median/p90 0.371907/0.374871s
+B=1 latency: L4 2.7661 ms/token, batched 2.1086 ms/token; regression -23.77%
+uneven B=8: small 1228.62 tok/s, large 1188.00 tok/s; penalty 3.31%
+padding fractions: small 0.7752%, large 40.7407%
+predictions: {"b1_regression_below_10_percent": true, "b8_speedup_at_least_4x": true}
+written: results/l6/batching-bench-20261021T131308951824Z.json
+PASS: L4 token oracle, B=8 throughput >=4x, B=1 latency regression <10%

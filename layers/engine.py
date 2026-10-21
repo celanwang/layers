@@ -261,3 +261,90 @@ class Engine:
             return tuple(self._requests[seq_id].generated)
         except KeyError as exc:
             raise KeyError(f"unknown request id: {seq_id}") from exc
+
+    def cancel_request(self, seq_id: int) -> None:
+        """Release a request and forget its history, including after completion.
+
+        Idempotent, but like admission and stepping this must be called by the
+        scheduler's owner thread, between iterations. HTTP threads signal that
+        owner instead of mutating the pool themselves.
+        """
+        request = self._requests.pop(seq_id, None)
+        if request is not None and request.active:
+            self.pool.free(seq_id)
+            request.active = False
+
+
+class _BatchedPagedKVCache:
+    """Snapshot row order/positions and adapt the unchanged L4 page pool."""
+
+    def __init__(self, pool: PagedKVPool, seq_ids):
+        self.pool = pool
+        self.seq_ids = tuple(seq_ids)
+        if not self.seq_ids or len(set(self.seq_ids)) != len(self.seq_ids):
+            raise ValueError("a decode batch requires non-empty, distinct sequence IDs")
+        self.lengths = tuple(pool.seq_len(seq_id) for seq_id in self.seq_ids)
+        self.positions = mx.array(self.lengths, dtype=mx.float32)
+        self.padded_length = max(self.lengths) + 1
+
+    def append(self, layer_idx: int, k: mx.array, v: mx.array):
+        keys, values = [], []
+        for row, seq_id in enumerate(self.seq_ids):
+            row_k, row_v = self.pool.append(
+                seq_id, k[row : row + 1], v[row : row + 1], layer_idx=layer_idx
+            )
+            pad = self.padded_length - row_k.shape[-2]
+            if pad:
+                zeros = mx.zeros(
+                    (1, row_k.shape[1], pad, row_k.shape[-1]), dtype=row_k.dtype
+                )
+                row_k = mx.concatenate((row_k, zeros), axis=-2)
+                row_v = mx.concatenate((row_v, zeros), axis=-2)
+            keys.append(row_k)
+            values.append(row_v)
+        if len(keys) == 1:
+            return keys[0], values[0]
+        return mx.concatenate(keys, axis=0), mx.concatenate(values, axis=0)
+
+
+class BatchedEngine(Engine):
+    """L4 admission/prefill with one shared decode forward per iteration.
+
+    Like Engine, this synchronous scheduler admits and prefills requests through
+    ``add_request`` between iterations. Each new prompt is processed separately
+    before joining the next decode batch; prefix sharing and reservation rules
+    are inherited unchanged. Callers serialize add_request/step at boundaries.
+    """
+
+    def step(self) -> list[TokenEvent]:
+        current = [request for request in self._requests.values() if request.active]
+        events, continuing, tokens = [], [], []
+        finished_requests = []
+        for request in current:
+            token_id = int(request.sampler(request.next_logits))
+            request.generated.append(token_id)
+            finished = (
+                len(request.generated) >= request.max_new_tokens
+                or len(request.prompt_ids) + len(request.generated) >= self.max_context
+            )
+            events.append(TokenEvent(request.seq_id, token_id, finished))
+            if finished:
+                finished_requests.append(request)
+            else:
+                continuing.append(request)
+                tokens.append([token_id])
+
+        if continuing:
+            cache = _BatchedPagedKVCache(
+                self.pool, [request.seq_id for request in continuing]
+            )
+            logits = self.model.decode_batch(mx.array(tokens, dtype=mx.int32), cache)
+            mx.eval(logits)
+            for row, request in enumerate(continuing):
+                request.next_logits = logits[row, 0]
+
+        # Release only after the iteration, including all surviving-row writes.
+        for request in finished_requests:
+            request.active = False
+            self.pool.free(request.seq_id)
+        return events

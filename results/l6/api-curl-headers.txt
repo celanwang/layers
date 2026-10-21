@@ -1,0 +1,8 @@
+HTTP/1.1 200 OK
+Server: layers/0.1 Python/3.12.15
+Date: Wed, 21 Oct 2026 14:43:41 GMT
+Content-Type: text/event-stream
+Connection: close
+x-request-id: req-88ad51bf7c4b4bbfb02671355d395990
+Cache-Control: no-cache
+

@@ -78,3 +78,9 @@ class TransformerBlock(nn.Module):
             )
         x = x + attn_out
         return x + self.mlp(self.ln_mlp(x))
+
+    def decode_batch(self, x: mx.array, cache, layer_idx: int) -> mx.array:
+        """Apply this block to one token per independent cached request."""
+        attn_out, _ = self.attn.decode_batch(self.ln_attn(x), cache, layer_idx)
+        x = x + attn_out
+        return x + self.mlp(self.ln_mlp(x[:, 0, :]))[:, None, :]

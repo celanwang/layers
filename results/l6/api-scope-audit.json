@@ -1,0 +1,133 @@
+{
+  "baseline": "0280dbcbb27e",
+  "existing_test_files": {
+    "tests/test_attention.py": {
+      "unchanged": true,
+      "sha256": "fa3893140ec58d4c3a8cc80069fefd0f8404a261e86ab49f2c5448c4779da495"
+    },
+    "tests/test_batched_engine.py": {
+      "unchanged": true,
+      "sha256": "c7a84b8f9e4b690311f4440471bd134ca1e749bd13272a29432df595795da334"
+    },
+    "tests/test_bf16_train.py": {
+      "unchanged": true,
+      "sha256": "6fec8b34a705d0641240dd93dee99419b6721dedbfdfed9e007c3feeeaaec2ad"
+    },
+    "tests/test_engine.py": {
+      "unchanged": true,
+      "sha256": "763ebd5059ef23988425f46654998e40d82354762920c6b15a9439c713575980"
+    },
+    "tests/test_inference.py": {
+      "unchanged": true,
+      "sha256": "73e51d3ff9cd7cc127f6b32f8e1ef2fa0a721577e6da1ce6846315679bf4dcb3"
+    },
+    "tests/test_kv_quant.py": {
+      "unchanged": true,
+      "sha256": "1a177e64801500d63e2dc6ded9e0df8bbefc113d380e2f66cca298df288e05f3"
+    },
+    "tests/test_model.py": {
+      "unchanged": true,
+      "sha256": "590d001b0ca8c28f0cbfba3666d199c456edcc75702e6e34de7a0ba9bd8c3669"
+    },
+    "tests/test_optimizer.py": {
+      "unchanged": true,
+      "sha256": "ebba200dfb43ab12541f81c28319c737c42628d78821bce9d63acc0fa79243da"
+    },
+    "tests/test_quant.py": {
+      "unchanged": true,
+      "sha256": "54a26e163755a3a47c493f548ed684948d148eb29be4a17ec49bc065fdc4ac71"
+    },
+    "tests/test_tokenizer.py": {
+      "unchanged": true,
+      "sha256": "88439af7cd4d8b194e2811ebb2b2a7c758e387fed668368890e7fe3713d46bd7"
+    }
+  },
+  "existing_engine_methods_ast_unchanged": {
+    "Engine.__init__": true,
+    "Engine.active_seq_ids": true,
+    "Engine.active_requests": true,
+    "Engine._prompt_ids": true,
+    "Engine._prefix_source": true,
+    "Engine.add_request": true,
+    "Engine.step": true,
+    "Engine.run": true,
+    "Engine.generated_tokens": true,
+    "_BatchedPagedKVCache.__init__": true,
+    "_BatchedPagedKVCache.append": true,
+    "BatchedEngine.step": true
+  },
+  "implementation_notes_append_only": true,
+  "tracked_changes_within_whitelist": {
+    "bench/l6_api_bench.py": true,
+    "layers/engine.py": true,
+    "results/l6/api-bench-20261021T143438682160Z.json": true,
+    "results/l6/api-bench-20261021T143755909668Z.json": true,
+    "results/l6/api-bench-20261021T144110591270Z.json": true,
+    "results/l6/api-bench-acceptance.txt": true,
+    "results/l6/api-bench-attempt1.txt": true,
+    "results/l6/api-bench-attempt2.txt": true,
+    "results/l6/api-bench-attempt3.txt": true,
+    "results/l6/api-cli-shutdown.txt": true,
+    "results/l6/api-client-process-probe.json": true,
+    "results/l6/api-curl-acceptance.txt": true,
+    "results/l6/api-curl-full.txt": true,
+    "results/l6/api-curl-headers.txt": true,
+    "results/l6/api-curl-job-control.txt": true,
+    "results/l6/api-curl-oracle.json": true,
+    "results/l6/api-overhead-profile.json": true,
+    "results/l6/api-scope-audit.json": true,
+    "results/l6/api-tests-acceptance.txt": true,
+    "results/l6/api-tests-attempt1.txt": true,
+    "results/l6/api-tests-polling.txt": true,
+    "results/l6/api-tests-stage1.txt": true,
+    "results/l6/bf16-train-20261021T143553890918Z.json": true,
+    "results/l6/bf16-train-20261021T143635985662Z.json": true,
+    "results/l6/bf16-train-20261021T144225563415Z.json": true,
+    "results/l6/l6-t2-report.md": true,
+    "runs/l6-implementation-notes.md": true,
+    "server/__init__.py": true,
+    "server/app.py": true,
+    "tests/test_api_server.py": true
+  },
+  "preserved_preexisting_untracked_file": "results/l5/bf16-train-20261021T132935962922Z.json",
+  "delivered_implementation_commit": "ca8da0b1062c6f4ada279c6e9c9f5a9aed56e78f",
+  "accepted_benchmark_config_hash": "4474cab6ff21",
+  "accepted_benchmark_source_hashes_match": {
+    "server/app.py": true,
+    "layers/engine.py": true,
+    "layers/model.py": true,
+    "layers/attention.py": true,
+    "layers/inference.py": true,
+    "layers/paged_kv.py": true,
+    "layers/tokenizer.py": true,
+    "bench/l6_api_bench.py": true
+  },
+  "benchmark_commit_note": "The benchmark records its pre-polling-fix parent 0aa7dec; all recorded source hashes exactly match implementation commit ca8da0b1062c6f4ada279c6e9c9f5a9aed56e78f. The measurement protocol did not change.",
+  "serving_import_roots": [
+    "__future__",
+    "argparse",
+    "codecs",
+    "dataclasses",
+    "http",
+    "json",
+    "layers",
+    "math",
+    "mlx",
+    "pathlib",
+    "queue",
+    "select",
+    "signal",
+    "socket",
+    "sys",
+    "threading",
+    "time",
+    "traceback",
+    "uuid"
+  ],
+  "serving_uses_only_stdlib_and_existing_runtime": true,
+  "whitespace_check": {
+    "source_and_documentation_command": "git diff --check 0280dbcbb27e HEAD -- . ':(exclude)results/l6/api-curl*.txt'",
+    "raw_capture_policy": "Preserve exact HTTP CRLF and final SSE blank separator; validate raw captures as protocol bytes instead of applying source whitespace rules."
+  },
+  "raw_capture_wire_format_passed": true
+}
