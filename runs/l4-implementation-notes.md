@@ -123,3 +123,22 @@ The one-token decode curve moved from 508.01 tok/s at 64 cached tokens to 470.28
   request-set wall time and throughput, and shared-prefix memory savings.
 - Acceptance command output and measured values are recorded in
   `results/l4/l4-t2-report.md` and `results/l4/engine-bench-*.json`.
+
+### Measured result
+
+- Final acceptance run: Apple M4 Max, MLX 0.32.4, float32, 3 warmups and 10
+  repetitions; config hash `b4e856d94cfe`, code commit `c671927`.
+- Fragmentation for N=1/4/8/16 was 65,536 / 262,144 / 802,816 / 1,671,168 B;
+  every seeded aggregate stayed below its N × 8-token bound.
+- For 8 same-prompt requests and 128 generated tokens, continuous scheduling
+  took 0.329529 s median (p90 0.353987 s, 388.43 tok/s); sequential execution
+  took 0.348616 s median (p90 0.383359 s, 367.17 tok/s), a 1.058× throughput
+  ratio. This is an end-to-end request-set measurement: shared prompt prefill
+  contributes to the gain. Decode remains one model forward per request.
+- Eight 32-token prefixes occupied 524,288 B when shared and 4,194,304 B when
+  unshared, saving 87.5%.
+- A page can leave up to 15 unused slots for an individual 16-token page. The
+  half-page condition was checked as the task's seeded aggregate bound over N
+  sequences; it is not a deterministic per-sequence worst-case guarantee.
+- Full test and benchmark command output is preserved in
+  `results/l4/l4-t2-report.md`.
