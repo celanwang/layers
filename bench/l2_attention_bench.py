@@ -13,6 +13,9 @@ from pathlib import Path
 
 import mlx.core as mx
 
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+
 from layers import CausalSelfAttention
 from layers.attention import _stable_softmax, attention_scores
 
