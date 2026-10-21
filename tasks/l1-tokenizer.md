@@ -31,8 +31,8 @@
 - 接口严格按 `runs/l1-bpe-principle.md` 第"接口设计"节：`BPETokenizer.train/encode/decode/save/load/vocab_size`。
 - 算法约束：初始词表 256 字节；平局时取 pair 字典序小者（训练必须可复现：同语料同参数两次训练产物完全一致）；encode 按 merge rank 顺序合并；decode 用 `errors="replace"` 兜底；不做预分词（v1 有意为之）。
 - 特殊 token：定义 4 个保留 id（`<|beginoftext|>`、`<|endoftext|>`、`<|padding|>`、`<|unknown|>`，id 从 vocab_size 起分配），不进入 BPE 合并空间。
-- 语料：`data/tiny-shakespeare.txt`，从 https://raw.githubusercontent.com/karpathy/char-rnn/master/data/tiny-shakespeare/input.txt 下载（约 1.1MB）。
-- 训练参数：vocab_size = 1024（256 字节 + 768 合并 + 4 特殊 token）。
+- 语料：`data/tiny-shakespeare.txt`，从 https://raw.githubusercontent.com/karpathy/char-rnn/master/data/tinyshakespeare/input.txt 下载（约 1.1MB）。
+- 训练参数：vocab_size = 1024 指 **BPE 词表**（256 字节 + 768 次合并，`BPETokenizer.vocab_size` 返回 1024）；4 个特殊 token 的 id 从 1024 起分配，总 id 空间 1028。
 - 批准的依赖（用 `uv pip install --python .venv/bin/python <pkg>` 装入 `.venv`）：`pytest`、`tiktoken`、`tokenizers`。
 - save/load 格式自定，但必须 roundtrip 无损。
 
