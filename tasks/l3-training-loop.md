@@ -28,7 +28,7 @@
 ## 4. 实现要求
 
 - 严格按 `runs/l3-training-principle.md` §4/§7：`AdamW`（偏差修正、decoupled weight decay、β=(0.9,0.95)、ε=1e-8）、`cosine_lr`（warmup 100 步、峰值 3e-4、衰减至 10%）、`clip_grad_norm`（global norm ≤ 1.0）。
-- 训练配置：ctx=256、batch=16、步数 200（短跑验收版）；数据用 L1 tokenizer（`results/l1/tokenizer-1024.json`）编码整个 `data/tiny-shakespeare.txt`，train/heldout 沿用 `len*9//10` 切分；从 heldout 采样评估 batch，评估不前向训练梯度。
+- 训练配置：ctx=256、batch=16、步数 **500**（v2 修正：v1 的 200 步阈值校准失误——200 步实测降幅 29.71%，曲线健康单调， lengthen 以产生证据而非放宽阈值）；数据用 L1 tokenizer（`results/l1/tokenizer-1024.json`）编码整个 `data/tiny-shakespeare.txt`，train/heldout 沿用 `len*9//10` 切分；从 heldout 采样评估 batch，评估不前向训练梯度。
 - 检查点：训练结束保存权重到 `results/l3/ckpt-final.npz`（或 MLX 原生格式），loss 曲线（train/heldout 每 10 步）存 `results/l3/loss-curve.json`。
 - 测量（沿用 L0 协议，JSON 入 `results/l3/`）：
   1. 训练步吞吐 tokens/s（median/p90，含 config hash）
