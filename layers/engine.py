@@ -348,3 +348,86 @@ class BatchedEngine(Engine):
             request.active = False
             self.pool.free(request.seq_id)
         return events
+
+
+class _DirectPagedKVCache:
+    """Snapshot logical positions, write pages, then materialize the whole batch."""
+
+    def __init__(self, pool: PagedKVPool, seq_ids):
+        self.pool = pool
+        self.seq_ids = tuple(seq_ids)
+        if not self.seq_ids or len(set(self.seq_ids)) != len(self.seq_ids):
+            raise ValueError("a decode batch requires non-empty, distinct sequence IDs")
+        self.lengths = tuple(pool.seq_len(seq_id) for seq_id in self.seq_ids)
+        self.positions = mx.array(self.lengths, dtype=mx.float32)
+
+    def append_pages(self, layer_idx: int, k: mx.array, v: mx.array):
+        for row, seq_id in enumerate(self.seq_ids):
+            self.pool.append_pages(
+                seq_id, k[row : row + 1], v[row : row + 1], layer_idx=layer_idx
+            )
+        return self.pool.materialize_batch(self.seq_ids, layer_idx)
+
+
+def _decode_paged_batch(model, ids: mx.array, cache) -> mx.array:
+    """L6 block/head arithmetic with only the attention KV path substituted.
+
+    Kept here because model/transformer files are outside the T1 whitelist.
+    No model mutation or monkey patching is needed to run both oracles.
+    """
+    if ids.ndim != 2 or ids.shape != (len(cache.seq_ids), 1) or not ids.shape[0]:
+        raise ValueError("ids must have shape [non-empty cache batch, 1]")
+    if any(length >= model.ctx for length in cache.lengths):
+        raise ValueError("batched decode would exceed ctx")
+    x = model.token_embedding(ids)
+    for layer_idx, block in enumerate(model.blocks):
+        attn_out, _ = block.attn.decode_paged_batch(block.ln_attn(x), cache, layer_idx)
+        x = x + attn_out
+        x = x + block.mlp(block.ln_mlp(x[:, 0, :]))[:, None, :]
+    normalized = model.final_norm(x[:, 0, :])
+    weights = mx.transpose(model.token_embedding.weight)
+    midpoint = model.d_model // 2
+    logits = normalized[:, :midpoint] @ weights[:midpoint]
+    logits = logits + normalized[:, midpoint:] @ weights[midpoint:]
+    return logits[:, None, :]
+
+
+class PagedAttentionEngine(BatchedEngine):
+    """Additive L7-T1 engine; L6 remains an immutable, callable oracle.
+
+    Sampling, event ordering and deferred release mirror BatchedEngine.step.
+    Only the cache adapter and decode entry point differ.
+    """
+
+    def step(self) -> list[TokenEvent]:
+        current = [request for request in self._requests.values() if request.active]
+        events, continuing, tokens = [], [], []
+        finished_requests = []
+        for request in current:
+            token_id = int(request.sampler(request.next_logits))
+            request.generated.append(token_id)
+            finished = (
+                len(request.generated) >= request.max_new_tokens
+                or len(request.prompt_ids) + len(request.generated) >= self.max_context
+            )
+            events.append(TokenEvent(request.seq_id, token_id, finished))
+            if finished:
+                finished_requests.append(request)
+            else:
+                continuing.append(request)
+                tokens.append([token_id])
+
+        if continuing:
+            cache = _DirectPagedKVCache(
+                self.pool, [request.seq_id for request in continuing]
+            )
+            logits = _decode_paged_batch(self.model, mx.array(tokens, dtype=mx.int32), cache)
+            mx.eval(logits)
+            for row, request in enumerate(continuing):
+                request.next_logits = logits[row, 0]
+
+        # Release only after the iteration, including all surviving-row writes.
+        for request in finished_requests:
+            request.active = False
+            self.pool.free(request.seq_id)
+        return events

@@ -36,3 +36,27 @@ L6 archival practice. Existing artifacts are untouched.
 The invocation did not specify a literal `-o` path. The section 6 execution
 summary will be saved as `results/l7/l7-t1-output.md`; the full report is
 `results/l7/l7-t1-report.md`.
+
+## Component and oracle verification
+
+Added `PagedKVPool.append_pages` and `materialize_batch`; a compact bank uses
+one `mx.take` for both K/V across all rows, with no per-row gather. Page payloads
+remain lazy, fixed-size physical blocks with logical tail lengths. Unused
+blocks may point at a real page: only the length mask grants visibility.
+This is vectorized materialization, not a fused Metal PagedAttention kernel.
+
+`PagedAttentionEngine` inherits L6 admission/cancel/prefill and duplicates only
+its step orchestration to select the new decode path. Sampler invocations and
+release order are unchanged. The local decode function retains L6 residual,
+MLP, normalization, and two-half vocabulary projection operation order.
+
+- New tests: 14 passed; full suite: 133 passed (119 pre-existing + 14 new),
+  one pre-existing PyTorch warning. Full output: `results/l7/tests-acceptance.txt`.
+- Trained d512 checkpoint: eight variable prefixes, 33 token events each,
+  32 actual decode forwards; max absolute logit error versus L6 is 0.0.
+  All seeded tokens match and both pools are fully reclaimed.
+- Scope audit against `a89132b`: 53 existing methods source-identical;
+  30 existing tests/bench/model/transformer/sampler/server/script files
+  byte-identical. See `results/l7/scope-audit.json`.
+- Syntax compilation and `git diff --check` pass. No project lint
+  configuration or installed lint runner is declared in the repository.

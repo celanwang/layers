@@ -2,6 +2,7 @@
 
 from .attention import CausalSelfAttention, RotaryEmbedding, attention_scores
 from .engine import BatchedEngine, Engine, RequestCapacityError, TokenEvent
+from .engine import PagedAttentionEngine
 from .embedding import TokenEmbedding
 from .inference import KVCache, Sampler, generate
 from .model import GPT, cross_entropy
@@ -21,6 +22,7 @@ __all__ = [
     "MLP",
     "PagedKVCache",
     "PagedKVPool",
+    "PagedAttentionEngine",
     "PoolExhaustedError",
     "QuantizedLinear",
     "RotaryEmbedding",

@@ -1,0 +1,11 @@
+{
+  "oracle": "unchanged L6 BatchedEngine",
+  "batch_size": 8,
+  "sampled_tokens_per_request": 33,
+  "decode_forwards_per_request": 32,
+  "atol": 1e-05,
+  "rtol": 0,
+  "max_absolute_logit_error": 0.0,
+  "seeded_tokens_equal": true,
+  "all_pages_reclaimed": true
+}
