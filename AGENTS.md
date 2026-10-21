@@ -119,9 +119,11 @@ layers 的核心目标是"建出来以理解"。执行侧仍尽可能完全交�
 - **L4 推理**：已收官并合并 main（`9196e0e`）。KV cache + 采样 + 流式 UTF-8 + mini 引擎（分页 KV 池、fork CoW、连续批处理调度）；60 项测试；复盘见 `runs/l4-retrospective.md`。mini-vLLM 开放问题闭环（mini 形态，与 vLLM 的 kernel batching 差距已定量界定）。
 - **L5 量化/混合精度**：已收官并合并 main（`4c3b4d8`）。手写 PTQ（INT8/INT4 g64）+ INT8 KV + bf16 训练；L0 开放问题 1（半精度加速比异常）闭环；91 项测试；复盘见 `runs/l5-retrospective.md`。
 - **L6 服务化**：已收官并合并 main。T1 kernel batching（BatchedEngine 拼批 paged decode，B=8 聚合 1436 tok/s = 4.1×，B=1 延迟反改善 24.6%）+ T2 stdlib HTTP/SSE API（OpenAI 兼容子集，零新依赖，API 开销 3.7–4.1%，8 路零串话、断连即回收）；119 项测试；复盘见 `runs/l6-retrospective.md`。**L0–L6 全管线收官**；后续候选为 L7 专项（最小服务范围：EOS/stop、观测、鉴权/TLS、生命周期），明确不做推测解码与多 LoRA。
+- **L7 decode host 路径直读化**：已收官并合并 main。T1 直读 page attention（向量化物化替代逐行 gather，B=8 +12~16%）+ T2 批式采样单栅栏（RNG 位精确，再 +15%）；合并 +30%（1893–1918 tok/s），"host 小操作/同步主导"假说获受控干预直接支持；B=1 有 4% 回归（固定物化成本摊不薄）；156 项测试；复盘见 `runs/l7-retrospective.md`。
 
 ### 仍开放
 
-- **L6 选题（已定方向，待启动）**：服务化——OpenAI 兼容 API、流式响应、kernel batching（L4 缺口）、压缩推理路径整合（L5 产物），全管线收官层。
+- 后续专项（按 L7 对照精读 §5 性价比排序，均未启动）：Metal capture profiling（判决收紧首选，0.5–1 天）；`mx.fast.scaled_dot_product_attention` 拼批 ablation（0.5–1 天）；L5×运行时 INT8 页直读整合（profiling 之后）。
+- L7 候选（最小服务范围，未启动）：EOS/stop 终止、基础观测、鉴权/TLS（对外暴露时）、优雅重载。
 - 专项小实验（可插空）：KV cache 转正条件配对测量（n≥256）；KV INT4 与层敏感度混合粒度；QAT（独立训练迭代，如需）。
 - 除已收官迭代外，新迭代仍遵循"讨论确认后再落地"的节奏。
