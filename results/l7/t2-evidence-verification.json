@@ -1,0 +1,41 @@
+{
+  "benchmark_path": "results/l7/sampling-bench-20261021T155558005176Z.json",
+  "benchmark_sha256": "add39278c3e1ec2dfccd3aad921f5348c1eae60320a039925335de9ac2ddb076",
+  "implementation_commit": "2f81b785f4bddc64e2ecf4abeb3438997d9ca5f7",
+  "config_hash": "08e7ca285efb",
+  "config_hash_verified": true,
+  "source_hashes_match_worktree_and_committed_source": true,
+  "checkpoint_and_historical_l6_hashes_verified": true,
+  "protocol_exactly_equals_historical_l6": true,
+  "uses_unchanged_l6_pairing_and_timing_harness": true,
+  "pairs": [
+    "l6_vs_t1",
+    "t1_vs_t2",
+    "l6_vs_t2"
+  ],
+  "all_720_raw_timings_and_aggregates_verified": true,
+  "paired_trials_including_warmups": 156,
+  "engine_runs_including_warmups": 312,
+  "paired_request_output_comparisons_including_warmups": 585,
+  "paired_token_comparisons_including_warmups": 37440,
+  "token_oracles_and_pool_reclamation_asserted_each_trial": true,
+  "tests": {
+    "command": ".venv/bin/python -m pytest tests/ -q",
+    "passed": 156,
+    "warnings": 1,
+    "exit_code": 0
+  },
+  "benchmark": {
+    "command": ".venv/bin/python bench/l7_sampling_bench.py",
+    "exit_code": 0
+  },
+  "prediction": {
+    "t2_b8_throughput_gain_percent": 15.314239571539211,
+    "t2_b8_decode_time_reduction_percent": 13.280441017900902,
+    "t2_gain_at_least_5_percent": true,
+    "t2_gain_below_3_percent": false,
+    "t2_verdict": "supported",
+    "combined_b8_at_least_1800": true,
+    "combined_b8_below_1600": false
+  }
+}

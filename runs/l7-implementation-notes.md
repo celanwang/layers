@@ -173,3 +173,32 @@ Whole-batch fallback preserves custom callable and Sampler-subclass behavior.
 
 Implementation and test verification are committed before the formal paired
 performance run so the measurement records a reproducible implementation hash.
+
+## L7-T2 formal measurement and final interpretation
+
+Both section 5 commands exit 0. One formal performance run, implementation
+`2f81b785f4bd` (full hash in JSON), config `08e7ca285efb`, record
+`results/l7/sampling-bench-20261021T155558005176Z.json`:
+
+- B=8 L6/T1 pair: 1449.17 / 1645.67 tok/s (+13.56%).
+- B=8 T1/T2 pair: 1663.67 / 1918.45 tok/s (+15.31% T2 increment);
+  decode median/p90 307.753/312.361 -> 266.882/269.831 ms,
+  13.28% decode-time reduction. The >=5% throughput prediction is supported.
+- B=8 L6/T2 pair: 1450.15 / 1891.05 tok/s (+30.40% combined);
+  >=1800 tok/s combined prediction supported. Each ratio uses its own pair.
+- T2/T1 gains for B=1/2/4: +1.79% / +3.09% / +13.48%. Combined T2/L6
+  still has a B=1 latency regression of 4.03% and slightly lower B=2 throughput.
+  No uniform small-batch performance improvement is claimed.
+- The unchanged L6 harness supplies every timing/pairing operation. All source
+  hashes match both the worktree and measurement commit; protocol equals L6's
+  historical JSON exactly. Independently verified 720 raw timing values and
+  aggregates. 312 engine runs / 37,440 paired token comparisons including
+  warmups; all token/pool assertions pass. No discarded or repeated bench run.
+- This controlled removal of synchronization boundaries supports their cost in
+  the measured workload. Stochastic performance, other hardware/model shapes
+  and the remaining cost distribution are unmeasured; no Metal trace.
+
+Full report `results/l7/l7-t2-report.md`; section 6 / -o summary
+`results/l7/l7-t2-output.md`; verification `t2-evidence-verification.json`.
+Final scope audit and documentation checks accompany the archive commit.
+No dependency, RNG, KV, threshold or protocol changes; no push.
