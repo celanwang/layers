@@ -262,6 +262,18 @@ class Engine:
         except KeyError as exc:
             raise KeyError(f"unknown request id: {seq_id}") from exc
 
+    def cancel_request(self, seq_id: int) -> None:
+        """Release a request and forget its history, including after completion.
+
+        Idempotent, but like admission and stepping this must be called by the
+        scheduler's owner thread, between iterations. HTTP threads signal that
+        owner instead of mutating the pool themselves.
+        """
+        request = self._requests.pop(seq_id, None)
+        if request is not None and request.active:
+            self.pool.free(seq_id)
+            request.active = False
+
 
 class _BatchedPagedKVCache:
     """Snapshot row order/positions and adapt the unchanged L4 page pool."""

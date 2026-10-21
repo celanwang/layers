@@ -1,0 +1,48 @@
+..F..................................................................... [ 60%]
+...............................................                          [100%]
+=================================== FAILURES ===================================
+_____ test_disconnect_reclaims_live_pages_before_generation_finishes[True] _____
+
+stream = True
+
+    @pytest.mark.parametrize("stream", [True, False])
+    def test_disconnect_reclaims_live_pages_before_generation_finishes(stream):
+        gpt_engine = engine()
+        original = gpt_engine.step
+        paused, resume = threading.Event(), threading.Event()
+        steps = []
+        def gated_step():
+            steps.append(threading.get_ident())
+            if len(steps) == 2:
+                paused.set()
+                assert resume.wait(5)
+            return original()
+        gpt_engine.step = gated_step
+        with serving(gpt_engine) as server:
+            connection = http.client.HTTPConnection("127.0.0.1", server.server_port, timeout=5)
+            body = payload(stream=stream, max_tokens=200)
+            connection.request("POST", "/v1/chat/completions", json.dumps(body), {"Content-Type": "application/json"})
+            try:
+                assert paused.wait(5)
+                assert gpt_engine.pool.allocated_blocks > 0
+                if stream:
+                    response = connection.getresponse()
+                    assert response.readline().startswith(b"data: ")
+                    assert response.readline() == b"\n"
+                    response.close()
+                # RST closes both buffered HTTP and raw sockets, also for JSON mode
+                # where no response headers have been emitted yet.
+>               connection.sock.setsockopt(socket.SOL_SOCKET, socket.SO_LINGER, struct.pack("ii", 1, 0))
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+E               AttributeError: 'NoneType' object has no attribute 'setsockopt'
+
+tests/test_api_server.py:205: AttributeError
+=============================== warnings summary ===============================
+tests/test_kv_quant.py::test_kv_roundtrip_bound_and_pytorch_public_api_oracle
+  /Users/wangchen/Developer/layers/tests/test_kv_quant.py:38: UserWarning: torch.quantize_per_tensor, torch.quantize_per_channel and other quantized tensor creation functions that produce tensors with dtype torch.quint8, torch.qint8, and torch.qint32 are deprecated and will be removed in a future PyTorch release. Please see https://github.com/pytorch/pytorch/issues/184982 for more information. (Triggered internally at /Users/runner/work/pytorch/pytorch/aten/src/ATen/quantized/Quantizer.cpp:116.)
+    oracle = torch.quantize_per_channel(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/test_api_server.py::test_disconnect_reclaims_live_pages_before_generation_finishes[True]
+1 failed, 118 passed, 1 warning in 23.58s

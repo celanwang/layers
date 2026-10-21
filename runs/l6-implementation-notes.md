@@ -119,3 +119,63 @@ steps, rather than adding a pending request queue. HTTP/SSE and framework
 source comparisons are outside T1. No external inference/serving source was
 read and no push was performed. Failed measurements and diagnostic probes
 are preserved, not substituted for final acceptance.
+
+## L6-T2: blind HTTP/SSE implementation
+
+The serving layer is built directly from the approved principle note and
+OpenAI's public API reference. No inference serving framework implementation
+source was read. The schema oracle is the public
+[chat completion reference](https://developers.openai.com/api/reference/resources/chat/subresources/completions/methods/create),
+[streaming event reference](https://developers.openai.com/api/reference/resources/chat/subresources/completions/streaming-events),
+and [model list reference](https://developers.openai.com/api/reference/resources/models/methods/list).
+
+- `ThreadingHTTPServer` parses a deliberately explicit text-only chat subset.
+  Messages become `role: content` lines. The model description discloses the
+  500-step base checkpoint and absence of instruction tuning. The default
+  runtime is fp32; the optional L5 INT8 extension is not selected for T2.
+- One dedicated thread owns admission, sampling, stepping, cancellation and
+  the paged pool. Bounded ingress and per-request output queues bridge HTTP
+  threads to that owner. Cancellation uses an Event independent of ingress
+  capacity. A full output queue closes only that client's socket and releases
+  its request at the iteration boundary, without blocking other decodes.
+- The only engine change is additive: idempotent `cancel_request`, which also
+  forgets completed histories. No existing method changes. HTTP threads never
+  touch mutable engine state; the tokenizer and context settings are read-only.
+- Each request has its own Sampler and incremental UTF-8 decoder. SSE emits
+  assistant role, content deltas, a length terminal chunk, and `[DONE]`.
+  Optional `stream_options.include_usage` follows the public schema: null
+  usage on ordinary chunks, then an empty-choices usage chunk before `[DONE]`.
+  JSON mode concatenates the same decoded pieces and reports token usage.
+- Invalid/unsupported parameters fail before admission with an OpenAI-style
+  error envelope. Content-Length and socket timeouts bound body reads/writes.
+  Connection resets, EOF, overflow and server shutdown all signal the owner
+  to reclaim pages. Normal completion also drops the engine's request history.
+
+### T2 failure probes and corrected assumptions
+
+The first API test run exposed MLX lazy-weight ownership: transferring an
+unevaluated model graph into another thread can fail with `There is no
+Stream(gpu, 0) in current thread`. Evaluating model parameters before starting
+the owner thread fixes the boundary without changing numerical operations.
+The corrected tests include newly constructed lazy models, not just already
+evaluated checkpoints.
+
+The disconnect test holds the second engine iteration at a barrier, verifies
+live allocated pages, receives an actual SSE event, then closes the client
+with TCP reset. JSON mode closes before any response headers. This proves
+early cancellation rather than merely waiting for a short request to finish.
+An initial test revision tried accessing HTTPConnection.sock after response
+headers transferred ownership to HTTPResponse; the harness now sets linger
+before that transfer. The failed full-suite output is retained in
+`results/l6/api-tests-attempt1.txt`.
+
+The initial API benchmark completed successfully, but overlapped API test
+debugging for part of its run. Its raw JSON and console output are retained
+as exploratory evidence only; acceptance is rerun serially after tests pass.
+The benchmark keeps L0's three warmups, ten repeats, median/p90, raw samples,
+hardware and configuration/source hashes. Direct/API order alternates in
+paired trials. Both paths include prompt tokenization, prefill, sampling,
+decode and text output; HTTP also includes fresh TCP setup and SSE consumption.
+Model/server startup is excluded. Concurrency 1/4/8 trials compare every output
+with an independently generated direct-engine result and assert empty pools
+after shutdown. No measurement threshold has been relaxed.
