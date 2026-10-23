@@ -55,3 +55,14 @@ protocol differences rather than changing a gate. No absolute throughput gate.
 List files, commands/results, measured overhead, limitations and deviations;
 principle, implementation notes, comparison and retrospective archived under
 `runs/`. Commit each verified stage with conventional concise messages.
+
+## Final fault-path audit (2026-10-23)
+
+The user's follow-up requests final remaining improvements within this local
+service goal. Reproduce and isolate stderr write failures: completion,
+admission rejection and engine failure must still publish ready/done and reclaim
+pages. Catch broken/closed diagnostic streams without recursively logging their
+failure; expose a process-local log-write-failure counter. Use a new
+`tests/test_service_faults.py` without changing prior tests. Preserve failing
+evidence and run regression checks. No public generation or numerical contract
+changes, additional dependency, push or merge is authorized by this audit.
