@@ -9,7 +9,6 @@ is accepted; unsupported generation options are rejected rather than ignored.
 from __future__ import annotations
 
 import argparse
-import codecs
 from dataclasses import dataclass, field
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import json
@@ -31,6 +30,9 @@ if str(ROOT) not in sys.path:
 
 from layers import BatchedEngine, BPETokenizer, GPT, RequestCapacityError, Sampler
 from layers.inference import _token_bytes
+from server.completion import CompletionFilter, validate_stop
+from server.observability import Metrics
+from server.runtime import MODEL_MANIFEST, load_assets
 
 MODEL_ID = "layers-gpt"
 DESCRIPTION = (
@@ -66,6 +68,10 @@ def chat_template(messages):
             raise APIError("unsupported message role", param="messages")
         if not isinstance(item["content"], str):
             raise APIError("message content must be text", param="messages")
+        try:
+            item["content"].encode("utf-8")
+        except UnicodeEncodeError as exc:
+            raise APIError("message content must be valid Unicode", param="messages") from exc
         lines.append(f"{item['role']}: {item['content']}")
     return "\n".join(lines)
 
@@ -74,7 +80,7 @@ def parse_request(body, engine):
     if not isinstance(body, dict):
         raise APIError("request must be a JSON object")
     supported = {"model", "messages", "stream", "max_tokens", "temperature",
-                 "top_p", "seed", "stream_options"}
+                 "top_p", "seed", "stream_options", "stop"}
     unknown = set(body) - supported
     if unknown:
         raise APIError("unsupported parameter", param=sorted(unknown)[0])
@@ -96,6 +102,10 @@ def parse_request(body, engine):
             or type(options.get("include_usage", False)) is not bool
             or ("stream_options" in body and not stream)):
         raise APIError("stream_options supports only include_usage with stream=true", param="stream_options")
+    try:
+        validate_stop(body.get("stop"))
+    except ValueError as exc:
+        raise APIError(str(exc), param="stop") from exc
     prompt_ids = engine.tokenizer.encode(chat_template(body.get("messages")))
     remaining = engine.max_context - len(prompt_ids)
     count = body.get("max_tokens", min(32, remaining))
@@ -120,7 +130,14 @@ class Generation:
     error: APIError | None = None
     seq_id: int | None = None
     count: int = 0
-    decoder: object = field(default_factory=lambda: codecs.getincrementaldecoder("utf-8")("replace"))
+
+    completion: object = field(default_factory=CompletionFilter)
+    finish_reason: str = "length"
+    request_id: str = field(default_factory=lambda: "req-" + uuid.uuid4().hex)
+    submitted_at: float = field(default_factory=time.monotonic)
+    last_token_at: float | None = None
+    first_text_at: float | None = None
+    reported: bool = False
 
     def abort(self, error):
         self.error = error
@@ -138,7 +155,7 @@ class EngineBridge:
     close its socket, and release its pages at the iteration boundary.
     """
 
-    def __init__(self, engine, *, pending_size=32, output_size=128):
+    def __init__(self, engine, *, pending_size=32, output_size=128, log_requests=True):
         if pending_size <= 0 or output_size <= 0:
             raise ValueError("queue capacities must be positive")
         import mlx.core as mx
@@ -149,28 +166,82 @@ class EngineBridge:
         self.engine, self.output_size = engine, output_size
         self.pending = queue.Queue(pending_size)
         self.stopping = threading.Event()
+        self.draining = threading.Event()
+        self.failed = threading.Event()
+        self.drain_deadline = None
+        self.metrics = Metrics()
+        self.log_requests = log_requests
+        self.eos_id = engine.tokenizer._special_ids.get("<|endoftext|>") if engine.tokenizer else None
         self.lock = threading.Lock()
         self.thread = threading.Thread(target=self._run, name="layers-engine", daemon=True)
         self.thread.start()
 
-    def submit(self, prompt_ids, max_tokens, sampling, disconnect=None):
+    def submit(self, prompt_ids, max_tokens, sampling, disconnect=None, *, stops=(), request_id=None):
         job = Generation(prompt_ids, max_tokens, sampling, queue.Queue(self.output_size), disconnect)
+        job.completion = CompletionFilter(stops)
+        if request_id is not None:
+            job.request_id = request_id
+        self.metrics.count("received")
         with self.lock:
-            if self.stopping.is_set():
+            if not self.ready:
+                self.metrics.count("rejected")
                 raise APIError("server is stopping", 503)
             try:
                 self.pending.put_nowait(job)
             except queue.Full as exc:
+                self.metrics.count("rejected")
                 raise APIError("request queue is full", 429, code="capacity_exceeded") from exc
         return job
+
+    @property
+    def ready(self):
+        return self.thread.is_alive() and not (
+            self.stopping.is_set() or self.draining.is_set() or self.failed.is_set())
+
+    def snapshot(self):
+        result = self.metrics.snapshot()
+        result.update({"ready": self.ready, "draining": self.draining.is_set(),
+                       "owner_alive": self.thread.is_alive(), "failed": self.failed.is_set()})
+        return result
+
+    def _publish(self):
+        self.metrics.publish(active_requests=self.engine.active_requests,
+                             waiting_requests=self.pending.qsize(),
+                             allocated_pages=self.engine.pool.allocated_blocks,
+                             capacity_pages=self.engine.pool.capacity,
+                             free_pages=self.engine.pool.num_free_blocks)
+
+    def _diagnostic(self, message):
+        """A broken/closed log sink must never interrupt terminal notifications."""
+        try:
+            print(message, file=sys.stderr, flush=True)
+        except (OSError, ValueError):
+            # Do not recursively report a failure through the same broken sink.
+            self.metrics.count("log_write_failures")
+
+    def _report(self, job):
+        if job.reported:
+            return
+        job.reported = True
+        outcome = ("rejected" if job.seq_id is None and job.error and job.error.status in (429, 503)
+                   else "errors" if job.error else "cancelled" if job.cancelled.is_set() else "completed")
+        self.metrics.count(outcome)
+        if self.log_requests:
+            self._diagnostic(json.dumps({"event": "request_end", "request_id": job.request_id,
+                              "outcome": outcome, "finish_reason": job.finish_reason,
+                              "completion_tokens": job.count,
+                              "duration_seconds": time.monotonic() - job.submitted_at}))
 
     def _release(self, job):
         if job.seq_id is not None:
             self.engine.cancel_request(job.seq_id)
+        self._report(job)
         job.done.set()
 
     def _admit(self, job, live):
         try:
+            if self.draining.is_set() and time.monotonic() >= self.drain_deadline:
+                job.abort(APIError("drain deadline expired", 503))
             if not job.cancelled.is_set():
                 job.seq_id = self.engine.add_request(
                     job.prompt_ids, Sampler(**job.sampling), job.max_tokens
@@ -179,22 +250,28 @@ class EngineBridge:
         except RequestCapacityError as exc:
             job.error = APIError(str(exc), 429, code="capacity_exceeded")
         except Exception:
-            traceback.print_exc()
+            self._diagnostic(traceback.format_exc())
             job.error = APIError("engine admission failed", 500)
         finally:
-            job.ready.set()
             if job.seq_id is None:
+                self._report(job)
                 job.done.set()
+            job.ready.set()
 
     def _run(self):
         live = {}
         try:
             while not self.stopping.is_set():
+                if self.draining.is_set() and time.monotonic() >= self.drain_deadline:
+                    break
                 # Cancel before admitting, so reclaimed capacity is immediately reusable.
                 for seq_id, job in list(live.items()):
                     if job.cancelled.is_set():
                         self._release(job)
                         del live[seq_id]
+                self._publish()
+                if self.draining.is_set() and not live and self.pending.empty():
+                    break
                 if not live:
                     try:
                         self._admit(self.pending.get(timeout=0.01), live)
@@ -212,25 +289,44 @@ class EngineBridge:
                     for event in events:
                         job = live[event.seq_id]
                         job.count += 1
-                        content = job.decoder.decode(
-                            _token_bytes(self.engine.tokenizer, event.token_id),
-                            final=event.finished,
+                        now = time.monotonic()
+                        self.metrics.count("generated_tokens")
+                        if job.last_token_at is not None:
+                            self.metrics.observe("itl_seconds", now - job.last_token_at)
+                        job.last_token_at = now
+                        eos = event.token_id == self.eos_id
+                        content, matched = job.completion.feed(
+                            b"" if eos else _token_bytes(self.engine.tokenizer, event.token_id),
+                            final=event.finished or eos,
                         )
+                        finished = event.finished or eos or matched
+                        if eos or matched:
+                            job.finish_reason = "stop"
+                        if content and job.first_text_at is None:
+                            job.first_text_at = now
+                            self.metrics.observe("ttft_seconds", now - job.submitted_at)
                         try:
                             if not job.cancelled.is_set():
-                                job.output.put_nowait((content, event.finished, job.count))
+                                job.output.put_nowait((content, finished, job.count))
                         except queue.Full:
                             job.abort(APIError("client fell behind the output queue", 503))
-                        if event.finished or job.cancelled.is_set():
+                        if finished or job.cancelled.is_set():
                             self._release(job)
                             del live[event.seq_id]
                 except Exception:
-                    traceback.print_exc()
+                    self.failed.set()
+                    self.stopping.set()
+                    self._diagnostic(traceback.format_exc())
                     for job in live.values():
                         job.abort(APIError("engine generation failed", 500))
                         self._release(job)
                     live.clear()
+                self._publish()
+        except Exception:
+            self.failed.set()
+            self._diagnostic(traceback.format_exc())
         finally:
+            self.stopping.set()
             for job in live.values():
                 job.abort(APIError("server is stopping", 503))
                 self._release(job)
@@ -239,9 +335,23 @@ class EngineBridge:
                 job.abort(APIError("server is stopping", 503))
                 self._release(job)
 
-    def close(self):
+            self._publish()
+
+    def begin_drain(self, timeout=10.0):
+        if not math.isfinite(timeout) or timeout < 0:
+            raise ValueError("drain timeout must be finite and non-negative")
         with self.lock:
-            self.stopping.set()
+            if not self.draining.is_set():
+                self.drain_deadline = time.monotonic() + timeout
+                self.draining.set()
+
+    def close(self, drain_timeout=None):
+        if drain_timeout is None:
+            with self.lock:
+                self.stopping.set()
+        else:
+            self.begin_drain(drain_timeout)
+        # In-flight device work is not preemptible; release at the next boundary.
         self.thread.join()
 
 
@@ -297,6 +407,17 @@ class ChatHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         self.request_id = "req-" + uuid.uuid4().hex
         try:
+            if self.path in ("/healthz", "/readyz", "/metrics"):
+                bridge = self.server.bridge
+                body = bridge.snapshot()
+                if self.path == "/metrics":
+                    body["model"] = getattr(bridge.engine, "artifact_manifest", {})
+                    body["engine"] = type(bridge.engine).__name__
+                healthy = bridge.thread.is_alive() and not bridge.failed.is_set()
+                status = 200 if self.path == "/metrics" or (
+                    bridge.ready if self.path == "/readyz" else healthy) else 503
+                self._json(body, status)
+                return
             if self.path != "/v1/models":
                 raise APIError("unknown endpoint", 404)
             self._json({"object": "list", "data": [{
@@ -334,7 +455,9 @@ class ChatHandler(BaseHTTPRequestHandler):
             except (ValueError, UnicodeError) as exc:
                 raise APIError("invalid JSON body") from exc
             prompt, count, sampling, stream, include_usage = parse_request(body, self.server.bridge.engine)
-            job = self.server.bridge.submit(prompt, count, sampling, self._disconnect)
+            job = self.server.bridge.submit(prompt, count, sampling, self._disconnect,
+                                             stops=validate_stop(body.get("stop")),
+                                             request_id=self.request_id)
             while not job.ready.wait(0.01):
                 self._check_peer(job)
             if job.error:
@@ -376,14 +499,14 @@ class ChatHandler(BaseHTTPRequestHandler):
                 if finished:
                     token_usage = usage(len(prompt), generated)
                     if stream:
-                        self._sse(chunk({}, "length"))
+                        self._sse(chunk({}, job.finish_reason))
                         if include_usage:
                             self._sse(chunk({}, choices=[], token_usage=token_usage))
                         self._sse("[DONE]")
                     else:
                         self._json({**base, "object": "chat.completion", "choices": [{
                             "index": 0, "message": {"role": "assistant", "content": "".join(parts)},
-                            "logprobs": None, "finish_reason": "length",
+                            "logprobs": None, "finish_reason": job.finish_reason,
                         }], "usage": token_usage})
                     break
         except APIError as exc:
@@ -396,7 +519,7 @@ class ChatHandler(BaseHTTPRequestHandler):
 
 
 class ChatServer(ThreadingHTTPServer):
-    daemon_threads = True
+    daemon_threads = False
     request_queue_size = 32
 
     def __init__(self, address, engine, **bridge_options):
@@ -404,11 +527,12 @@ class ChatServer(ThreadingHTTPServer):
             raise ValueError("HTTP serving requires a tokenizer")
         super().__init__(address, ChatHandler)
         self.created = int(time.time())
+        self.drain_timeout = bridge_options.pop("drain_timeout", None)
         self.bridge = EngineBridge(engine, **bridge_options)
 
     def server_close(self):
         if hasattr(self, "bridge"):
-            self.bridge.close()
+            self.bridge.close(self.drain_timeout)
         super().server_close()
 
 
@@ -416,19 +540,17 @@ def make_server(host, port, engine, **bridge_options) -> ThreadingHTTPServer:
     return ChatServer((host, port), engine, **bridge_options)
 
 
-def load_engine(checkpoint=CHECKPOINT, tokenizer_path=TOKENIZER):
-    # MLX is the existing project runtime, not a serving dependency.
-    import mlx.core as mx
+def load_engine(checkpoint=CHECKPOINT, tokenizer_path=TOKENIZER, engine_name="l6",
+                manifest_path=MODEL_MANIFEST):
+    from layers import BatchedSamplingEngine
 
-    model = GPT(vocab_size=1028, n_layer=4, d_model=512, n_head=8, ctx=256)
-    for name, value in mx.load(checkpoint).items():
-        parts = name.split(".")
-        current = model
-        for part in parts[:-1]:
-            current = current[int(part)] if part.isdigit() else getattr(current, part)
-        setattr(current, parts[-1], value)
-    mx.eval(model.parameters())
-    return BatchedEngine(model, BPETokenizer.load(str(tokenizer_path)))
+    if engine_name not in ("l6", "l7"):
+        raise ValueError("engine must be l6 or l7")
+    model, tokenizer, manifest = load_assets(checkpoint, tokenizer_path, manifest_path=manifest_path)
+    cls = BatchedEngine if engine_name == "l6" else BatchedSamplingEngine
+    engine = cls(model, tokenizer)
+    engine.artifact_manifest = manifest
+    return engine
 
 
 def main():
@@ -437,10 +559,18 @@ def main():
     parser.add_argument("--port", type=int, default=8611)
     parser.add_argument("--checkpoint", type=Path, default=CHECKPOINT)
     parser.add_argument("--tokenizer", type=Path, default=TOKENIZER)
+    parser.add_argument("--engine", choices=("l6", "l7"), default="l6")
+    parser.add_argument("--manifest", type=Path, default=MODEL_MANIFEST)
+    parser.add_argument("--drain-timeout", type=float, default=10.0)
     args = parser.parse_args()
-    server = make_server(args.host, args.port, load_engine(args.checkpoint, args.tokenizer))
+    if not math.isfinite(args.drain_timeout) or args.drain_timeout < 0:
+        parser.error("--drain-timeout must be finite and non-negative")
+    server = make_server(args.host, args.port, load_engine(args.checkpoint, args.tokenizer, args.engine,
+                                                         args.manifest),
+                         drain_timeout=args.drain_timeout)
 
     def stop(signum, frame):
+        server.bridge.begin_drain(args.drain_timeout)
         threading.Thread(target=server.shutdown, daemon=True).start()
 
     signal.signal(signal.SIGTERM, stop)

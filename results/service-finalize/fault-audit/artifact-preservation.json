@@ -1,0 +1,6 @@
+[
+  {
+    "original_preserved": "results/service-finalize/cli-smoke.json",
+    "new_test_output": "results/service-finalize/fault-audit/test-generated/results/service-finalize/cli-smoke.json"
+  }
+]

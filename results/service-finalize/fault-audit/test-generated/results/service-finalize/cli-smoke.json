@@ -1,0 +1,18 @@
+{
+  "startup": "Serving layers-gpt at http://127.0.0.1:61664; L3 500-step base model; not instruction tuned. Messages are joined as role: content lines. Text-only chat subset.",
+  "done_frame_received": true,
+  "exit_code": 0,
+  "usage": {
+    "prompt_tokens": 7,
+    "completion_tokens": 180,
+    "total_tokens": 187
+  },
+  "request_log": {
+    "event": "request_end",
+    "request_id": "req-fe1ab73f91044e60b8e99092edf65564",
+    "outcome": "completed",
+    "finish_reason": "length",
+    "completion_tokens": 180,
+    "duration_seconds": 0.3928476250002859
+  }
+}

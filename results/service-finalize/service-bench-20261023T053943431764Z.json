@@ -1,0 +1,3270 @@
+{
+  "timestamp": "20261023T053943431764Z",
+  "config": {
+    "protocol": {
+      "warmup": 3,
+      "reps": 10,
+      "counts": [
+        1,
+        4,
+        8
+      ],
+      "max_new": 64,
+      "order": "paired alternating direct/API; fresh engine/pool per trial",
+      "share_prefixes": false,
+      "generation": "greedy; EOS enabled",
+      "scope": "full request incl prefill; API adds connection, queues and SSE",
+      "owner_lifecycle": "persistent",
+      "concurrency_caveat": "direct eager admission vs HTTP staggered arrival",
+      "ttft": "client first nonempty content; ITL from owner token-ready events"
+    },
+    "device": {
+      "chip": "Apple M4 Max",
+      "memory_bytes": 51539607552,
+      "platform": "macOS-15.8-arm64-arm-64bit",
+      "python": "3.12.15 (main, Oct  3 2026, 00:54:33) [Clang 22.1.3 ]",
+      "mlx": "0.32.4"
+    },
+    "git_commit": "d8170c24730d4b2c0b90283974e0035941415812",
+    "assets": {
+      "checkpoint_sha256": "a6bc079ef679c90ea8a4fdff95cf5086d4d49b8c811ce0252b2c31c7f1531889",
+      "tokenizer_sha256": "b8056fefeb320f2788aa709d8a0ab9a518980aaac9bef8391702331bbfe9dc87",
+      "vocab_size": 1028,
+      "parameters": 13118464
+    },
+    "source_sha256": {
+      "server/app.py": "b5ccb1403a4d003fe51012abaaef2cc28f68890a7f19c393581d5a3ba5eb4e2e",
+      "server/runtime.py": "84064c592c8f4e104b786808bdd6a4743b519b739a342bfcb9cd8b4f53335ccd",
+      "server/completion.py": "5f74465c7af00526ece27738c5bd7180d5c1db96dd2acf51de3856a0388ed395",
+      "server/observability.py": "d976c0f73e0cea1659994cd37547e097610bc113ee87245f463a0a86fe5e1312",
+      "layers/engine.py": "9fa2900e4917505b70bb5c32884a45423a3c7abb9a0bd6913f0617362692de58",
+      "layers/inference.py": "a2b1abd547ff35c2dd9de619ca7d4f98f4ce24becbcc123a1700ea2018c5f631",
+      "layers/paged_kv.py": "bf1c34431459ea6723662abadd719a65b5be830f33fa57783db1b65585594a11",
+      "bench/final_service_bench.py": "af0ed297f78b481a26a84454ab44be644ad4ee0d11622cc625aa35e1f22ddbee"
+    }
+  },
+  "config_hash": "5319981ae5d4",
+  "measurements": [
+    {
+      "engine": "l6",
+      "concurrency": 1,
+      "direct": {
+        "median_s": 0.131160416000057,
+        "p90_s": 0.2333960420000949,
+        "samples_s": [
+          0.2333960420000949,
+          0.2361949589994765,
+          0.13351679200059152,
+          0.14042570800029353,
+          0.12894991700068203,
+          0.12826216599933105,
+          0.12652670800071064,
+          0.13086879200000112,
+          0.131160416000057,
+          0.1305227909997484
+        ]
+      },
+      "api": {
+        "median_s": 0.13874262499939505,
+        "p90_s": 0.23581120800008648,
+        "samples_s": [
+          0.23581120800008648,
+          0.24366658300004929,
+          0.13874262499939505,
+          0.13542429100016307,
+          0.14234495800064906,
+          0.12825312499990105,
+          0.13337500000034197,
+          0.13050870899951406,
+          0.13633241699972132,
+          0.1434547079998083
+        ]
+      },
+      "output_tokens": 64,
+      "api_tokens_per_second": 461.2857800569872,
+      "direct_tokens_per_second": 487.9520967665441,
+      "overhead_percent": 5.780866842733046,
+      "per_request_latency": [
+        {
+          "median_s": 0.13870329199926346,
+          "p90_s": 0.23576750000029278,
+          "samples_s": [
+            0.23576750000029278,
+            0.24359991700021055,
+            0.13870329199926346,
+            0.1353910839998207,
+            0.1422878330004096,
+            0.1282182080003622,
+            0.13332791699940572,
+            0.13045983299980435,
+            0.13628358400001161,
+            0.1434003330004998
+          ]
+        }
+      ],
+      "per_request_ttft": [
+        {
+          "median_s": 0.004748000000290631,
+          "p90_s": 0.008742791999793553,
+          "samples_s": [
+            0.008742791999793553,
+            0.008867458999702649,
+            0.005702957999346836,
+            0.004596708999997645,
+            0.004582000000482367,
+            0.004748000000290631,
+            0.004941332999806036,
+            0.0045625000002473826,
+            0.004499249999753374,
+            0.00460300000031566
+          ]
+        }
+      ],
+      "owner_metric_snapshots": [
+        {
+          "counters": {
+            "received": 4,
+            "completed": 4,
+            "rejected": 0,
+            "cancelled": 0,
+            "errors": 0,
+            "generated_tokens": 256
+          },
+          "gauges": {
+            "active_requests": 0,
+            "waiting_requests": 0,
+            "allocated_pages": 0,
+            "capacity_pages": 128,
+            "free_pages": 128
+          },
+          "latencies": {
+            "ttft_seconds": {
+              "window_count": 4,
+              "window_limit": 1024,
+              "p50": 0.008212499999899592,
+              "p90": 0.008212499999899592
+            },
+            "itl_seconds": {
+              "window_count": 252,
+              "window_limit": 1024,
+              "p50": 0.0036542079997161636,
+              "p90": 0.003757457999199687
+            }
+          },
+          "ready": true,
+          "draining": false,
+          "owner_alive": true,
+          "failed": false
+        },
+        {
+          "counters": {
+            "received": 5,
+            "completed": 5,
+            "rejected": 0,
+            "cancelled": 0,
+            "errors": 0,
+            "generated_tokens": 320
+          },
+          "gauges": {
+            "active_requests": 0,
+            "waiting_requests": 0,
+            "allocated_pages": 0,
+            "capacity_pages": 128,
+            "free_pages": 128
+          },
+          "latencies": {
+            "ttft_seconds": {
+              "window_count": 5,
+              "window_limit": 1024,
+              "p50": 0.008212041999286157,
+              "p90": 0.008212499999899592
+            },
+            "itl_seconds": {
+              "window_count": 315,
+              "window_limit": 1024,
+              "p50": 0.003666583000267565,
+              "p90": 0.0037837919999219594
+            }
+          },
+          "ready": true,
+          "draining": false,
+          "owner_alive": true,
+          "failed": false
+        },
+        {
+          "counters": {
+            "received": 6,
+            "completed": 6,
+            "rejected": 0,
+            "cancelled": 0,
+            "errors": 0,
+            "generated_tokens": 384
+          },
+          "gauges": {
+            "active_requests": 0,
+            "waiting_requests": 0,
+            "allocated_pages": 0,
+            "capacity_pages": 128,
+            "free_pages": 128
+          },
+          "latencies": {
+            "ttft_seconds": {
+              "window_count": 6,
+              "window_limit": 1024,
+              "p50": 0.008212041999286157,
+              "p90": 0.008212499999899592
+            },
+            "itl_seconds": {
+              "window_count": 378,
+              "window_limit": 1024,
+              "p50": 0.0036477499997999985,
+              "p90": 0.0037822499998583226
+            }
+          },
+          "ready": true,
+          "draining": false,
+          "owner_alive": true,
+          "failed": false
+        },
+        {
+          "counters": {
+            "received": 7,
+            "completed": 7,
+            "rejected": 0,
+            "cancelled": 0,
+            "errors": 0,
+            "generated_tokens": 448
+          },
+          "gauges": {
+            "active_requests": 0,
+            "waiting_requests": 0,
+            "allocated_pages": 0,
+            "capacity_pages": 128,
+            "free_pages": 128
+          },
+          "latencies": {
+            "ttft_seconds": {
+              "window_count": 7,
+              "window_limit": 1024,
+              "p50": 0.008191666999664449,
+              "p90": 0.008212499999899592
+            },
+            "itl_seconds": {
+              "window_count": 441,
+              "window_limit": 1024,
+              "p50": 0.0036342079993119114,
+              "p90": 0.0037764170001537423
+            }
+          },
+          "ready": true,
+          "draining": false,
+          "owner_alive": true,
+          "failed": false
+        },
+        {
+          "counters": {
+            "received": 8,
+            "completed": 8,
+            "rejected": 0,
+            "cancelled": 0,
+            "errors": 0,
+            "generated_tokens": 512
+          },
+          "gauges": {
+            "active_requests": 0,
+            "waiting_requests": 0,
+            "allocated_pages": 0,
+            "capacity_pages": 128,
+            "free_pages": 128
+          },
+          "latencies": {
+            "ttft_seconds": {
+              "window_count": 8,
+              "window_limit": 1024,
+              "p50": 0.008191666999664449,
+              "p90": 0.008212499999899592
+            },
+            "itl_seconds": {
+              "window_count": 504,
+              "window_limit": 1024,
+              "p50": 0.0036057499992239173,
+              "p90": 0.0037658749997717678
+            }
+          },
+          "ready": true,
+          "draining": false,
+          "owner_alive": true,
+          "failed": false
+        },
+        {
+          "counters": {
+            "received": 9,
+            "completed": 9,
+            "rejected": 0,
+            "cancelled": 0,
+            "errors": 0,
+            "generated_tokens": 576
+          },
+          "gauges": {
+            "active_requests": 0,
+            "waiting_requests": 0,
+            "allocated_pages": 0,
+            "capacity_pages": 128,
+            "free_pages": 128
+          },
+          "latencies": {
+            "ttft_seconds": {
+              "window_count": 9,
+              "window_limit": 1024,
+              "p50": 0.008157624999512336,
+              "p90": 0.008212499999899592
+            },
+            "itl_seconds": {
+              "window_count": 567,
+              "window_limit": 1024,
+              "p50": 0.0035660419998748694,
+              "p90": 0.0037608329994327505
+            }
+          },
+          "ready": true,
+          "draining": false,
+          "owner_alive": true,
+          "failed": false
+        },
+        {
+          "counters": {
+            "received": 10,
+            "completed": 10,
+            "rejected": 0,
+            "cancelled": 0,
+            "errors": 0,
+            "generated_tokens": 640
+          },
+          "gauges": {
+            "active_requests": 0,
+            "waiting_requests": 0,
+            "allocated_pages": 0,
+            "capacity_pages": 128,
+            "free_pages": 128
+          },
+          "latencies": {
+            "ttft_seconds": {
+              "window_count": 10,
+              "window_limit": 1024,
+              "p50": 0.008157624999512336,
+              "p90": 0.008212499999899592
+            },
+            "itl_seconds": {
+              "window_count": 630,
+              "window_limit": 1024,
+              "p50": 0.0035193339999750606,
+              "p90": 0.0037519999996220577
+            }
+          },
+          "ready": true,
+          "draining": false,
+          "owner_alive": true,
+          "failed": false
+        },
+        {
+          "counters": {
+            "received": 11,
+            "completed": 11,
+            "rejected": 0,
+            "cancelled": 0,
+            "errors": 0,
+            "generated_tokens": 704
+          },
+          "gauges": {
+            "active_requests": 0,
+            "waiting_requests": 0,
+            "allocated_pages": 0,
+            "capacity_pages": 128,
+            "free_pages": 128
+          },
+          "latencies": {
+            "ttft_seconds": {
+              "window_count": 11,
+              "window_limit": 1024,
+              "p50": 0.005189667000195186,
+              "p90": 0.008212041999286157
+            },
+            "itl_seconds": {
+              "window_count": 693,
+              "window_limit": 1024,
+              "p50": 0.002728041999944253,
+              "p90": 0.0037447090007844963
+            }
+          },
+          "ready": true,
+          "draining": false,
+          "owner_alive": true,
+          "failed": false
+        },
+        {
+          "counters": {
+            "received": 12,
+            "completed": 12,
+            "rejected": 0,
+            "cancelled": 0,
+            "errors": 0,
+            "generated_tokens": 768
+          },
+          "gauges": {
+            "active_requests": 0,
+            "waiting_requests": 0,
+            "allocated_pages": 0,
+            "capacity_pages": 128,
+            "free_pages": 128
+          },
+          "latencies": {
+            "ttft_seconds": {
+              "window_count": 12,
+              "window_limit": 1024,
+              "p50": 0.005189667000195186,
+              "p90": 0.008212041999286157
+            },
+            "itl_seconds": {
+              "window_count": 756,
+              "window_limit": 1024,
+              "p50": 0.002413333999356837,
+              "p90": 0.003734791999704612
+            }
+          },
+          "ready": true,
+          "draining": false,
+          "owner_alive": true,
+          "failed": false
+        },
+        {
+          "counters": {
+            "received": 13,
+            "completed": 13,
+            "rejected": 0,
+            "cancelled": 0,
+            "errors": 0,
+            "generated_tokens": 832
+          },
+          "gauges": {
+            "active_requests": 0,
+            "waiting_requests": 0,
+            "allocated_pages": 0,
+            "capacity_pages": 128,
+            "free_pages": 128
+          },
+          "latencies": {
+            "ttft_seconds": {
+              "window_count": 13,
+              "window_limit": 1024,
+              "p50": 0.004450292000001355,
+              "p90": 0.008212041999286157
+            },
+            "itl_seconds": {
+              "window_count": 819,
+              "window_limit": 1024,
+              "p50": 0.002365416999964509,
+              "p90": 0.003734457999598817
+            }
+          },
+          "ready": true,
+          "draining": false,
+          "owner_alive": true,
+          "failed": false
+        }
+      ],
+      "oracle_passed": true,
+      "reclaimed": true
+    },
+    {
+      "engine": "l6",
+      "concurrency": 4,
+      "direct": {
+        "median_s": 0.2448210000002291,
+        "p90_s": 0.24727891600014118,
+        "samples_s": [
+          0.2457170829993629,
+          0.24727891600014118,
+          0.2448487909996402,
+          0.2425550830002976,
+          0.2521191669993641,
+          0.24083770800007187,
+          0.2422349580001537,
+          0.23583954100013216,
+          0.2448210000002291,
+          0.23870166599954246
+        ]
+      },
+      "api": {
+        "median_s": 0.24910966599964013,
+        "p90_s": 0.2548067500001707,
+        "samples_s": [
+          0.25008654199973535,
+          0.2516343750003216,
+          0.2379099159998077,
+          0.24506233299962332,
+          0.24715337499947054,
+          0.24792816700028197,
+          0.24910966599964013,
+          0.2548067500001707,
+          0.25747954199960077,
+          0.24301291599931574
+        ]
+      },
+      "output_tokens": 256,
+      "api_tokens_per_second": 1027.6598419925215,
+      "direct_tokens_per_second": 1045.661932594673,
+      "overhead_percent": 1.7517557723426558,
+      "per_request_latency": [
+        {
+          "median_s": 0.24894475000019156,
+          "p90_s": 0.254658417000428,
+          "samples_s": [
+            0.24982237499989424,
+            0.25160362499991606,
+            0.23781316599979618,
+            0.2450321670003177,
+            0.24677924999923562,
+            0.24789837499974965,
+            0.24894475000019156,
+            0.254658417000428,
+            0.25743983300071704,
+            0.24280266700043285
+          ]
+        },
+        {
+          "median_s": 0.2489801659994555,
+          "p90_s": 0.25462058399989473,
+          "samples_s": [
+            0.24989924999954383,
+            0.25133508399994753,
+            0.23783749999984138,
+            0.24482925000029354,
+            0.24698645799981023,
+            0.24762300000020332,
+            0.2489801659994555,
+            0.25462058399989473,
+            0.2572979160004252,
+            0.24261508300060086
+          ]
+        },
+        {
+          "median_s": 0.2486707079997359,
+          "p90_s": 0.2543389170004957,
+          "samples_s": [
+            0.2499027500007287,
+            0.2514715409997734,
+            0.23761454100076662,
+            0.24472829200021806,
+            0.24678779199985001,
+            0.2478017909998016,
+            0.2486707079997359,
+            0.2543389170004957,
+            0.25703941700066935,
+            0.2427876659994581
+          ]
+        },
+        {
+          "median_s": 0.24891591699997662,
+          "p90_s": 0.2546387499996854,
+          "samples_s": [
+            0.24991599999975733,
+            0.25135620800028846,
+            0.2376630839999052,
+            0.24486337500002264,
+            0.2470765840007516,
+            0.24753333300031954,
+            0.24891591699997662,
+            0.2546387499996854,
+            0.25731229199936934,
+            0.2427056669994272
+          ]
+        }
+      ],
+      "per_request_ttft": [
+        {
+          "median_s": 0.016339709000021685,
+          "p90_s": 0.019815749999906984,
+          "samples_s": [
+            0.012801290999959747,
+            0.017584207999789214,
+            0.019815749999906984,
+            0.014614708999943105,
+            0.013091834000078961,
+            0.014718958999765164,
+            0.02047308399960457,
+            0.016339709000021685,
+            0.012836833000619663,
+            0.017542625000714906
+          ]
+        },
+        {
+          "median_s": 0.0162058750001961,
+          "p90_s": 0.019746582999687234,
+          "samples_s": [
+            0.012702125000032538,
+            0.017457167000429763,
+            0.019746582999687234,
+            0.014526666000165278,
+            0.01302258299983805,
+            0.014635665999776393,
+            0.020370082999761507,
+            0.0162058750001961,
+            0.012807583000721934,
+            0.017421208000087063
+          ]
+        },
+        {
+          "median_s": 0.016239833000327053,
+          "p90_s": 0.01976316600030259,
+          "samples_s": [
+            0.012618542000382149,
+            0.017489832999672217,
+            0.01976316600030259,
+            0.0145262920004825,
+            0.012947375000294414,
+            0.014684165999824472,
+            0.02028591599992069,
+            0.016239833000327053,
+            0.012695875000645174,
+            0.01738408300025185
+          ]
+        },
+        {
+          "median_s": 0.016232916999797453,
+          "p90_s": 0.019706874999428692,
+          "samples_s": [
+            0.012724625000373635,
+            0.017487250000158383,
+            0.019706874999428692,
+            0.01443241700053477,
+            0.013032959000156552,
+            0.014543750000484579,
+            0.02039670800058957,
+            0.016232916999797453,
+            0.012779958999999508,
+            0.01744487499945535
+          ]
+        }
+      ],
+      "owner_metric_snapshots": [
+        {
+          "counters": {
+            "received": 16,
+            "completed": 16,
+            "rejected": 0,
+            "cancelled": 0,
+            "errors": 0,
+            "generated_tokens": 1024
+          },
+          "gauges": {
+            "active_requests": 0,
+            "waiting_requests": 0,
+            "allocated_pages": 0,
+            "capacity_pages": 128,
+            "free_pages": 128
+          },
+          "latencies": {
+            "ttft_seconds": {
+              "window_count": 16,
+              "window_limit": 1024,
+              "p50": 0.012048707999383623,
+              "p90": 0.013363750000280561
+            },
+            "itl_seconds": {
+              "window_count": 1008,
+              "window_limit": 1024,
+              "p50": 0.0034423750003043097,
+              "p90": 0.005254916999547277
+            }
+          },
+          "ready": true,
+          "draining": false,
+          "owner_alive": true,
+          "failed": false
+        },
+        {
+          "counters": {
+            "received": 20,
+            "completed": 20,
+            "rejected": 0,
+            "cancelled": 0,
+            "errors": 0,
+            "generated_tokens": 1280
+          },
+          "gauges": {
+            "active_requests": 0,
+            "waiting_requests": 0,
+            "allocated_pages": 0,
+            "capacity_pages": 128,
+            "free_pages": 128
+          },
+          "latencies": {
+            "ttft_seconds": {
+              "window_count": 20,
+              "window_limit": 1024,
+              "p50": 0.012636292000024696,
+              "p90": 0.015911208000034094
+            },
+            "itl_seconds": {
+              "window_count": 1024,
+              "window_limit": 1024,
+              "p50": 0.003388958999494207,
+              "p90": 0.00521649999973306
+            }
+          },
+          "ready": true,
+          "draining": false,
+          "owner_alive": true,
+          "failed": false
+        },
+        {
+          "counters": {
+            "received": 24,
+            "completed": 24,
+            "rejected": 0,
+            "cancelled": 0,
+            "errors": 0,
+            "generated_tokens": 1536
+          },
+          "gauges": {
+            "active_requests": 0,
+            "waiting_requests": 0,
+            "allocated_pages": 0,
+            "capacity_pages": 128,
+            "free_pages": 128
+          },
+          "latencies": {
+            "ttft_seconds": {
+              "window_count": 24,
+              "window_limit": 1024,
+              "p50": 0.01326762500048062,
+              "p90": 0.0180980000004638
+            },
+            "itl_seconds": {
+              "window_count": 1024,
+              "window_limit": 1024,
+              "p50": 0.0034214999996038387,
+              "p90": 0.004911749999337189
+            }
+          },
+          "ready": true,
+          "draining": false,
+          "owner_alive": true,
+          "failed": false
+        },
+        {
+          "counters": {
+            "received": 28,
+            "completed": 28,
+            "rejected": 0,
+            "cancelled": 0,
+            "errors": 0,
+            "generated_tokens": 1792
+          },
+          "gauges": {
+            "active_requests": 0,
+            "waiting_requests": 0,
+            "allocated_pages": 0,
+            "capacity_pages": 128,
+            "free_pages": 128
+          },
+          "latencies": {
+            "ttft_seconds": {
+              "window_count": 28,
+              "window_limit": 1024,
+              "p50": 0.013131957999576116,
+              "p90": 0.0180980000004638
+            },
+            "itl_seconds": {
+              "window_count": 1024,
+              "window_limit": 1024,
+              "p50": 0.0033544999996593106,
+              "p90": 0.004981000000043423
+            }
+          },
+          "ready": true,
+          "draining": false,
+          "owner_alive": true,
+          "failed": false
+        },
+        {
+          "counters": {
+            "received": 32,
+            "completed": 32,
+            "rejected": 0,
+            "cancelled": 0,
+            "errors": 0,
+            "generated_tokens": 2048
+          },
+          "gauges": {
+            "active_requests": 0,
+            "waiting_requests": 0,
+            "allocated_pages": 0,
+            "capacity_pages": 128,
+            "free_pages": 128
+          },
+          "latencies": {
+            "ttft_seconds": {
+              "window_count": 32,
+              "window_limit": 1024,
+              "p50": 0.012862042000051588,
+              "p90": 0.016704749999917112
+            },
+            "itl_seconds": {
+              "window_count": 1024,
+              "window_limit": 1024,
+              "p50": 0.0033381250004822505,
+              "p90": 0.005244167000455491
+            }
+          },
+          "ready": true,
+          "draining": false,
+          "owner_alive": true,
+          "failed": false
+        },
+        {
+          "counters": {
+            "received": 36,
+            "completed": 36,
+            "rejected": 0,
+            "cancelled": 0,
+            "errors": 0,
+            "generated_tokens": 2304
+          },
+          "gauges": {
+            "active_requests": 0,
+            "waiting_requests": 0,
+            "allocated_pages": 0,
+            "capacity_pages": 128,
+            "free_pages": 128
+          },
+          "latencies": {
+            "ttft_seconds": {
+              "window_count": 36,
+              "window_limit": 1024,
+              "p50": 0.012984707999748935,
+              "p90": 0.016704749999917112
+            },
+            "itl_seconds": {
+              "window_count": 1024,
+              "window_limit": 1024,
+              "p50": 0.00333508299991081,
+              "p90": 0.005244167000455491
+            }
+          },
+          "ready": true,
+          "draining": false,
+          "owner_alive": true,
+          "failed": false
+        },
+        {
+          "counters": {
+            "received": 40,
+            "completed": 40,
+            "rejected": 0,
+            "cancelled": 0,
+            "errors": 0,
+            "generated_tokens": 2560
+          },
+          "gauges": {
+            "active_requests": 0,
+            "waiting_requests": 0,
+            "allocated_pages": 0,
+            "capacity_pages": 128,
+            "free_pages": 128
+          },
+          "latencies": {
+            "ttft_seconds": {
+              "window_count": 40,
+              "window_limit": 1024,
+              "p50": 0.013131957999576116,
+              "p90": 0.018826042000000598
+            },
+            "itl_seconds": {
+              "window_count": 1024,
+              "window_limit": 1024,
+              "p50": 0.003305541999907291,
+              "p90": 0.005271582999739621
+            }
+          },
+          "ready": true,
+          "draining": false,
+          "owner_alive": true,
+          "failed": false
+        },
+        {
+          "counters": {
+            "received": 44,
+            "completed": 44,
+            "rejected": 0,
+            "cancelled": 0,
+            "errors": 0,
+            "generated_tokens": 2816
+          },
+          "gauges": {
+            "active_requests": 0,
+            "waiting_requests": 0,
+            "allocated_pages": 0,
+            "capacity_pages": 128,
+            "free_pages": 128
+          },
+          "latencies": {
+            "ttft_seconds": {
+              "window_count": 44,
+              "window_limit": 1024,
+              "p50": 0.013363750000280561,
+              "p90": 0.01829629100029706
+            },
+            "itl_seconds": {
+              "window_count": 1024,
+              "window_limit": 1024,
+              "p50": 0.0033297079999101697,
+              "p90": 0.005307584000547649
+            }
+          },
+          "ready": true,
+          "draining": false,
+          "owner_alive": true,
+          "failed": false
+        },
+        {
+          "counters": {
+            "received": 48,
+            "completed": 48,
+            "rejected": 0,
+            "cancelled": 0,
+            "errors": 0,
+            "generated_tokens": 3072
+          },
+          "gauges": {
+            "active_requests": 0,
+            "waiting_requests": 0,
+            "allocated_pages": 0,
+            "capacity_pages": 128,
+            "free_pages": 128
+          },
+          "latencies": {
+            "ttft_seconds": {
+              "window_count": 48,
+              "window_limit": 1024,
+              "p50": 0.013131957999576116,
+              "p90": 0.01829629100029706
+            },
+            "itl_seconds": {
+              "window_count": 1024,
+              "window_limit": 1024,
+              "p50": 0.003336083999784023,
+              "p90": 0.005354959000214876
+            }
+          },
+          "ready": true,
+          "draining": false,
+          "owner_alive": true,
+          "failed": false
+        },
+        {
+          "counters": {
+            "received": 52,
+            "completed": 52,
+            "rejected": 0,
+            "cancelled": 0,
+            "errors": 0,
+            "generated_tokens": 3328
+          },
+          "gauges": {
+            "active_requests": 0,
+            "waiting_requests": 0,
+            "allocated_pages": 0,
+            "capacity_pages": 128,
+            "free_pages": 128
+          },
+          "latencies": {
+            "ttft_seconds": {
+              "window_count": 52,
+              "window_limit": 1024,
+              "p50": 0.013363750000280561,
+              "p90": 0.01820262500041281
+            },
+            "itl_seconds": {
+              "window_count": 1024,
+              "window_limit": 1024,
+              "p50": 0.0033387499997843406,
+              "p90": 0.005306457999722625
+            }
+          },
+          "ready": true,
+          "draining": false,
+          "owner_alive": true,
+          "failed": false
+        }
+      ],
+      "oracle_passed": true,
+      "reclaimed": true
+    },
+    {
+      "engine": "l6",
+      "concurrency": 8,
+      "direct": {
+        "median_s": 0.376553667000735,
+        "p90_s": 0.38779183299993747,
+        "samples_s": [
+          0.3669464169997809,
+          0.376553667000735,
+          0.3665211249999629,
+          0.38779183299993747,
+          0.3715427079996516,
+          0.3788310830004775,
+          0.39009474999966187,
+          0.38648845799980336,
+          0.3636319580000418,
+          0.371829040999728
+        ]
+      },
+      "api": {
+        "median_s": 0.39835758300068846,
+        "p90_s": 0.42640208400007396,
+        "samples_s": [
+          0.39500370800033124,
+          0.3886352079998687,
+          0.38150504199984425,
+          0.4482459999999264,
+          0.42640208400007396,
+          0.4070895830000154,
+          0.39835758300068846,
+          0.3930597909993594,
+          0.38211349999983213,
+          0.3999440830002641
+        ]
+      },
+      "output_tokens": 512,
+      "api_tokens_per_second": 1285.2774036414291,
+      "direct_tokens_per_second": 1359.6999441755552,
+      "overhead_percent": 5.790387376551798,
+      "per_request_latency": [
+        {
+          "median_s": 0.3982211250004184,
+          "p90_s": 0.4257951250001497,
+          "samples_s": [
+            0.394559708000088,
+            0.38855708300070546,
+            0.38097387499965407,
+            0.447814833000848,
+            0.4257951250001497,
+            0.40647716599960404,
+            0.3982211250004184,
+            0.39203974999963975,
+            0.3819943749995218,
+            0.39974337500007096
+          ]
+        },
+        {
+          "median_s": 0.39810995799962257,
+          "p90_s": 0.42568362500060175,
+          "samples_s": [
+            0.3946893339998496,
+            0.3884078339997359,
+            0.38103112499993586,
+            0.4475293750001583,
+            0.42568362500060175,
+            0.4068509999997332,
+            0.39810995799962257,
+            0.39159604200085596,
+            0.3815295419999529,
+            0.39953637500002515
+          ]
+        },
+        {
+          "median_s": 0.39824983299968153,
+          "p90_s": 0.42610262499965756,
+          "samples_s": [
+            0.3948392080001213,
+            0.388073500000246,
+            0.381143874999907,
+            0.4472649999997884,
+            0.42610262499965756,
+            0.4067285829996763,
+            0.39824983299968153,
+            0.39269345799948496,
+            0.38201220899918553,
+            0.39943633300026704
+          ]
+        },
+        {
+          "median_s": 0.39793337499941117,
+          "p90_s": 0.4259725409992825,
+          "samples_s": [
+            0.3943924999994124,
+            0.3877685420002308,
+            0.38136074999965786,
+            0.44805887500024255,
+            0.4259725409992825,
+            0.4062412499997663,
+            0.39793337499941117,
+            0.3924466250000478,
+            0.3817286250005054,
+            0.39919629100040765
+          ]
+        },
+        {
+          "median_s": 0.39792941699943185,
+          "p90_s": 0.42567570799928944,
+          "samples_s": [
+            0.39449091700043937,
+            0.38804979199994705,
+            0.38103700000010576,
+            0.4472146670004804,
+            0.42567570799928944,
+            0.40642266600025323,
+            0.39792941699943185,
+            0.39235020900014206,
+            0.38099858300029155,
+            0.3988104999998541
+          ]
+        },
+        {
+          "median_s": 0.3981530830005795,
+          "p90_s": 0.4259115830000155,
+          "samples_s": [
+            0.39425575000041135,
+            0.3883594170001743,
+            0.381130791999567,
+            0.44784708299994236,
+            0.4259115830000155,
+            0.40689341699999204,
+            0.3981530830005795,
+            0.3921453749999273,
+            0.38120354199963913,
+            0.3995490829993287
+          ]
+        },
+        {
+          "median_s": 0.39751416699982656,
+          "p90_s": 0.4253493329997582,
+          "samples_s": [
+            0.3944296250001571,
+            0.38808366600005684,
+            0.3811135830001149,
+            0.447997292000764,
+            0.4253493329997582,
+            0.4067183329998443,
+            0.39751416699982656,
+            0.3925227919999088,
+            0.38176095800008625,
+            0.39958999999998923
+          ]
+        },
+        {
+          "median_s": 0.3972391670004072,
+          "p90_s": 0.42606145899935655,
+          "samples_s": [
+            0.3947270419994311,
+            0.3879398750004839,
+            0.3812305829997058,
+            0.44770791599967197,
+            0.42606145899935655,
+            0.4064248749991748,
+            0.3972391670004072,
+            0.39198016699992877,
+            0.381422874999771,
+            0.39967995900042297
+          ]
+        }
+      ],
+      "per_request_ttft": [
+        {
+          "median_s": 0.0320337909997761,
+          "p90_s": 0.034843624999666645,
+          "samples_s": [
+            0.023858458000177052,
+            0.03254516600009083,
+            0.02550108299965359,
+            0.036494875000244065,
+            0.0320337909997761,
+            0.034843624999666645,
+            0.032973375000437954,
+            0.030402375000448956,
+            0.026453624999703607,
+            0.02870683299988741
+          ]
+        },
+        {
+          "median_s": 0.031925291000334255,
+          "p90_s": 0.034864791000472906,
+          "samples_s": [
+            0.02358933400046226,
+            0.03258408399960899,
+            0.02524749999975029,
+            0.0364017909996619,
+            0.031925291000334255,
+            0.034864791000472906,
+            0.032586415999503515,
+            0.029879709000852017,
+            0.026279666999471374,
+            0.02841191700008494
+          ]
+        },
+        {
+          "median_s": 0.03191629200046009,
+          "p90_s": 0.03482337500008725,
+          "samples_s": [
+            0.023879999999735446,
+            0.03214875000048778,
+            0.02516399999967689,
+            0.03674658399995678,
+            0.03191629200046009,
+            0.03482337500008725,
+            0.03267004099961923,
+            0.030414707999625534,
+            0.026487749999432708,
+            0.028824666000218713
+          ]
+        },
+        {
+          "median_s": 0.03161491599985311,
+          "p90_s": 0.035046915999373596,
+          "samples_s": [
+            0.023714750000181084,
+            0.032332208000298124,
+            0.02549720899969543,
+            0.03651266700035194,
+            0.03161491599985311,
+            0.035046915999373596,
+            0.032743291999395296,
+            0.029988582999976643,
+            0.026263208000273153,
+            0.02853479100031109
+          ]
+        },
+        {
+          "median_s": 0.03201691599952028,
+          "p90_s": 0.0347438750004585,
+          "samples_s": [
+            0.023698500000136846,
+            0.03233054199972685,
+            0.0254142089997913,
+            0.036089541999899666,
+            0.03201691599952028,
+            0.0347438750004585,
+            0.032799458999761555,
+            0.029857417000130226,
+            0.02609141599987197,
+            0.028414833000169892
+          ]
+        },
+        {
+          "median_s": 0.03175279200058867,
+          "p90_s": 0.03493274999982532,
+          "samples_s": [
+            0.023533167000096,
+            0.03239270799986116,
+            0.02532645900009811,
+            0.03652920800050197,
+            0.03175279200058867,
+            0.03493274999982532,
+            0.03278687500005617,
+            0.030265542000051937,
+            0.02649325000038516,
+            0.028450457999497303
+          ]
+        },
+        {
+          "median_s": 0.03185483299967018,
+          "p90_s": 0.034924374999718566,
+          "samples_s": [
+            0.023730708000584855,
+            0.03227108299961401,
+            0.025180458000249928,
+            0.03652725000029022,
+            0.03185483299967018,
+            0.034924374999718566,
+            0.032404167000095185,
+            0.030087541999819223,
+            0.026327999999921303,
+            0.02877941600036138
+          ]
+        },
+        {
+          "median_s": 0.03182979199937108,
+          "p90_s": 0.03509049999956915,
+          "samples_s": [
+            0.023654582999370177,
+            0.03246158399997512,
+            0.02539270800025406,
+            0.03630895799960854,
+            0.03182979199937108,
+            0.03509049999956915,
+            0.03240433400060283,
+            0.029877625000153785,
+            0.02617612499943789,
+            0.028747917000146117
+          ]
+        }
+      ],
+      "owner_metric_snapshots": [
+        {
+          "counters": {
+            "received": 32,
+            "completed": 32,
+            "rejected": 0,
+            "cancelled": 0,
+            "errors": 0,
+            "generated_tokens": 2048
+          },
+          "gauges": {
+            "active_requests": 0,
+            "waiting_requests": 0,
+            "allocated_pages": 0,
+            "capacity_pages": 128,
+            "free_pages": 128
+          },
+          "latencies": {
+            "ttft_seconds": {
+              "window_count": 32,
+              "window_limit": 1024,
+              "p50": 0.023936124999636377,
+              "p90": 0.024833166999997047
+            },
+            "itl_seconds": {
+              "window_count": 1024,
+              "window_limit": 1024,
+              "p50": 0.005446166999718116,
+              "p90": 0.007375709000370989
+            }
+          },
+          "ready": true,
+          "draining": false,
+          "owner_alive": true,
+          "failed": false
+        },
+        {
+          "counters": {
+            "received": 40,
+            "completed": 40,
+            "rejected": 0,
+            "cancelled": 0,
+            "errors": 0,
+            "generated_tokens": 2560
+          },
+          "gauges": {
+            "active_requests": 0,
+            "waiting_requests": 0,
+            "allocated_pages": 0,
+            "capacity_pages": 128,
+            "free_pages": 128
+          },
+          "latencies": {
+            "ttft_seconds": {
+              "window_count": 40,
+              "window_limit": 1024,
+              "p50": 0.024211459000071045,
+              "p90": 0.030182458000126644
+            },
+            "itl_seconds": {
+              "window_count": 1024,
+              "window_limit": 1024,
+              "p50": 0.005405165999945893,
+              "p90": 0.007149500000195985
+            }
+          },
+          "ready": true,
+          "draining": false,
+          "owner_alive": true,
+          "failed": false
+        },
+        {
+          "counters": {
+            "received": 48,
+            "completed": 48,
+            "rejected": 0,
+            "cancelled": 0,
+            "errors": 0,
+            "generated_tokens": 3072
+          },
+          "gauges": {
+            "active_requests": 0,
+            "waiting_requests": 0,
+            "allocated_pages": 0,
+            "capacity_pages": 128,
+            "free_pages": 128
+          },
+          "latencies": {
+            "ttft_seconds": {
+              "window_count": 48,
+              "window_limit": 1024,
+              "p50": 0.02407850000054168,
+              "p90": 0.030013792000318062
+            },
+            "itl_seconds": {
+              "window_count": 1024,
+              "window_limit": 1024,
+              "p50": 0.005248750000646396,
+              "p90": 0.00716299999930925
+            }
+          },
+          "ready": true,
+          "draining": false,
+          "owner_alive": true,
+          "failed": false
+        },
+        {
+          "counters": {
+            "received": 56,
+            "completed": 56,
+            "rejected": 0,
+            "cancelled": 0,
+            "errors": 0,
+            "generated_tokens": 3584
+          },
+          "gauges": {
+            "active_requests": 0,
+            "waiting_requests": 0,
+            "allocated_pages": 0,
+            "capacity_pages": 128,
+            "free_pages": 128
+          },
+          "latencies": {
+            "ttft_seconds": {
+              "window_count": 56,
+              "window_limit": 1024,
+              "p50": 0.024264957999548642,
+              "p90": 0.0337168340001881
+            },
+            "itl_seconds": {
+              "window_count": 1024,
+              "window_limit": 1024,
+              "p50": 0.0056903750000856235,
+              "p90": 0.007686916000238853
+            }
+          },
+          "ready": true,
+          "draining": false,
+          "owner_alive": true,
+          "failed": false
+        },
+        {
+          "counters": {
+            "received": 64,
+            "completed": 64,
+            "rejected": 0,
+            "cancelled": 0,
+            "errors": 0,
+            "generated_tokens": 4096
+          },
+          "gauges": {
+            "active_requests": 0,
+            "waiting_requests": 0,
+            "allocated_pages": 0,
+            "capacity_pages": 128,
+            "free_pages": 128
+          },
+          "latencies": {
+            "ttft_seconds": {
+              "window_count": 64,
+              "window_limit": 1024,
+              "p50": 0.024501083999894036,
+              "p90": 0.03360745800000586
+            },
+            "itl_seconds": {
+              "window_count": 1024,
+              "window_limit": 1024,
+              "p50": 0.00630195800022193,
+              "p90": 0.0075748750005004695
+            }
+          },
+          "ready": true,
+          "draining": false,
+          "owner_alive": true,
+          "failed": false
+        },
+        {
+          "counters": {
+            "received": 72,
+            "completed": 72,
+            "rejected": 0,
+            "cancelled": 0,
+            "errors": 0,
+            "generated_tokens": 4608
+          },
+          "gauges": {
+            "active_requests": 0,
+            "waiting_requests": 0,
+            "allocated_pages": 0,
+            "capacity_pages": 128,
+            "free_pages": 128
+          },
+          "latencies": {
+            "ttft_seconds": {
+              "window_count": 72,
+              "window_limit": 1024,
+              "p50": 0.024883582999791543,
+              "p90": 0.03360745800000586
+            },
+            "itl_seconds": {
+              "window_count": 1024,
+              "window_limit": 1024,
+              "p50": 0.005767499999819847,
+              "p90": 0.007448709000527742
+            }
+          },
+          "ready": true,
+          "draining": false,
+          "owner_alive": true,
+          "failed": false
+        },
+        {
+          "counters": {
+            "received": 80,
+            "completed": 80,
+            "rejected": 0,
+            "cancelled": 0,
+            "errors": 0,
+            "generated_tokens": 5120
+          },
+          "gauges": {
+            "active_requests": 0,
+            "waiting_requests": 0,
+            "allocated_pages": 0,
+            "capacity_pages": 128,
+            "free_pages": 128
+          },
+          "latencies": {
+            "ttft_seconds": {
+              "window_count": 80,
+              "window_limit": 1024,
+              "p50": 0.02925725000022794,
+              "p90": 0.03360745800000586
+            },
+            "itl_seconds": {
+              "window_count": 1024,
+              "window_limit": 1024,
+              "p50": 0.005439124999611522,
+              "p90": 0.007385791999695357
+            }
+          },
+          "ready": true,
+          "draining": false,
+          "owner_alive": true,
+          "failed": false
+        },
+        {
+          "counters": {
+            "received": 88,
+            "completed": 88,
+            "rejected": 0,
+            "cancelled": 0,
+            "errors": 0,
+            "generated_tokens": 5632
+          },
+          "gauges": {
+            "active_requests": 0,
+            "waiting_requests": 0,
+            "allocated_pages": 0,
+            "capacity_pages": 128,
+            "free_pages": 128
+          },
+          "latencies": {
+            "ttft_seconds": {
+              "window_count": 88,
+              "window_limit": 1024,
+              "p50": 0.02789095800017094,
+              "p90": 0.03305616600027861
+            },
+            "itl_seconds": {
+              "window_count": 1024,
+              "window_limit": 1024,
+              "p50": 0.005433000000266475,
+              "p90": 0.007198000000244065
+            }
+          },
+          "ready": true,
+          "draining": false,
+          "owner_alive": true,
+          "failed": false
+        },
+        {
+          "counters": {
+            "received": 96,
+            "completed": 96,
+            "rejected": 0,
+            "cancelled": 0,
+            "errors": 0,
+            "generated_tokens": 6144
+          },
+          "gauges": {
+            "active_requests": 0,
+            "waiting_requests": 0,
+            "allocated_pages": 0,
+            "capacity_pages": 128,
+            "free_pages": 128
+          },
+          "latencies": {
+            "ttft_seconds": {
+              "window_count": 96,
+              "window_limit": 1024,
+              "p50": 0.027282500000183063,
+              "p90": 0.0330037909998282
+            },
+            "itl_seconds": {
+              "window_count": 1024,
+              "window_limit": 1024,
+              "p50": 0.005459791000248515,
+              "p90": 0.007065624999995634
+            }
+          },
+          "ready": true,
+          "draining": false,
+          "owner_alive": true,
+          "failed": false
+        },
+        {
+          "counters": {
+            "received": 104,
+            "completed": 104,
+            "rejected": 0,
+            "cancelled": 0,
+            "errors": 0,
+            "generated_tokens": 6656
+          },
+          "gauges": {
+            "active_requests": 0,
+            "waiting_requests": 0,
+            "allocated_pages": 0,
+            "capacity_pages": 128,
+            "free_pages": 128
+          },
+          "latencies": {
+            "ttft_seconds": {
+              "window_count": 104,
+              "window_limit": 1024,
+              "p50": 0.026368458999968425,
+              "p90": 0.03281733400035591
+            },
+            "itl_seconds": {
+              "window_count": 1024,
+              "window_limit": 1024,
+              "p50": 0.005511000000296917,
+              "p90": 0.007236583999656432
+            }
+          },
+          "ready": true,
+          "draining": false,
+          "owner_alive": true,
+          "failed": false
+        }
+      ],
+      "oracle_passed": true,
+      "reclaimed": true
+    },
+    {
+      "engine": "l7",
+      "concurrency": 1,
+      "direct": {
+        "median_s": 0.15114549999998417,
+        "p90_s": 0.1826266250000117,
+        "samples_s": [
+          0.14802879100079736,
+          0.21500320799987094,
+          0.14848437500040745,
+          0.1826266250000117,
+          0.14709487500022078,
+          0.15656962500088412,
+          0.16272162499990372,
+          0.13643058399975416,
+          0.15114549999998417,
+          0.1509305409999797
+        ]
+      },
+      "api": {
+        "median_s": 0.16742975000033766,
+        "p90_s": 0.22414545799983898,
+        "samples_s": [
+          0.1514720839995789,
+          0.22414545799983898,
+          0.24877891699998145,
+          0.18438583400075004,
+          0.1654567080004199,
+          0.16940916600015044,
+          0.16311066700018273,
+          0.16742975000033766,
+          0.15739600000051723,
+          0.15262737500052026
+        ]
+      },
+      "output_tokens": 64,
+      "api_tokens_per_second": 382.24986897412754,
+      "direct_tokens_per_second": 423.43304961118065,
+      "overhead_percent": 10.77389005981335,
+      "per_request_latency": [
+        {
+          "median_s": 0.16736991699963255,
+          "p90_s": 0.22407995799949276,
+          "samples_s": [
+            0.15143199999965873,
+            0.22407995799949276,
+            0.24872125000001688,
+            0.18431383300048765,
+            0.16539599999941856,
+            0.16935062499942433,
+            0.16300799999953597,
+            0.16736991699963255,
+            0.1573606669999208,
+            0.15258704099960596
+          ]
+        }
+      ],
+      "per_request_ttft": [
+        {
+          "median_s": 0.0057193330003428855,
+          "p90_s": 0.008381624999856285,
+          "samples_s": [
+            0.006082333999984257,
+            0.008381624999856285,
+            0.008847791999869514,
+            0.008020750000468979,
+            0.0049470829999336274,
+            0.005551207999815233,
+            0.004569167000227026,
+            0.00516770899957919,
+            0.0057193330003428855,
+            0.0053299999999580905
+          ]
+        }
+      ],
+      "owner_metric_snapshots": [
+        {
+          "counters": {
+            "received": 4,
+            "completed": 4,
+            "rejected": 0,
+            "cancelled": 0,
+            "errors": 0,
+            "generated_tokens": 256
+          },
+          "gauges": {
+            "active_requests": 0,
+            "waiting_requests": 0,
+            "allocated_pages": 0,
+            "capacity_pages": 128,
+            "free_pages": 128
+          },
+          "latencies": {
+            "ttft_seconds": {
+              "window_count": 4,
+              "window_limit": 1024,
+              "p50": 0.005575250000219967,
+              "p90": 0.005575250000219967
+            },
+            "itl_seconds": {
+              "window_count": 252,
+              "window_limit": 1024,
+              "p50": 0.002479292000316491,
+              "p90": 0.003742416999557463
+            }
+          },
+          "ready": true,
+          "draining": false,
+          "owner_alive": true,
+          "failed": false
+        },
+        {
+          "counters": {
+            "received": 5,
+            "completed": 5,
+            "rejected": 0,
+            "cancelled": 0,
+            "errors": 0,
+            "generated_tokens": 320
+          },
+          "gauges": {
+            "active_requests": 0,
+            "waiting_requests": 0,
+            "allocated_pages": 0,
+            "capacity_pages": 128,
+            "free_pages": 128
+          },
+          "latencies": {
+            "ttft_seconds": {
+              "window_count": 5,
+              "window_limit": 1024,
+              "p50": 0.005575250000219967,
+              "p90": 0.0074339169996164856
+            },
+            "itl_seconds": {
+              "window_count": 315,
+              "window_limit": 1024,
+              "p50": 0.0026029169994217227,
+              "p90": 0.003837790999568824
+            }
+          },
+          "ready": true,
+          "draining": false,
+          "owner_alive": true,
+          "failed": false
+        },
+        {
+          "counters": {
+            "received": 6,
+            "completed": 6,
+            "rejected": 0,
+            "cancelled": 0,
+            "errors": 0,
+            "generated_tokens": 384
+          },
+          "gauges": {
+            "active_requests": 0,
+            "waiting_requests": 0,
+            "allocated_pages": 0,
+            "capacity_pages": 128,
+            "free_pages": 128
+          },
+          "latencies": {
+            "ttft_seconds": {
+              "window_count": 6,
+              "window_limit": 1024,
+              "p50": 0.0074339169996164856,
+              "p90": 0.007836333000341256
+            },
+            "itl_seconds": {
+              "window_count": 378,
+              "window_limit": 1024,
+              "p50": 0.002899707999858947,
+              "p90": 0.003925082999558072
+            }
+          },
+          "ready": true,
+          "draining": false,
+          "owner_alive": true,
+          "failed": false
+        },
+        {
+          "counters": {
+            "received": 7,
+            "completed": 7,
+            "rejected": 0,
+            "cancelled": 0,
+            "errors": 0,
+            "generated_tokens": 448
+          },
+          "gauges": {
+            "active_requests": 0,
+            "waiting_requests": 0,
+            "allocated_pages": 0,
+            "capacity_pages": 128,
+            "free_pages": 128
+          },
+          "latencies": {
+            "ttft_seconds": {
+              "window_count": 7,
+              "window_limit": 1024,
+              "p50": 0.0074339169996164856,
+              "p90": 0.007836333000341256
+            },
+            "itl_seconds": {
+              "window_count": 441,
+              "window_limit": 1024,
+              "p50": 0.0027985830001853174,
+              "p90": 0.003915042000699032
+            }
+          },
+          "ready": true,
+          "draining": false,
+          "owner_alive": true,
+          "failed": false
+        },
+        {
+          "counters": {
+            "received": 8,
+            "completed": 8,
+            "rejected": 0,
+            "cancelled": 0,
+            "errors": 0,
+            "generated_tokens": 512
+          },
+          "gauges": {
+            "active_requests": 0,
+            "waiting_requests": 0,
+            "allocated_pages": 0,
+            "capacity_pages": 128,
+            "free_pages": 128
+          },
+          "latencies": {
+            "ttft_seconds": {
+              "window_count": 8,
+              "window_limit": 1024,
+              "p50": 0.0074339169996164856,
+              "p90": 0.007836333000341256
+            },
+            "itl_seconds": {
+              "window_count": 504,
+              "window_limit": 1024,
+              "p50": 0.002696040999580873,
+              "p90": 0.0038904999992155354
+            }
+          },
+          "ready": true,
+          "draining": false,
+          "owner_alive": true,
+          "failed": false
+        },
+        {
+          "counters": {
+            "received": 9,
+            "completed": 9,
+            "rejected": 0,
+            "cancelled": 0,
+            "errors": 0,
+            "generated_tokens": 576
+          },
+          "gauges": {
+            "active_requests": 0,
+            "waiting_requests": 0,
+            "allocated_pages": 0,
+            "capacity_pages": 128,
+            "free_pages": 128
+          },
+          "latencies": {
+            "ttft_seconds": {
+              "window_count": 9,
+              "window_limit": 1024,
+              "p50": 0.005575250000219967,
+              "p90": 0.007836333000341256
+            },
+            "itl_seconds": {
+              "window_count": 567,
+              "window_limit": 1024,
+              "p50": 0.002636250000250584,
+              "p90": 0.0038864170001033926
+            }
+          },
+          "ready": true,
+          "draining": false,
+          "owner_alive": true,
+          "failed": false
+        },
+        {
+          "counters": {
+            "received": 10,
+            "completed": 10,
+            "rejected": 0,
+            "cancelled": 0,
+            "errors": 0,
+            "generated_tokens": 640
+          },
+          "gauges": {
+            "active_requests": 0,
+            "waiting_requests": 0,
+            "allocated_pages": 0,
+            "capacity_pages": 128,
+            "free_pages": 128
+          },
+          "latencies": {
+            "ttft_seconds": {
+              "window_count": 10,
+              "window_limit": 1024,
+              "p50": 0.005575250000219967,
+              "p90": 0.007836333000341256
+            },
+            "itl_seconds": {
+              "window_count": 630,
+              "window_limit": 1024,
+              "p50": 0.0025799590002861805,
+              "p90": 0.0038860829999975977
+            }
+          },
+          "ready": true,
+          "draining": false,
+          "owner_alive": true,
+          "failed": false
+        },
+        {
+          "counters": {
+            "received": 11,
+            "completed": 11,
+            "rejected": 0,
+            "cancelled": 0,
+            "errors": 0,
+            "generated_tokens": 704
+          },
+          "gauges": {
+            "active_requests": 0,
+            "waiting_requests": 0,
+            "allocated_pages": 0,
+            "capacity_pages": 128,
+            "free_pages": 128
+          },
+          "latencies": {
+            "ttft_seconds": {
+              "window_count": 11,
+              "window_limit": 1024,
+              "p50": 0.00505050000083429,
+              "p90": 0.007453666999936104
+            },
+            "itl_seconds": {
+              "window_count": 693,
+              "window_limit": 1024,
+              "p50": 0.002555874999416119,
+              "p90": 0.003875207999954
+            }
+          },
+          "ready": true,
+          "draining": false,
+          "owner_alive": true,
+          "failed": false
+        },
+        {
+          "counters": {
+            "received": 12,
+            "completed": 12,
+            "rejected": 0,
+            "cancelled": 0,
+            "errors": 0,
+            "generated_tokens": 768
+          },
+          "gauges": {
+            "active_requests": 0,
+            "waiting_requests": 0,
+            "allocated_pages": 0,
+            "capacity_pages": 128,
+            "free_pages": 128
+          },
+          "latencies": {
+            "ttft_seconds": {
+              "window_count": 12,
+              "window_limit": 1024,
+              "p50": 0.005274375000226428,
+              "p90": 0.007453666999936104
+            },
+            "itl_seconds": {
+              "window_count": 756,
+              "window_limit": 1024,
+              "p50": 0.0025265000003855675,
+              "p90": 0.003870332999213133
+            }
+          },
+          "ready": true,
+          "draining": false,
+          "owner_alive": true,
+          "failed": false
+        },
+        {
+          "counters": {
+            "received": 13,
+            "completed": 13,
+            "rejected": 0,
+            "cancelled": 0,
+            "errors": 0,
+            "generated_tokens": 832
+          },
+          "gauges": {
+            "active_requests": 0,
+            "waiting_requests": 0,
+            "allocated_pages": 0,
+            "capacity_pages": 128,
+            "free_pages": 128
+          },
+          "latencies": {
+            "ttft_seconds": {
+              "window_count": 13,
+              "window_limit": 1024,
+              "p50": 0.00505050000083429,
+              "p90": 0.007453666999936104
+            },
+            "itl_seconds": {
+              "window_count": 819,
+              "window_limit": 1024,
+              "p50": 0.002507707999939157,
+              "p90": 0.003859334000480885
+            }
+          },
+          "ready": true,
+          "draining": false,
+          "owner_alive": true,
+          "failed": false
+        }
+      ],
+      "oracle_passed": true,
+      "reclaimed": true
+    },
+    {
+      "engine": "l7",
+      "concurrency": 4,
+      "direct": {
+        "median_s": 0.20311454200054868,
+        "p90_s": 0.21672983299959014,
+        "samples_s": [
+          0.22459483300008287,
+          0.20574795799984713,
+          0.20311454200054868,
+          0.1966415840006448,
+          0.20191679199979262,
+          0.20299733400042896,
+          0.20241258300029585,
+          0.21672983299959014,
+          0.20481933300015953,
+          0.20118224999987433
+        ]
+      },
+      "api": {
+        "median_s": 0.21335670899952675,
+        "p90_s": 0.22581033299957198,
+        "samples_s": [
+          0.22640300000057323,
+          0.2220367919999262,
+          0.22581033299957198,
+          0.21335670899952675,
+          0.21206891700057895,
+          0.213960957999916,
+          0.21081512500040844,
+          0.21322916699955385,
+          0.20827620799991564,
+          0.20942087500043272
+        ]
+      },
+      "output_tokens": 256,
+      "api_tokens_per_second": 1199.8685262836889,
+      "direct_tokens_per_second": 1260.3725832653993,
+      "overhead_percent": 5.042557218256882,
+      "per_request_latency": [
+        {
+          "median_s": 0.2131108330004281,
+          "p90_s": 0.22557400000005146,
+          "samples_s": [
+            0.2263533750001443,
+            0.22198083399962343,
+            0.22557400000005146,
+            0.2130235000004177,
+            0.21202537499993923,
+            0.21379941600025631,
+            0.21063308400061942,
+            0.2131108330004281,
+            0.20796554100070352,
+            0.20906162499977654
+          ]
+        },
+        {
+          "median_s": 0.21309133300019312,
+          "p90_s": 0.2257137500000681,
+          "samples_s": [
+            0.22614545799933694,
+            0.22184391600058007,
+            0.2257137500000681,
+            0.21283033400050044,
+            0.21179204199961532,
+            0.21372675000020536,
+            0.2107840419994318,
+            0.21309133300019312,
+            0.20793100000082632,
+            0.2092958749999525
+          ]
+        },
+        {
+          "median_s": 0.21325029200033896,
+          "p90_s": 0.22571345799951814,
+          "samples_s": [
+            0.22606749999977183,
+            0.22166691699931107,
+            0.22571345799951814,
+            0.21325029200033896,
+            0.21187287500015373,
+            0.21353499999986525,
+            0.2105864590002966,
+            0.21285958399948868,
+            0.2081566249999014,
+            0.20892662500045844
+          ]
+        },
+        {
+          "median_s": 0.21310970800004725,
+          "p90_s": 0.22551449999991746,
+          "samples_s": [
+            0.22596345800047857,
+            0.22177770899997995,
+            0.22551449999991746,
+            0.21310970800004725,
+            0.2119528339999306,
+            0.2138143330003004,
+            0.21047458299926802,
+            0.21297475000028498,
+            0.20815508299983776,
+            0.20927350000056322
+          ]
+        }
+      ],
+      "per_request_ttft": [
+        {
+          "median_s": 0.015088292000655201,
+          "p90_s": 0.017799291999835987,
+          "samples_s": [
+            0.01883558300050936,
+            0.017799291999835987,
+            0.012901291000162018,
+            0.017612167000152112,
+            0.014273084000706149,
+            0.01665704100014409,
+            0.015088292000655201,
+            0.013041958000030718,
+            0.012368041000627272,
+            0.012423375000253145
+          ]
+        },
+        {
+          "median_s": 0.015239166999890585,
+          "p90_s": 0.01766408300045441,
+          "samples_s": [
+            0.018708915999923192,
+            0.01766408300045441,
+            0.012897416999294364,
+            0.017464125000515196,
+            0.014145291999739129,
+            0.016479500000059488,
+            0.015239166999890585,
+            0.012951166000675585,
+            0.012298583000301733,
+            0.01252683300026547
+          ]
+        },
+        {
+          "median_s": 0.015082584000083443,
+          "p90_s": 0.017700458000035724,
+          "samples_s": [
+            0.018798416999743495,
+            0.017700458000035724,
+            0.012880499999482709,
+            0.01756812500025262,
+            0.014165499999762687,
+            0.016537833000256796,
+            0.015082584000083443,
+            0.01287549999960902,
+            0.012329624999438238,
+            0.012599458000295272
+          ]
+        },
+        {
+          "median_s": 0.015161124999394815,
+          "p90_s": 0.0175822920000428,
+          "samples_s": [
+            0.01876529200035293,
+            0.0175822920000428,
+            0.012817916999665613,
+            0.017463375000261294,
+            0.014206916999683017,
+            0.01651258299989422,
+            0.015161124999394815,
+            0.013052250000328058,
+            0.012345832999926643,
+            0.012452792000658519
+          ]
+        }
+      ],
+      "owner_metric_snapshots": [
+        {
+          "counters": {
+            "received": 16,
+            "completed": 16,
+            "rejected": 0,
+            "cancelled": 0,
+            "errors": 0,
+            "generated_tokens": 1024
+          },
+          "gauges": {
+            "active_requests": 0,
+            "waiting_requests": 0,
+            "allocated_pages": 0,
+            "capacity_pages": 128,
+            "free_pages": 128
+          },
+          "latencies": {
+            "ttft_seconds": {
+              "window_count": 16,
+              "window_limit": 1024,
+              "p50": 0.015277208999577852,
+              "p90": 0.017133917000137444
+            },
+            "itl_seconds": {
+              "window_count": 1008,
+              "window_limit": 1024,
+              "p50": 0.0031889170004433254,
+              "p90": 0.004317584000091301
+            }
+          },
+          "ready": true,
+          "draining": false,
+          "owner_alive": true,
+          "failed": false
+        },
+        {
+          "counters": {
+            "received": 20,
+            "completed": 20,
+            "rejected": 0,
+            "cancelled": 0,
+            "errors": 0,
+            "generated_tokens": 1280
+          },
+          "gauges": {
+            "active_requests": 0,
+            "waiting_requests": 0,
+            "allocated_pages": 0,
+            "capacity_pages": 128,
+            "free_pages": 128
+          },
+          "latencies": {
+            "ttft_seconds": {
+              "window_count": 20,
+              "window_limit": 1024,
+              "p50": 0.015925416999380104,
+              "p90": 0.017133917000137444
+            },
+            "itl_seconds": {
+              "window_count": 1024,
+              "window_limit": 1024,
+              "p50": 0.0031889170004433254,
+              "p90": 0.004289833999791881
+            }
+          },
+          "ready": true,
+          "draining": false,
+          "owner_alive": true,
+          "failed": false
+        },
+        {
+          "counters": {
+            "received": 24,
+            "completed": 24,
+            "rejected": 0,
+            "cancelled": 0,
+            "errors": 0,
+            "generated_tokens": 1536
+          },
+          "gauges": {
+            "active_requests": 0,
+            "waiting_requests": 0,
+            "allocated_pages": 0,
+            "capacity_pages": 128,
+            "free_pages": 128
+          },
+          "latencies": {
+            "ttft_seconds": {
+              "window_count": 24,
+              "window_limit": 1024,
+              "p50": 0.015277208999577852,
+              "p90": 0.017073541000172554
+            },
+            "itl_seconds": {
+              "window_count": 1024,
+              "window_limit": 1024,
+              "p50": 0.0031048749997353298,
+              "p90": 0.004553916000077152
+            }
+          },
+          "ready": true,
+          "draining": false,
+          "owner_alive": true,
+          "failed": false
+        },
+        {
+          "counters": {
+            "received": 28,
+            "completed": 28,
+            "rejected": 0,
+            "cancelled": 0,
+            "errors": 0,
+            "generated_tokens": 1792
+          },
+          "gauges": {
+            "active_requests": 0,
+            "waiting_requests": 0,
+            "allocated_pages": 0,
+            "capacity_pages": 128,
+            "free_pages": 128
+          },
+          "latencies": {
+            "ttft_seconds": {
+              "window_count": 28,
+              "window_limit": 1024,
+              "p50": 0.015732584000033967,
+              "p90": 0.017073541000172554
+            },
+            "itl_seconds": {
+              "window_count": 1024,
+              "window_limit": 1024,
+              "p50": 0.0030092909992163186,
+              "p90": 0.004620667000381218
+            }
+          },
+          "ready": true,
+          "draining": false,
+          "owner_alive": true,
+          "failed": false
+        },
+        {
+          "counters": {
+            "received": 32,
+            "completed": 32,
+            "rejected": 0,
+            "cancelled": 0,
+            "errors": 0,
+            "generated_tokens": 2048
+          },
+          "gauges": {
+            "active_requests": 0,
+            "waiting_requests": 0,
+            "allocated_pages": 0,
+            "capacity_pages": 128,
+            "free_pages": 128
+          },
+          "latencies": {
+            "ttft_seconds": {
+              "window_count": 32,
+              "window_limit": 1024,
+              "p50": 0.015277208999577852,
+              "p90": 0.016762915999606776
+            },
+            "itl_seconds": {
+              "window_count": 1024,
+              "window_limit": 1024,
+              "p50": 0.0027451250007288763,
+              "p90": 0.004682499999944412
+            }
+          },
+          "ready": true,
+          "draining": false,
+          "owner_alive": true,
+          "failed": false
+        },
+        {
+          "counters": {
+            "received": 36,
+            "completed": 36,
+            "rejected": 0,
+            "cancelled": 0,
+            "errors": 0,
+            "generated_tokens": 2304
+          },
+          "gauges": {
+            "active_requests": 0,
+            "waiting_requests": 0,
+            "allocated_pages": 0,
+            "capacity_pages": 128,
+            "free_pages": 128
+          },
+          "latencies": {
+            "ttft_seconds": {
+              "window_count": 36,
+              "window_limit": 1024,
+              "p50": 0.015172207999967213,
+              "p90": 0.016762915999606776
+            },
+            "itl_seconds": {
+              "window_count": 1024,
+              "window_limit": 1024,
+              "p50": 0.0026581249994706013,
+              "p90": 0.004646125000363099
+            }
+          },
+          "ready": true,
+          "draining": false,
+          "owner_alive": true,
+          "failed": false
+        },
+        {
+          "counters": {
+            "received": 40,
+            "completed": 40,
+            "rejected": 0,
+            "cancelled": 0,
+            "errors": 0,
+            "generated_tokens": 2560
+          },
+          "gauges": {
+            "active_requests": 0,
+            "waiting_requests": 0,
+            "allocated_pages": 0,
+            "capacity_pages": 128,
+            "free_pages": 128
+          },
+          "latencies": {
+            "ttft_seconds": {
+              "window_count": 40,
+              "window_limit": 1024,
+              "p50": 0.01507554199997685,
+              "p90": 0.016762915999606776
+            },
+            "itl_seconds": {
+              "window_count": 1024,
+              "window_limit": 1024,
+              "p50": 0.002611792000607238,
+              "p90": 0.004636458999812021
+            }
+          },
+          "ready": true,
+          "draining": false,
+          "owner_alive": true,
+          "failed": false
+        },
+        {
+          "counters": {
+            "received": 44,
+            "completed": 44,
+            "rejected": 0,
+            "cancelled": 0,
+            "errors": 0,
+            "generated_tokens": 2816
+          },
+          "gauges": {
+            "active_requests": 0,
+            "waiting_requests": 0,
+            "allocated_pages": 0,
+            "capacity_pages": 128,
+            "free_pages": 128
+          },
+          "latencies": {
+            "ttft_seconds": {
+              "window_count": 44,
+              "window_limit": 1024,
+              "p50": 0.01450379099969723,
+              "p90": 0.01658362499983923
+            },
+            "itl_seconds": {
+              "window_count": 1024,
+              "window_limit": 1024,
+              "p50": 0.0026347089997216244,
+              "p90": 0.004636292000213871
+            }
+          },
+          "ready": true,
+          "draining": false,
+          "owner_alive": true,
+          "failed": false
+        },
+        {
+          "counters": {
+            "received": 48,
+            "completed": 48,
+            "rejected": 0,
+            "cancelled": 0,
+            "errors": 0,
+            "generated_tokens": 3072
+          },
+          "gauges": {
+            "active_requests": 0,
+            "waiting_requests": 0,
+            "allocated_pages": 0,
+            "capacity_pages": 128,
+            "free_pages": 128
+          },
+          "latencies": {
+            "ttft_seconds": {
+              "window_count": 48,
+              "window_limit": 1024,
+              "p50": 0.014375083000231825,
+              "p90": 0.01658362499983923
+            },
+            "itl_seconds": {
+              "window_count": 1024,
+              "window_limit": 1024,
+              "p50": 0.002629999999953725,
+              "p90": 0.004599416000019119
+            }
+          },
+          "ready": true,
+          "draining": false,
+          "owner_alive": true,
+          "failed": false
+        },
+        {
+          "counters": {
+            "received": 52,
+            "completed": 52,
+            "rejected": 0,
+            "cancelled": 0,
+            "errors": 0,
+            "generated_tokens": 3328
+          },
+          "gauges": {
+            "active_requests": 0,
+            "waiting_requests": 0,
+            "allocated_pages": 0,
+            "capacity_pages": 128,
+            "free_pages": 128
+          },
+          "latencies": {
+            "ttft_seconds": {
+              "window_count": 52,
+              "window_limit": 1024,
+              "p50": 0.013904666000598809,
+              "p90": 0.016347707999557315
+            },
+            "itl_seconds": {
+              "window_count": 1024,
+              "window_limit": 1024,
+              "p50": 0.0026474170008441433,
+              "p90": 0.004604833000485087
+            }
+          },
+          "ready": true,
+          "draining": false,
+          "owner_alive": true,
+          "failed": false
+        }
+      ],
+      "oracle_passed": true,
+      "reclaimed": true
+    },
+    {
+      "engine": "l7",
+      "concurrency": 8,
+      "direct": {
+        "median_s": 0.29604358300002787,
+        "p90_s": 0.3084601250002379,
+        "samples_s": [
+          0.3084601250002379,
+          0.29520854099973803,
+          0.2946709159996317,
+          0.3287101669993717,
+          0.2911977920002755,
+          0.29604358300002787,
+          0.29096437499993044,
+          0.30279129199971067,
+          0.3047322919992439,
+          0.27861508400019375
+        ]
+      },
+      "api": {
+        "median_s": 0.317855082999813,
+        "p90_s": 0.32605258300009154,
+        "samples_s": [
+          0.31269254100061517,
+          0.3154867909997847,
+          0.32605258300009154,
+          0.32094033300018054,
+          0.3244254999999612,
+          0.317855082999813,
+          0.34881283300001087,
+          0.299407166000492,
+          0.30396908300008363,
+          0.2856760000004215
+        ]
+      },
+      "output_tokens": 512,
+      "api_tokens_per_second": 1610.7969555431057,
+      "direct_tokens_per_second": 1729.4750820521983,
+      "overhead_percent": 7.367665185900374,
+      "per_request_latency": [
+        {
+          "median_s": 0.31726829200033535,
+          "p90_s": 0.32574237500011805,
+          "samples_s": [
+            0.3120417499994801,
+            0.3149595839995527,
+            0.32574237500011805,
+            0.3205568339999445,
+            0.32423095899957843,
+            0.31726829200033535,
+            0.34836716599966167,
+            0.2988872919995629,
+            0.3035808750000797,
+            0.2849865409998529
+          ]
+        },
+        {
+          "median_s": 0.317446832999849,
+          "p90_s": 0.32486129099925165,
+          "samples_s": [
+            0.3122649580000143,
+            0.3142837089999375,
+            0.32486129099925165,
+            0.32070154099983483,
+            0.3234204159998626,
+            0.317446832999849,
+            0.3480062499993437,
+            0.298860541999602,
+            0.30376408400024957,
+            0.2851925000004485
+          ]
+        },
+        {
+          "median_s": 0.31748837499981164,
+          "p90_s": 0.32580979199974536,
+          "samples_s": [
+            0.31251604200042493,
+            0.3148122920001697,
+            0.32580979199974536,
+            0.3204054580000957,
+            0.32405683400065755,
+            0.31748837499981164,
+            0.34817929200016806,
+            0.2992151250000461,
+            0.3031618750001144,
+            0.2848817499998404
+          ]
+        },
+        {
+          "median_s": 0.3166035840004042,
+          "p90_s": 0.3252514159994462,
+          "samples_s": [
+            0.31243816599999263,
+            0.31510720799997216,
+            0.3252514159994462,
+            0.3203440830002364,
+            0.324186333000398,
+            0.3166035840004042,
+            0.3484559159996934,
+            0.29874445800032845,
+            0.303624750000381,
+            0.28497712499938643
+          ]
+        },
+        {
+          "median_s": 0.3175947500003531,
+          "p90_s": 0.3254665419999583,
+          "samples_s": [
+            0.3122302080000736,
+            0.31514229200001864,
+            0.3254665419999583,
+            0.32048145800035854,
+            0.3238936249999824,
+            0.3175947500003531,
+            0.3484066660003009,
+            0.2989712079997844,
+            0.30359108399989054,
+            0.2852511669998421
+          ]
+        },
+        {
+          "median_s": 0.3169377079993865,
+          "p90_s": 0.3254152500003329,
+          "samples_s": [
+            0.3121851659998356,
+            0.31510691699986637,
+            0.3254152500003329,
+            0.32055612500062125,
+            0.3241081670003041,
+            0.3169377079993865,
+            0.34804999999960273,
+            0.29909500000030675,
+            0.3034403330002533,
+            0.28520162499989965
+          ]
+        },
+        {
+          "median_s": 0.31664658399949985,
+          "p90_s": 0.3258700830001544,
+          "samples_s": [
+            0.312463833000038,
+            0.31505237500005023,
+            0.3258700830001544,
+            0.3202488330007327,
+            0.32425412500015227,
+            0.31664658399949985,
+            0.34830274999967514,
+            0.29903079199993954,
+            0.3033805000004577,
+            0.2849450829999114
+          ]
+        },
+        {
+          "median_s": 0.31760566600041784,
+          "p90_s": 0.3252050830005828,
+          "samples_s": [
+            0.312471459000335,
+            0.31519795900021563,
+            0.3252050830005828,
+            0.3204942080001274,
+            0.3236374580001211,
+            0.31760566600041784,
+            0.34876483399966673,
+            0.29893354200066824,
+            0.3036591669997506,
+            0.2848841249997349
+          ]
+        }
+      ],
+      "per_request_ttft": [
+        {
+          "median_s": 0.03336529199987126,
+          "p90_s": 0.034215041000607016,
+          "samples_s": [
+            0.033842707999610866,
+            0.026494333999835362,
+            0.034215041000607016,
+            0.03009720899990498,
+            0.038414374999774736,
+            0.027525499999683234,
+            0.033937832999981765,
+            0.03336529199987126,
+            0.02887504199952673,
+            0.025917791000210855
+          ]
+        },
+        {
+          "median_s": 0.0335438330002944,
+          "p90_s": 0.033999790999587276,
+          "samples_s": [
+            0.03395137499956036,
+            0.02646999999979016,
+            0.033999790999587276,
+            0.029915166000137106,
+            0.03835724999953527,
+            0.027274250000118627,
+            0.03390983400004188,
+            0.0335438330002944,
+            0.028884583999570168,
+            0.02599395800007187
+          ]
+        },
+        {
+          "median_s": 0.03366383299999143,
+          "p90_s": 0.03418520899958821,
+          "samples_s": [
+            0.03412533299979259,
+            0.026607666999552748,
+            0.03418520899958821,
+            0.029930667000371614,
+            0.0383549590005714,
+            0.0273889580003015,
+            0.033927833999769064,
+            0.03366383299999143,
+            0.028571957999702136,
+            0.026004875000580796
+          ]
+        },
+        {
+          "median_s": 0.03357574999972712,
+          "p90_s": 0.03389391600012459,
+          "samples_s": [
+            0.03389391600012459,
+            0.02649045800080785,
+            0.03360787499968865,
+            0.029789416000312485,
+            0.038308875000439,
+            0.027489959000376984,
+            0.03375266599960014,
+            0.03357574999972712,
+            0.028765582999767503,
+            0.025865040999633493
+          ]
+        },
+        {
+          "median_s": 0.03342049999992014,
+          "p90_s": 0.033766790999834484,
+          "samples_s": [
+            0.033766790999834484,
+            0.02654379199975665,
+            0.03371750000042084,
+            0.029969582999910926,
+            0.0381197090000569,
+            0.027401625000493368,
+            0.033648208000158775,
+            0.03342049999992014,
+            0.028698874999463442,
+            0.025860875000034866
+          ]
+        },
+        {
+          "median_s": 0.0334419999999227,
+          "p90_s": 0.03402224999990722,
+          "samples_s": [
+            0.03402224999990722,
+            0.026577249999718333,
+            0.033808042000600835,
+            0.029795000000376604,
+            0.03815191700050491,
+            0.027326999999786494,
+            0.033938541999305016,
+            0.0334419999999227,
+            0.028666582999903767,
+            0.02578216700021585
+          ]
+        },
+        {
+          "median_s": 0.033152125000015076,
+          "p90_s": 0.034018125000329746,
+          "samples_s": [
+            0.03401495799971599,
+            0.026698417000261543,
+            0.034018125000329746,
+            0.029941165999844088,
+            0.03824770899973373,
+            0.02737270899979194,
+            0.03378358299960382,
+            0.033152125000015076,
+            0.028791000000637723,
+            0.026054082999507955
+          ]
+        },
+        {
+          "median_s": 0.03326758399998653,
+          "p90_s": 0.034045291999973415,
+          "samples_s": [
+            0.034004916999947454,
+            0.026777916999890294,
+            0.033910791000380414,
+            0.029710333000366518,
+            0.03831949999948847,
+            0.027634291000140365,
+            0.034045291999973415,
+            0.03326758399998653,
+            0.0285619169999336,
+            0.026200708999567723
+          ]
+        }
+      ],
+      "owner_metric_snapshots": [
+        {
+          "counters": {
+            "received": 32,
+            "completed": 32,
+            "rejected": 0,
+            "cancelled": 0,
+            "errors": 0,
+            "generated_tokens": 2048
+          },
+          "gauges": {
+            "active_requests": 0,
+            "waiting_requests": 0,
+            "allocated_pages": 0,
+            "capacity_pages": 128,
+            "free_pages": 128
+          },
+          "latencies": {
+            "ttft_seconds": {
+              "window_count": 32,
+              "window_limit": 1024,
+              "p50": 0.030296792000626738,
+              "p90": 0.031889167000372254
+            },
+            "itl_seconds": {
+              "window_count": 1024,
+              "window_limit": 1024,
+              "p50": 0.004218500000206404,
+              "p90": 0.0056686669995542616
+            }
+          },
+          "ready": true,
+          "draining": false,
+          "owner_alive": true,
+          "failed": false
+        },
+        {
+          "counters": {
+            "received": 40,
+            "completed": 40,
+            "rejected": 0,
+            "cancelled": 0,
+            "errors": 0,
+            "generated_tokens": 2560
+          },
+          "gauges": {
+            "active_requests": 0,
+            "waiting_requests": 0,
+            "allocated_pages": 0,
+            "capacity_pages": 128,
+            "free_pages": 128
+          },
+          "latencies": {
+            "ttft_seconds": {
+              "window_count": 40,
+              "window_limit": 1024,
+              "p50": 0.029498416999558685,
+              "p90": 0.031889167000372254
+            },
+            "itl_seconds": {
+              "window_count": 1024,
+              "window_limit": 1024,
+              "p50": 0.0042937919997712015,
+              "p90": 0.005640999999741325
+            }
+          },
+          "ready": true,
+          "draining": false,
+          "owner_alive": true,
+          "failed": false
+        },
+        {
+          "counters": {
+            "received": 48,
+            "completed": 48,
+            "rejected": 0,
+            "cancelled": 0,
+            "errors": 0,
+            "generated_tokens": 3072
+          },
+          "gauges": {
+            "active_requests": 0,
+            "waiting_requests": 0,
+            "allocated_pages": 0,
+            "capacity_pages": 128,
+            "free_pages": 128
+          },
+          "latencies": {
+            "ttft_seconds": {
+              "window_count": 48,
+              "window_limit": 1024,
+              "p50": 0.030296792000626738,
+              "p90": 0.031889167000372254
+            },
+            "itl_seconds": {
+              "window_count": 1024,
+              "window_limit": 1024,
+              "p50": 0.004458040999452351,
+              "p90": 0.005753916000685422
+            }
+          },
+          "ready": true,
+          "draining": false,
+          "owner_alive": true,
+          "failed": false
+        },
+        {
+          "counters": {
+            "received": 56,
+            "completed": 56,
+            "rejected": 0,
+            "cancelled": 0,
+            "errors": 0,
+            "generated_tokens": 3584
+          },
+          "gauges": {
+            "active_requests": 0,
+            "waiting_requests": 0,
+            "allocated_pages": 0,
+            "capacity_pages": 128,
+            "free_pages": 128
+          },
+          "latencies": {
+            "ttft_seconds": {
+              "window_count": 56,
+              "window_limit": 1024,
+              "p50": 0.029498416999558685,
+              "p90": 0.03178316699995776
+            },
+            "itl_seconds": {
+              "window_count": 1024,
+              "window_limit": 1024,
+              "p50": 0.004528999999820371,
+              "p90": 0.005666125000061584
+            }
+          },
+          "ready": true,
+          "draining": false,
+          "owner_alive": true,
+          "failed": false
+        },
+        {
+          "counters": {
+            "received": 64,
+            "completed": 64,
+            "rejected": 0,
+            "cancelled": 0,
+            "errors": 0,
+            "generated_tokens": 4096
+          },
+          "gauges": {
+            "active_requests": 0,
+            "waiting_requests": 0,
+            "allocated_pages": 0,
+            "capacity_pages": 128,
+            "free_pages": 128
+          },
+          "latencies": {
+            "ttft_seconds": {
+              "window_count": 64,
+              "window_limit": 1024,
+              "p50": 0.030296792000626738,
+              "p90": 0.035786917000223184
+            },
+            "itl_seconds": {
+              "window_count": 1024,
+              "window_limit": 1024,
+              "p50": 0.004356624999672931,
+              "p90": 0.005666125000061584
+            }
+          },
+          "ready": true,
+          "draining": false,
+          "owner_alive": true,
+          "failed": false
+        },
+        {
+          "counters": {
+            "received": 72,
+            "completed": 72,
+            "rejected": 0,
+            "cancelled": 0,
+            "errors": 0,
+            "generated_tokens": 4608
+          },
+          "gauges": {
+            "active_requests": 0,
+            "waiting_requests": 0,
+            "allocated_pages": 0,
+            "capacity_pages": 128,
+            "free_pages": 128
+          },
+          "latencies": {
+            "ttft_seconds": {
+              "window_count": 72,
+              "window_limit": 1024,
+              "p50": 0.029498416999558685,
+              "p90": 0.03306283399979293
+            },
+            "itl_seconds": {
+              "window_count": 1024,
+              "window_limit": 1024,
+              "p50": 0.004389541000819008,
+              "p90": 0.005718999999771768
+            }
+          },
+          "ready": true,
+          "draining": false,
+          "owner_alive": true,
+          "failed": false
+        },
+        {
+          "counters": {
+            "received": 80,
+            "completed": 80,
+            "rejected": 0,
+            "cancelled": 0,
+            "errors": 0,
+            "generated_tokens": 5120
+          },
+          "gauges": {
+            "active_requests": 0,
+            "waiting_requests": 0,
+            "allocated_pages": 0,
+            "capacity_pages": 128,
+            "free_pages": 128
+          },
+          "latencies": {
+            "ttft_seconds": {
+              "window_count": 80,
+              "window_limit": 1024,
+              "p50": 0.030296792000626738,
+              "p90": 0.03306283399979293
+            },
+            "itl_seconds": {
+              "window_count": 1024,
+              "window_limit": 1024,
+              "p50": 0.004789333999724477,
+              "p90": 0.0059822080002049915
+            }
+          },
+          "ready": true,
+          "draining": false,
+          "owner_alive": true,
+          "failed": false
+        },
+        {
+          "counters": {
+            "received": 88,
+            "completed": 88,
+            "rejected": 0,
+            "cancelled": 0,
+            "errors": 0,
+            "generated_tokens": 5632
+          },
+          "gauges": {
+            "active_requests": 0,
+            "waiting_requests": 0,
+            "allocated_pages": 0,
+            "capacity_pages": 128,
+            "free_pages": 128
+          },
+          "latencies": {
+            "ttft_seconds": {
+              "window_count": 88,
+              "window_limit": 1024,
+              "p50": 0.030615708000368613,
+              "p90": 0.03273395799988066
+            },
+            "itl_seconds": {
+              "window_count": 1024,
+              "window_limit": 1024,
+              "p50": 0.004440707999492588,
+              "p90": 0.005869958999937808
+            }
+          },
+          "ready": true,
+          "draining": false,
+          "owner_alive": true,
+          "failed": false
+        },
+        {
+          "counters": {
+            "received": 96,
+            "completed": 96,
+            "rejected": 0,
+            "cancelled": 0,
+            "errors": 0,
+            "generated_tokens": 6144
+          },
+          "gauges": {
+            "active_requests": 0,
+            "waiting_requests": 0,
+            "allocated_pages": 0,
+            "capacity_pages": 128,
+            "free_pages": 128
+          },
+          "latencies": {
+            "ttft_seconds": {
+              "window_count": 96,
+              "window_limit": 1024,
+              "p50": 0.030296792000626738,
+              "p90": 0.032540291999794135
+            },
+            "itl_seconds": {
+              "window_count": 1024,
+              "window_limit": 1024,
+              "p50": 0.004093958999874303,
+              "p90": 0.005531750000045577
+            }
+          },
+          "ready": true,
+          "draining": false,
+          "owner_alive": true,
+          "failed": false
+        },
+        {
+          "counters": {
+            "received": 104,
+            "completed": 104,
+            "rejected": 0,
+            "cancelled": 0,
+            "errors": 0,
+            "generated_tokens": 6656
+          },
+          "gauges": {
+            "active_requests": 0,
+            "waiting_requests": 0,
+            "allocated_pages": 0,
+            "capacity_pages": 128,
+            "free_pages": 128
+          },
+          "latencies": {
+            "ttft_seconds": {
+              "window_count": 104,
+              "window_limit": 1024,
+              "p50": 0.029498416999558685,
+              "p90": 0.03247099999953207
+            },
+            "itl_seconds": {
+              "window_count": 1024,
+              "window_limit": 1024,
+              "p50": 0.004093416000614525,
+              "p90": 0.005531750000045577
+            }
+          },
+          "ready": true,
+          "draining": false,
+          "owner_alive": true,
+          "failed": false
+        }
+      ],
+      "oracle_passed": true,
+      "reclaimed": true
+    }
+  ],
+  "singleton_api_overhead_below_5_percent": false
+}

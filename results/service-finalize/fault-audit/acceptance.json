@@ -1,0 +1,18 @@
+{
+  "goal": "local service terminal-state fault isolation",
+  "repair_commit": "e7942dfbc47f9acf2c81da9bc6ca68149e178e56",
+  "source_sha256": {
+    "server/app.py": "542b4d480c1c06d2d4bfb223285c95420d7e614c4fc54bc59049bb6575d54ee8",
+    "server/observability.py": "ad6d1675afd1d50404ba553e9c5a5425e0f05914e905fb495315e0ad9c25e263",
+    "tests/test_service_faults.py": "19c81c3e3b12b9b49996aa9e6da9e8cf46b7e03d8970cff2ba63ff7bb7d3e426"
+  },
+  "regression": "189 passed; one existing PyTorch deprecation warning",
+  "before": "6 failed",
+  "after": "6 passed",
+  "performance_rerun": false,
+  "push_or_merge": false,
+  "limits": [
+    "diagnostic I/O remains synchronous",
+    "in-flight MLX calls cannot be preempted"
+  ]
+}

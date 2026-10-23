@@ -1,0 +1,230 @@
+FFFFFF                                                                   [100%]
+=================================== FAILURES ===================================
+___ test_log_failure_preserves_success_and_subsequent_requests[broken-pipe] ____
+
+failed_diagnostics = None
+
+    def test_log_failure_preserves_success_and_subsequent_requests(failed_diagnostics):
+        e = engine()
+        bridge = EngineBridge(e)
+        try:
+            for token in (1, 2):
+                job = bridge.submit([token], 1, {'temperature': 0})
+                assert job.ready.wait(2)
+                assert job.done.wait(2)
+>               assert job.error is None and not job.cancelled.is_set()
+E               AssertionError: assert (APIError('engine generation failed') is None)
+E                +  where APIError('engine generation failed') = Generation(prompt_ids=[1], max_tokens=1, sampling={'temperature': 0}, output=<queue.Queue object at 0x108d6b320>, disc...7bd4903bf7940', submitted_at=9505.631411583, last_token_at=9505.639935833, first_text_at=9505.639935833, reported=True).error
+
+tests/test_service_faults.py:26: AssertionError
+----------------------------- Captured stderr call -----------------------------
+Traceback (most recent call last):
+  File "/Users/wangchen/Developer/layers/server/app.py", line 307, in _run
+    self._release(job)
+  File "/Users/wangchen/Developer/layers/server/app.py", line 231, in _release
+    self._report(job)
+  File "/Users/wangchen/Developer/layers/server/app.py", line 222, in _report
+    print(json.dumps({"event": "request_end", "request_id": job.request_id,
+  File "/Users/wangchen/Developer/layers/tests/test_service_faults.py", line 13, in fail
+    raise request.param('controlled diagnostic write failure')
+BrokenPipeError: controlled diagnostic write failure
+__ test_log_failure_preserves_success_and_subsequent_requests[closed-stream] ___
+
+failed_diagnostics = None
+
+    def test_log_failure_preserves_success_and_subsequent_requests(failed_diagnostics):
+        e = engine()
+        bridge = EngineBridge(e)
+        try:
+            for token in (1, 2):
+                job = bridge.submit([token], 1, {'temperature': 0})
+                assert job.ready.wait(2)
+                assert job.done.wait(2)
+>               assert job.error is None and not job.cancelled.is_set()
+E               AssertionError: assert (APIError('engine generation failed') is None)
+E                +  where APIError('engine generation failed') = Generation(prompt_ids=[1], max_tokens=1, sampling={'temperature': 0}, output=<queue.Queue object at 0x108d6b890>, disc...5f51c7975439d', submitted_at=9505.652128375, last_token_at=9505.654220541, first_text_at=9505.654220541, reported=True).error
+
+tests/test_service_faults.py:26: AssertionError
+----------------------------- Captured stderr call -----------------------------
+Traceback (most recent call last):
+  File "/Users/wangchen/Developer/layers/server/app.py", line 307, in _run
+    self._release(job)
+  File "/Users/wangchen/Developer/layers/server/app.py", line 231, in _release
+    self._report(job)
+  File "/Users/wangchen/Developer/layers/server/app.py", line 222, in _report
+    print(json.dumps({"event": "request_end", "request_id": job.request_id,
+  File "/Users/wangchen/Developer/layers/tests/test_service_faults.py", line 13, in fail
+    raise request.param('controlled diagnostic write failure')
+ValueError: controlled diagnostic write failure
+__ test_log_failure_preserves_rejection_notifications_and_reuse[broken-pipe] ___
+
+failed_diagnostics = None
+
+    def test_log_failure_preserves_rejection_notifications_and_reuse(failed_diagnostics):
+        e = engine()
+        original = e.add_request
+        def admit(prompt, sampler, max_new_tokens):
+            if prompt == [1]:
+                raise RequestCapacityError('controlled rejection')
+            return original(prompt, sampler, max_new_tokens)
+        e.add_request = admit
+        bridge = EngineBridge(e)
+        try:
+            rejected = bridge.submit([1], 1, {'temperature': 0})
+>           assert rejected.ready.wait(2), 'rejected request must wake its HTTP waiter'
+E           AssertionError: rejected request must wake its HTTP waiter
+E           assert False
+E            +  where False = wait(2)
+E            +    where wait = <threading.Event at 0x118924c20: unset>.wait
+E            +      where <threading.Event at 0x118924c20: unset> = Generation(prompt_ids=[1], max_tokens=1, sampling={'temperature': 0}, output=<queue.Queue object at 0x1189248c0>, disc...-5ed7ffd5c2e04fa5bf8367762b520854', submitted_at=9505.657440166, last_token_at=None, first_text_at=None, reported=True).ready
+
+tests/test_service_faults.py:47: AssertionError
+----------------------------- Captured stderr call -----------------------------
+Traceback (most recent call last):
+  File "/Users/wangchen/Developer/layers/server/app.py", line 270, in _run
+    self._admit(self.pending.get(timeout=0.01), live)
+  File "/Users/wangchen/Developer/layers/server/app.py", line 250, in _admit
+    self._report(job)
+  File "/Users/wangchen/Developer/layers/server/app.py", line 222, in _report
+    print(json.dumps({"event": "request_end", "request_id": job.request_id,
+  File "/Users/wangchen/Developer/layers/tests/test_service_faults.py", line 13, in fail
+    raise request.param('controlled diagnostic write failure')
+BrokenPipeError: controlled diagnostic write failure
+_ test_log_failure_preserves_rejection_notifications_and_reuse[closed-stream] __
+
+failed_diagnostics = None
+
+    def test_log_failure_preserves_rejection_notifications_and_reuse(failed_diagnostics):
+        e = engine()
+        original = e.add_request
+        def admit(prompt, sampler, max_new_tokens):
+            if prompt == [1]:
+                raise RequestCapacityError('controlled rejection')
+            return original(prompt, sampler, max_new_tokens)
+        e.add_request = admit
+        bridge = EngineBridge(e)
+        try:
+            rejected = bridge.submit([1], 1, {'temperature': 0})
+>           assert rejected.ready.wait(2), 'rejected request must wake its HTTP waiter'
+E           AssertionError: rejected request must wake its HTTP waiter
+E           assert False
+E            +  where False = wait(2)
+E            +    where wait = <threading.Event at 0x118925dc0: unset>.wait
+E            +      where <threading.Event at 0x118925dc0: unset> = Generation(prompt_ids=[1], max_tokens=1, sampling={'temperature': 0}, output=<queue.Queue object at 0x118925a30>, disc...-dd5a969cec6247f2bc36b6aa5fd08573', submitted_at=9507.668020916, last_token_at=None, first_text_at=None, reported=True).ready
+
+tests/test_service_faults.py:47: AssertionError
+----------------------------- Captured stderr call -----------------------------
+Traceback (most recent call last):
+  File "/Users/wangchen/Developer/layers/server/app.py", line 270, in _run
+    self._admit(self.pending.get(timeout=0.01), live)
+  File "/Users/wangchen/Developer/layers/server/app.py", line 250, in _admit
+    self._report(job)
+  File "/Users/wangchen/Developer/layers/server/app.py", line 222, in _report
+    print(json.dumps({"event": "request_end", "request_id": job.request_id,
+  File "/Users/wangchen/Developer/layers/tests/test_service_faults.py", line 13, in fail
+    raise request.param('controlled diagnostic write failure')
+ValueError: controlled diagnostic write failure
+_ test_log_failure_during_engine_error_still_reclaims_every_page[broken-pipe] __
+
+failed_diagnostics = None
+
+    def test_log_failure_during_engine_error_still_reclaims_every_page(failed_diagnostics):
+        e = engine()
+        def fail():
+            raise RuntimeError('controlled model failure')
+        e.step = fail
+        bridge = EngineBridge(e)
+        try:
+            job = bridge.submit([1], 10, {'temperature': 0})
+            assert job.ready.wait(2) and job.done.wait(2)
+            bridge.close()
+>           assert job.error.status == 500 and job.cancelled.is_set()
+E           AssertionError: assert (503 == 500)
+E            +  where 503 = APIError('server is stopping').status
+E            +    where APIError('server is stopping') = Generation(prompt_ids=[1], max_tokens=10, sampling={'temperature': 0}, output=<queue.Queue object at 0x118926ba0>, dis...-1316bb96e9484b4dbcbb1100d6962758', submitted_at=9509.680278083, last_token_at=None, first_text_at=None, reported=True).error
+
+tests/test_service_faults.py:68: AssertionError
+----------------------------- Captured stderr call -----------------------------
+Traceback (most recent call last):
+  File "/Users/wangchen/Developer/layers/server/app.py", line 281, in _run
+    events = self.engine.step()
+             ^^^^^^^^^^^^^^^^^^
+  File "/Users/wangchen/Developer/layers/tests/test_service_faults.py", line 61, in fail
+    raise RuntimeError('controlled model failure')
+RuntimeError: controlled model failure
+Traceback (most recent call last):
+  File "/Users/wangchen/Developer/layers/server/app.py", line 281, in _run
+    events = self.engine.step()
+             ^^^^^^^^^^^^^^^^^^
+  File "/Users/wangchen/Developer/layers/tests/test_service_faults.py", line 61, in fail
+    raise RuntimeError('controlled model failure')
+RuntimeError: controlled model failure
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/wangchen/Developer/layers/server/app.py", line 315, in _run
+    self._release(job)
+  File "/Users/wangchen/Developer/layers/server/app.py", line 231, in _release
+    self._report(job)
+  File "/Users/wangchen/Developer/layers/server/app.py", line 222, in _report
+    print(json.dumps({"event": "request_end", "request_id": job.request_id,
+  File "/Users/wangchen/Developer/layers/tests/test_service_faults.py", line 13, in fail
+    raise request.param('controlled diagnostic write failure')
+BrokenPipeError: controlled diagnostic write failure
+_ test_log_failure_during_engine_error_still_reclaims_every_page[closed-stream] _
+
+failed_diagnostics = None
+
+    def test_log_failure_during_engine_error_still_reclaims_every_page(failed_diagnostics):
+        e = engine()
+        def fail():
+            raise RuntimeError('controlled model failure')
+        e.step = fail
+        bridge = EngineBridge(e)
+        try:
+            job = bridge.submit([1], 10, {'temperature': 0})
+            assert job.ready.wait(2) and job.done.wait(2)
+            bridge.close()
+>           assert job.error.status == 500 and job.cancelled.is_set()
+E           AssertionError: assert (503 == 500)
+E            +  where 503 = APIError('server is stopping').status
+E            +    where APIError('server is stopping') = Generation(prompt_ids=[1], max_tokens=10, sampling={'temperature': 0}, output=<queue.Queue object at 0x118927dd0>, dis...-cc9209b92db0422bb445bcbbe2118c28', submitted_at=9509.685830916, last_token_at=None, first_text_at=None, reported=True).error
+
+tests/test_service_faults.py:68: AssertionError
+----------------------------- Captured stderr call -----------------------------
+Traceback (most recent call last):
+  File "/Users/wangchen/Developer/layers/server/app.py", line 281, in _run
+    events = self.engine.step()
+             ^^^^^^^^^^^^^^^^^^
+  File "/Users/wangchen/Developer/layers/tests/test_service_faults.py", line 61, in fail
+    raise RuntimeError('controlled model failure')
+RuntimeError: controlled model failure
+Traceback (most recent call last):
+  File "/Users/wangchen/Developer/layers/server/app.py", line 281, in _run
+    events = self.engine.step()
+             ^^^^^^^^^^^^^^^^^^
+  File "/Users/wangchen/Developer/layers/tests/test_service_faults.py", line 61, in fail
+    raise RuntimeError('controlled model failure')
+RuntimeError: controlled model failure
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/wangchen/Developer/layers/server/app.py", line 315, in _run
+    self._release(job)
+  File "/Users/wangchen/Developer/layers/server/app.py", line 231, in _release
+    self._report(job)
+  File "/Users/wangchen/Developer/layers/server/app.py", line 222, in _report
+    print(json.dumps({"event": "request_end", "request_id": job.request_id,
+  File "/Users/wangchen/Developer/layers/tests/test_service_faults.py", line 13, in fail
+    raise request.param('controlled diagnostic write failure')
+ValueError: controlled diagnostic write failure
+=========================== short test summary info ============================
+FAILED tests/test_service_faults.py::test_log_failure_preserves_success_and_subsequent_requests[broken-pipe]
+FAILED tests/test_service_faults.py::test_log_failure_preserves_success_and_subsequent_requests[closed-stream]
+FAILED tests/test_service_faults.py::test_log_failure_preserves_rejection_notifications_and_reuse[broken-pipe]
+FAILED tests/test_service_faults.py::test_log_failure_preserves_rejection_notifications_and_reuse[closed-stream]
+FAILED tests/test_service_faults.py::test_log_failure_during_engine_error_still_reclaims_every_page[broken-pipe]
+FAILED tests/test_service_faults.py::test_log_failure_during_engine_error_still_reclaims_every_page[closed-stream]
+6 failed in 4.19s

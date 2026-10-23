@@ -1,0 +1,5 @@
+-r requirements-runtime.txt
+pytest==9.1.1
+torch==2.14.1
+tokenizers==0.23.3
+tiktoken==0.14.0
