@@ -1,0 +1,43 @@
+.................................F.                                      [100%]
+=================================== FAILURES ===================================
+__________ test_engine_capacity_returns_429_and_cancel_is_idempotent ___________
+
+    def test_engine_capacity_returns_429_and_cancel_is_idempotent():
+        gpt_engine = engine()
+        bridge = EngineBridge(gpt_engine)
+        # Queue 9 admissions before a single step, without racing a fast tiny model.
+        original = gpt_engine.add_request
+        entered, resume = threading.Event(), threading.Event()
+        def gated_add(*args, **kwargs):
+            entered.set()
+            assert resume.wait(5)
+            return original(*args, **kwargs)
+        gpt_engine.add_request = gated_add
+        try:
+            jobs = [bridge.submit([1], 100, {"temperature": 0})]
+            assert entered.wait(5)
+            jobs.extend(bridge.submit([row], 100, {"temperature": 0}) for row in range(2, 10))
+            resume.set()
+            assert jobs[-1].ready.wait(5)
+>           assert jobs[-1].error.status == 429 and jobs[-1].done.is_set()
+E           AssertionError: assert (429 == 429 and False)
+E            +  where 429 = APIError('engine is at its active request limit (8)').status
+E            +    where APIError('engine is at its active request limit (8)') = Generation(prompt_ids=[9], max_tokens=100, sampling={'temperature': 0}, output=<queue.Queue object at 0x107c47410>, di...-64f299e6e1d34eb79370ef15f496e59e', submitted_at=7488.413872791, last_token_at=None, first_text_at=None, reported=True).error
+E            +  and   False = is_set()
+E            +    where is_set = <threading.Event at 0x107c44050: unset>.is_set
+E            +      where <threading.Event at 0x107c44050: unset> = Generation(prompt_ids=[9], max_tokens=100, sampling={'temperature': 0}, output=<queue.Queue object at 0x107c47410>, di...-64f299e6e1d34eb79370ef15f496e59e', submitted_at=7488.413872791, last_token_at=None, first_text_at=None, reported=True).done
+
+tests/test_api_server.py:302: AssertionError
+----------------------------- Captured stderr call -----------------------------
+{"event": "request_end", "request_id": "req-64f299e6e1d34eb79370ef15f496e59e", "outcome": "errors", "finish_reason": "length", "completion_tokens": 0, "duration_seconds": 0.009435916999791516}
+{"event": "request_end", "request_id": "req-9db6bd2b089644d089493520e9ca7dea", "outcome": "errors", "finish_reason": "length", "completion_tokens": 1, "duration_seconds": 0.015337667000494548}
+{"event": "request_end", "request_id": "req-cf44ff8acde14a2a9918ea96b3d2de0f", "outcome": "errors", "finish_reason": "length", "completion_tokens": 1, "duration_seconds": 0.015286500000001979}
+{"event": "request_end", "request_id": "req-2cdb7448ec8d4d7b8090ba2d5d036df8", "outcome": "errors", "finish_reason": "length", "completion_tokens": 1, "duration_seconds": 0.015284957999938342}
+{"event": "request_end", "request_id": "req-b1b5617f2bd54099a7531a30941ffaf8", "outcome": "errors", "finish_reason": "length", "completion_tokens": 1, "duration_seconds": 0.015287625000382832}
+{"event": "request_end", "request_id": "req-b6e95f77b606445890e551fed7f54d28", "outcome": "errors", "finish_reason": "length", "completion_tokens": 1, "duration_seconds": 0.015291083999727562}
+{"event": "request_end", "request_id": "req-758352b4bfd14ecb9bf9e594e31382c8", "outcome": "errors", "finish_reason": "length", "completion_tokens": 1, "duration_seconds": 0.015290416999960144}
+{"event": "request_end", "request_id": "req-86c83ef0aec146afa4ba5eec9258ac96", "outcome": "errors", "finish_reason": "length", "completion_tokens": 1, "duration_seconds": 0.015291624999917985}
+{"event": "request_end", "request_id": "req-5def5d0a908f424891996bb209fd7624", "outcome": "errors", "finish_reason": "length", "completion_tokens": 1, "duration_seconds": 0.015292541999770037}
+=========================== short test summary info ============================
+FAILED tests/test_api_server.py::test_engine_capacity_returns_429_and_cancel_is_idempotent
+1 failed, 34 passed in 2.63s

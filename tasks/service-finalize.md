@@ -13,6 +13,7 @@ silent partial checkpoints, shutdown leaks and measurement overhead.
 
 `server/app.py`, `server/runtime.py`, `server/completion.py`,
 `server/observability.py`, `tests/test_service_*.py`,
+`server/model-manifest.json`,
 `bench/final_service_bench.py`, `README.md`, `requirements-runtime.txt`,
 `requirements-dev.txt`, `tasks/service-finalize.md`,
 `runs/service-finalize-*.md`, `results/service-finalize/`.

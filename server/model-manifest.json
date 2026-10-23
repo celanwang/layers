@@ -1,0 +1,8 @@
+{
+  "checkpoint_sha256": "a6bc079ef679c90ea8a4fdff95cf5086d4d49b8c811ce0252b2c31c7f1531889",
+  "tokenizer_sha256": "b8056fefeb320f2788aa709d8a0ab9a518980aaac9bef8391702331bbfe9dc87",
+  "vocab_size": 1028,
+  "parameters": 13118464,
+  "training_config_hash": "2c846ded0b41",
+  "description": "L3 500-step fp32 base GPT; no instruction tuning"
+}
