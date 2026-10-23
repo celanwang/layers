@@ -8,7 +8,8 @@ class Metrics:
     def __init__(self):
         self.lock = threading.Lock()
         self.counters = Counter({name: 0 for name in (
-            "received", "completed", "rejected", "cancelled", "errors", "generated_tokens")})
+            "received", "completed", "rejected", "cancelled", "errors", "generated_tokens",
+            "log_write_failures")})
         self.samples = {name: deque(maxlen=1024) for name in ("ttft_seconds", "itl_seconds")}
         self.gauges = {"active_requests": 0, "waiting_requests": 0, "allocated_pages": 0}
 

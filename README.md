@@ -121,6 +121,10 @@ This supports drain-and-restart, not zero-downtime hot reload.
   completion tokens and finish reason. Prompt/completion content is not logged.
   Admission rejections are distinct from generation errors. Metrics are
   process-local and reset on restart; the endpoint is not Prometheus format.
+  Broken or closed stderr streams increment `log_write_failures` without
+  changing request outcomes, readiness or KV cleanup. Traceback writes use the
+  same best-effort path. Logging remains synchronous: slow sinks can delay the
+  owner; this release does not implement an asynchronous logging pipeline.
 
 ## Validation and learning records
 

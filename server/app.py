@@ -211,6 +211,14 @@ class EngineBridge:
                              capacity_pages=self.engine.pool.capacity,
                              free_pages=self.engine.pool.num_free_blocks)
 
+    def _diagnostic(self, message):
+        """A broken/closed log sink must never interrupt terminal notifications."""
+        try:
+            print(message, file=sys.stderr, flush=True)
+        except (OSError, ValueError):
+            # Do not recursively report a failure through the same broken sink.
+            self.metrics.count("log_write_failures")
+
     def _report(self, job):
         if job.reported:
             return
@@ -219,11 +227,10 @@ class EngineBridge:
                    else "errors" if job.error else "cancelled" if job.cancelled.is_set() else "completed")
         self.metrics.count(outcome)
         if self.log_requests:
-            print(json.dumps({"event": "request_end", "request_id": job.request_id,
+            self._diagnostic(json.dumps({"event": "request_end", "request_id": job.request_id,
                               "outcome": outcome, "finish_reason": job.finish_reason,
                               "completion_tokens": job.count,
-                              "duration_seconds": time.monotonic() - job.submitted_at}),
-                  file=sys.stderr, flush=True)
+                              "duration_seconds": time.monotonic() - job.submitted_at}))
 
     def _release(self, job):
         if job.seq_id is not None:
@@ -243,7 +250,7 @@ class EngineBridge:
         except RequestCapacityError as exc:
             job.error = APIError(str(exc), 429, code="capacity_exceeded")
         except Exception:
-            traceback.print_exc()
+            self._diagnostic(traceback.format_exc())
             job.error = APIError("engine admission failed", 500)
         finally:
             if job.seq_id is None:
@@ -309,7 +316,7 @@ class EngineBridge:
                 except Exception:
                     self.failed.set()
                     self.stopping.set()
-                    traceback.print_exc()
+                    self._diagnostic(traceback.format_exc())
                     for job in live.values():
                         job.abort(APIError("engine generation failed", 500))
                         self._release(job)
@@ -317,7 +324,7 @@ class EngineBridge:
                 self._publish()
         except Exception:
             self.failed.set()
-            traceback.print_exc()
+            self._diagnostic(traceback.format_exc())
         finally:
             self.stopping.set()
             for job in live.values():
