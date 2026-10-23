@@ -23,3 +23,14 @@
 - Original 156 tests plus new tests: first full run 176 passed (one existing
   PyTorch quantization API warning). Artifact-registration testing was added
   afterwards and its targeted tests pass; a final full run remains required.
+
+## Final functional validation
+
+- Full regression: 183 passed (one existing PyTorch API deprecation warning).
+- Final focused suite: 48 passed, including actual L7 standard-Sampler early
+  termination, malformed Unicode rejection and all old API wire tests.
+- CLI process smoke: L7 accepted a 180-token SSE request, received SIGTERM after
+  first content, delivered the terminal usage/[DONE] frames and exited 0.
+- The stop fixture initially requested one token more than its scripted source;
+  corrected that new-test fixture budget. Existing tests were never changed.
+- Preserved first failing admission-state race output and all timing failures.

@@ -84,3 +84,45 @@ def test_length_flushes_incomplete_stop_prefix():
         assert text == 'hello ST'
         assert data['choices'][0]['finish_reason'] == 'length'
         reclaimed(server)
+
+
+@pytest.mark.parametrize('backend', ['l6', 'l7'])
+def test_eight_streams_have_independent_early_stop_and_length_limits(backend, monkeypatch):
+    from concurrent.futures import ThreadPoolExecutor
+    from layers import BatchedSamplingEngine
+    e = engine()
+    if backend == 'l7':
+        e = BatchedSamplingEngine(e.model, e.tokenizer, max_concurrent=8, block_size=4)
+    import mlx.core as mx
+    from layers import Sampler
+    def scripted_distribution(self, logits):
+        row = self.seed - 100
+        tokens = list(f'{row}:中文STOPtail'.encode())
+        if row % 3 == 0: tokens[2] = 257
+        token = tokens[self._draws]
+        return (mx.arange(logits.shape[0]) == token).astype(mx.float32)
+    monkeypatch.setattr(Sampler, 'probabilities', scripted_distribution)
+    with serving(e) as server:
+        requests = [payload(i, messages=[{'role':'user','content':f'row{i}'}], stream=True,
+            max_tokens=16, stop='STOP' if i % 3 == 1 else None) for i in range(8)]
+        with ThreadPoolExecutor(8) as pool:
+            result = list(pool.map(lambda b: completion(server,b), requests))
+        for row,(text,chunks) in enumerate(result):
+            expected = f'{row}:' if row % 3 == 0 else f'{row}:中文' if row % 3 == 1 else f'{row}:中文STOPtail'
+            assert text == expected
+            assert chunks[-1]['choices'][0]['finish_reason'] == ('length' if row % 3 == 2 else 'stop')
+        reclaimed(server)
+
+
+@pytest.mark.parametrize('change', [
+    {'stop':'\ud800'}, {'stop':['']},
+    {'messages':[{'role':'user','content':'\ud800'}]},
+])
+def test_invalid_unicode_and_stop_return_clear_400(change):
+    import json
+    from tests.test_api_server import post
+    with serving() as server:
+        conn,response = post(server,payload(**change))
+        assert response.status == 400
+        assert 'error' in json.loads(response.read())
+        conn.close()

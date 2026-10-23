@@ -15,7 +15,7 @@ The requirements record existing validated versions. No new runtime library
 was introduced by the service completion work.
 
 ```sh
-uv venv --python 3.12 .venv
+uv venv --python 3.12.15 .venv
 uv pip install --python .venv/bin/python -r requirements-runtime.txt
 # For all Oracle tests and experiments:
 uv pip install --python .venv/bin/python -r requirements-dev.txt
@@ -141,3 +141,10 @@ Research evidence lives in `tasks/` (specifications), `runs/` (principles,
 implementation/comparison notes and retrospectives), and `results/` (raw data).
 L0–L7 numerical/performance Oracles remain available. Service v1 documentation
 is in `runs/service-finalize-*.md` and `results/service-finalize/`.
+
+A separate steady-owner diagnostic is available with
+`bench/final_service_bench.py --steady-owner`. It retains the service owner
+across its 3 warmup requests and 10 observations, unlike the default fresh-owner
+protocol. Its measurements are archived separately and cannot replace a failed
+fresh-owner overhead gate. The cold request and warmed steady service are
+different workloads. See the completion retrospective for observed results.

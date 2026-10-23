@@ -1,0 +1,10 @@
+........................................................................ [ 39%]
+........................................................................ [ 78%]
+.......................................                                  [100%]
+=============================== warnings summary ===============================
+tests/test_kv_quant.py::test_kv_roundtrip_bound_and_pytorch_public_api_oracle
+  /Users/wangchen/Developer/layers/tests/test_kv_quant.py:38: UserWarning: torch.quantize_per_tensor, torch.quantize_per_channel and other quantized tensor creation functions that produce tensors with dtype torch.quint8, torch.qint8, and torch.qint32 are deprecated and will be removed in a future PyTorch release. Please see https://github.com/pytorch/pytorch/issues/184982 for more information. (Triggered internally at /Users/runner/work/pytorch/pytorch/aten/src/ATen/quantized/Quantizer.cpp:116.)
+    oracle = torch.quantize_per_channel(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+183 passed, 1 warning in 29.20s

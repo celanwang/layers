@@ -68,6 +68,10 @@ def chat_template(messages):
             raise APIError("unsupported message role", param="messages")
         if not isinstance(item["content"], str):
             raise APIError("message content must be text", param="messages")
+        try:
+            item["content"].encode("utf-8")
+        except UnicodeEncodeError as exc:
+            raise APIError("message content must be valid Unicode", param="messages") from exc
         lines.append(f"{item['role']}: {item['content']}")
     return "\n".join(lines)
 

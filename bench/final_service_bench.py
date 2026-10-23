@@ -1,5 +1,6 @@
 """Local service v1: paired direct/HTTP, real L3 assets and L6/L7 paths."""
 from concurrent.futures import ThreadPoolExecutor
+import argparse
 from datetime import datetime, timezone
 import hashlib
 import http.client
@@ -26,6 +27,8 @@ COUNTS = (1, 4, 8)
 
 def summary(values):
     ordered = sorted(values)
+    if not ordered:
+        return {'median_s':None,'p90_s':None,'samples_s':[]}
     return {'median_s': ordered[len(ordered)//2],
             'p90_s': ordered[int(len(ordered)*.9)-1], 'samples_s': values}
 
@@ -99,10 +102,13 @@ def client(server, row, barrier):
         conn.close()
 
 
-def api_trial(model, tokenizer, backend, count):
-    server = make_server('127.0.0.1',0,new_engine(model,tokenizer,backend))
-    thread = threading.Thread(target=server.serve_forever, kwargs={'poll_interval':.01})
-    thread.start()
+def api_trial(model, tokenizer, backend, count, persistent_server=None):
+    server = persistent_server
+    if server is None:
+        server = make_server('127.0.0.1',0,new_engine(model,tokenizer,backend))
+    if persistent_server is None:
+        thread = threading.Thread(target=server.serve_forever, kwargs={'poll_interval':.01})
+        thread.start()
     try:
         with ThreadPoolExecutor(count) as pool:
             barrier = threading.Barrier(count+1)
@@ -120,19 +126,25 @@ def api_trial(model, tokenizer, backend, count):
         return {'elapsed_s':elapsed,'outputs':[r['output'] for r in results],
                 'clients':results, 'state':state}
     finally:
-        server.shutdown()
-        server.server_close()
-        thread.join()
+        if persistent_server is None:
+            server.shutdown()
+            server.server_close()
+            thread.join()
         assert server.bridge.engine.pool.allocated_blocks == 0
 
 
 def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--steady-owner', action='store_true',
+                        help='separate diagnostic: retain engine-owner thread across warmup and measured requests')
+    args = parser.parse_args()
     loaded = load_engine()
     config = {
         'protocol':{'warmup':WARMUP,'reps':REPS,'counts':COUNTS,'max_new':TOKENS,
                     'order':'paired alternating direct/API; fresh engine/pool per trial',
                     'share_prefixes':False,'generation':'greedy; EOS enabled',
                     'scope':'full request incl prefill; API adds connection, queues and SSE',
+                    'owner_lifecycle':'persistent' if args.steady_owner else 'fresh per trial',
                     'concurrency_caveat':'direct eager admission vs HTTP staggered arrival',
                     'ttft':'client first nonempty content; ITL from owner token-ready events'},
         'device':{'chip':subprocess.check_output(['sysctl','-n','machdep.cpu.brand_string'],text=True).strip(),
@@ -140,6 +152,7 @@ def main():
                   'platform':platform.platform(),'python':sys.version,
                   'mlx':__import__('mlx.core',fromlist=['']).__version__},
         'git_commit':subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),
+        'git_status':subprocess.check_output(['git','status','--porcelain'],text=True).splitlines(),
         'assets':loaded.artifact_manifest,
         'source_sha256':{p:file_hash(ROOT/p) for p in ('server/app.py','server/runtime.py',
              'server/completion.py','server/observability.py','layers/engine.py',
@@ -149,17 +162,30 @@ def main():
     for backend in ('l6','l7'):
         for count in COUNTS:
             direct, api, client_rows, snapshots = [],[],[],[]
-            for rep in range(WARMUP+REPS):
-                result = {}
-                for mode in (('direct','api') if rep%2==0 else ('api','direct')):
-                    result[mode] = (direct_trial if mode=='direct' else api_trial)(
-                        loaded.model,loaded.tokenizer,backend,count)
-                assert result['direct']['outputs'] == result['api']['outputs'], 'output Oracle mismatch'
-                if rep>=WARMUP:
-                    direct.append(result['direct']['elapsed_s'])
-                    api.append(result['api']['elapsed_s'])
-                    client_rows.append(result['api']['clients'])
-                    snapshots.append(result['api']['state'])
+            persistent = None
+            if args.steady_owner:
+                persistent = make_server('127.0.0.1',0,new_engine(loaded.model,loaded.tokenizer,backend))
+                owner_http_thread = threading.Thread(target=persistent.serve_forever, kwargs={'poll_interval':.01})
+                owner_http_thread.start()
+            try:
+                for rep in range(WARMUP+REPS):
+                    result = {}
+                    for mode in (('direct','api') if rep%2==0 else ('api','direct')):
+                        if mode == 'direct':
+                            result[mode] = direct_trial(loaded.model,loaded.tokenizer,backend,count)
+                        else:
+                            result[mode] = api_trial(loaded.model,loaded.tokenizer,backend,count,persistent)
+                    assert result['direct']['outputs'] == result['api']['outputs'], 'output Oracle mismatch'
+                    if rep>=WARMUP:
+                        direct.append(result['direct']['elapsed_s'])
+                        api.append(result['api']['elapsed_s'])
+                        client_rows.append(result['api']['clients'])
+                        snapshots.append(result['api']['state'])
+            finally:
+                if persistent is not None:
+                    persistent.shutdown()
+                    persistent.server_close()
+                    owner_http_thread.join()
             left,right = summary(direct),summary(api)
             tokens = sum(r[1] for r in result['api']['outputs'])
             row = {'engine':backend,'concurrency':count,'direct':left,'api':right,

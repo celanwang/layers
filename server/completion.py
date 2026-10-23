@@ -10,6 +10,8 @@ def validate_stop(value):
     if (not isinstance(values, list) or not 1 <= len(values) <= 4
             or any(not isinstance(s, str) or not 1 <= len(s) <= 256 for s in values)):
         raise ValueError("stop must be a nonempty string or 1..4 strings of 1..256 characters")
+    for value in values:
+        value.encode("utf-8")
     return tuple(values)
 
 
