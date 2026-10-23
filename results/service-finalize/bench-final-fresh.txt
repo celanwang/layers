@@ -1,0 +1,7 @@
+l6 B=1: API=440.1 tok/s, overhead=1.10%
+l6 B=4: API=1020.1 tok/s, overhead=5.02%
+l6 B=8: API=1309.3 tok/s, overhead=7.00%
+l7 B=1: API=419.7 tok/s, overhead=3.82%
+l7 B=4: API=1186.2 tok/s, overhead=-1.91%
+l7 B=8: API=1634.5 tok/s, overhead=3.99%
+written: /Users/wangchen/Developer/layers/results/service-finalize/service-bench-20261023T054527680889Z.json; singleton <5% target: True
